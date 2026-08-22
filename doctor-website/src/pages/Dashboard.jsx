@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, FileText, AlertTriangle, Activity, Database, ChevronRight } from 'lucide-react';
 import { getAllPatients } from '../services/patients';
+import { deleteAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
 
 export default function Dashboard() {
@@ -9,6 +10,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
   const [seeded, setSeeded] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -34,6 +36,19 @@ export default function Dashboard() {
       console.error('Error seeding database:', err);
     }
     setSeeding(false);
+  };
+
+  const handleClear = async () => {
+    if (!window.confirm('Delete all patient data? This cannot be undone.')) return;
+    setClearing(true);
+    try {
+      await deleteAllPatients();
+      setPatients([]);
+      setSeeded(false);
+    } catch (err) {
+      console.error('Error clearing database:', err);
+    }
+    setClearing(false);
   };
 
   const totalPatients = patients.length;
@@ -79,6 +94,15 @@ export default function Dashboard() {
           >
             <Database className="w-4 h-4" />
             {seeding ? 'Seeding...' : 'Seed Sample Data'}
+          </button>
+        )}
+        {patients.length > 0 && (
+          <button
+            onClick={handleClear}
+            disabled={clearing}
+            className="flex items-center gap-2 px-4 py-2 bg-red-50 text-red-600 border border-red-200 rounded-xl text-sm font-medium hover:bg-red-100 disabled:opacity-50"
+          >
+            {clearing ? 'Clearing...' : 'Clear All Data'}
           </button>
         )}
       </div>
