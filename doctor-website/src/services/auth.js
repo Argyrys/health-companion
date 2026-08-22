@@ -1,8 +1,13 @@
-import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { auth } from './firebase';
 
 export const loginDoctor = async (email, password) => {
   const userCredential = await signInWithEmailAndPassword(auth, email, password);
+  return userCredential.user;
+};
+
+export const registerDoctor = async (email, password) => {
+  const userCredential = await createUserWithEmailAndPassword(auth, email, password);
   return userCredential.user;
 };
 

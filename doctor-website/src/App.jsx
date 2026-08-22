@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import PatientList from './pages/PatientList';
 import PatientReport from './pages/PatientReport';
@@ -35,7 +36,10 @@ function App() {
           </main>
         </div>
       ) : (
-        <Login onLogin={handleLogin} />
+        <Routes>
+          <Route path="/signup" element={<SignUp onLogin={handleLogin} />} />
+          <Route path="*" element={<Login onLogin={handleLogin} />} />
+        </Routes>
       )}
     </Router>
   );

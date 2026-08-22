@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Activity, Eye, EyeOff } from 'lucide-react';
-import { loginDoctor } from '../services/auth';
+import { registerDoctor } from '../services/auth';
 
-export default function Login({ onLogin }) {
+export default function SignUp({ onLogin }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -12,22 +13,33 @@ export default function Login({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const user = await loginDoctor(email, password);
+      const user = await registerDoctor(email, password);
       const name = user.email.split('@')[0];
       const displayName = name.charAt(0).toUpperCase() + name.slice(1);
       onLogin(displayName);
     } catch (err) {
-      if (err.code === 'auth/user-not-found') {
-        setError('No account found with this email');
-      } else if (err.code === 'auth/wrong-password') {
-        setError('Incorrect password');
+      if (err.code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists');
       } else if (err.code === 'auth/invalid-email') {
         setError('Invalid email address');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Password is too weak');
       } else {
-        setError('Login failed. Please try again.');
+        setError('Sign up failed. Please try again.');
       }
     }
     setLoading(false);
@@ -45,7 +57,7 @@ export default function Login({ onLogin }) {
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
-          <h2 className="text-xl font-semibold text-slate-800 mb-6">Sign in to your account</h2>
+          <h2 className="text-xl font-semibold text-slate-800 mb-6">Create your account</h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
@@ -56,6 +68,7 @@ export default function Login({ onLogin }) {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="doctor@hospital.com"
                 className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                required
               />
             </div>
 
@@ -66,8 +79,9 @@ export default function Login({ onLogin }) {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter password"
+                  placeholder="At least 6 characters"
                   className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all pr-12"
+                  required
                 />
                 <button
                   type="button"
@@ -77,6 +91,18 @@ export default function Login({ onLogin }) {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Re-enter password"
+                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                required
+              />
             </div>
 
             {error && (
@@ -96,22 +122,22 @@ export default function Login({ onLogin }) {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Signing in...
+                  Creating account...
                 </span>
               ) : (
-                'Sign In'
+                'Sign Up'
               )}
             </button>
           </form>
-        </div>
 
-        <div className="mt-4 text-center">
-          <p className="text-sm text-slate-500">
-            Don't have an account?{' '}
-            <a href="/signup" className="text-emerald-600 font-medium hover:underline">
-              Sign up
-            </a>
-          </p>
+          <div className="mt-6 text-center">
+            <p className="text-sm text-slate-500">
+              Already have an account?{' '}
+              <a href="/" className="text-emerald-600 font-medium hover:underline">
+                Sign in
+              </a>
+            </p>
+          </div>
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">
