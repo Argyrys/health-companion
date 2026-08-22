@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, Play, Pause, Camera, Brain, Pill, AlertTriangle,
@@ -14,6 +14,24 @@ const sectionColorMap = {
   violet: { light: 'bg-violet-50', icon: 'text-violet-600' },
   purple: { light: 'bg-purple-50', icon: 'text-purple-600' },
 };
+
+const Section = ({ sectionId, title, icon: Icon, children, color = 'emerald', expandedSections, toggleSection }) => (
+  <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+    <button
+      onClick={() => toggleSection(sectionId)}
+      className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors"
+    >
+      <div className="flex items-center gap-3">
+        <div className={`w-8 h-8 ${sectionColorMap[color]?.light || 'bg-emerald-50'} rounded-lg flex items-center justify-center`}>
+          <Icon className={`w-4 h-4 ${sectionColorMap[color]?.icon || 'text-emerald-600'}`} />
+        </div>
+        <h3 className="font-semibold text-slate-800">{title}</h3>
+      </div>
+      {expandedSections[sectionId] ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+    </button>
+    {expandedSections[sectionId] && <div className="px-6 pb-5 border-t border-slate-50">{children}</div>}
+  </div>
+);
 
 export default function PatientReport() {
   const { id } = useParams();
@@ -47,10 +65,13 @@ export default function PatientReport() {
     fetchPatient();
   }, [id]);
 
+  const initializedRef = useRef(false);
+
   useEffect(() => {
-    if (patient?.consultations?.[0]) {
+    if (patient?.consultations?.[0] && !initializedRef.current) {
       setDiagnosis(patient.consultations[0].diagnosis || '');
       setPrescription(patient.consultations[0].prescription || '');
+      initializedRef.current = true;
     }
   }, [patient]);
 
@@ -103,24 +124,6 @@ export default function PatientReport() {
 
   const consultation = patient.consultations[0];
 
-  const Section = ({ sectionId, title, icon: Icon, children, color = 'emerald' }) => (
-    <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-      <button
-        onClick={() => toggleSection(sectionId)}
-        className="w-full flex items-center justify-between px-6 py-4 hover:bg-slate-50 transition-colors"
-      >
-        <div className="flex items-center gap-3">
-          <div className={`w-8 h-8 ${sectionColorMap[color]?.light || 'bg-emerald-50'} rounded-lg flex items-center justify-center`}>
-            <Icon className={`w-4 h-4 ${sectionColorMap[color]?.icon || 'text-emerald-600'}`} />
-          </div>
-          <h3 className="font-semibold text-slate-800">{title}</h3>
-        </div>
-        {expandedSections[sectionId] ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
-      </button>
-      {expandedSections[sectionId] && <div className="px-6 pb-5 border-t border-slate-50">{children}</div>}
-    </div>
-  );
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -158,7 +161,7 @@ export default function PatientReport() {
       </div>
 
       <div className="space-y-4">
-        <Section sectionId="symptoms" title="Symptoms" icon={FileText}>
+        <Section sectionId="symptoms" title="Symptoms" icon={FileText} expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="pt-4 space-y-4">
             <div>
               <p className="text-sm text-slate-500 mb-1">Chief Complaint</p>
@@ -208,7 +211,7 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="history" title="Medical & Family History" icon={Heart} color="rose">
+        <Section sectionId="history" title="Medical & Family History" icon={Heart} color="rose" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="pt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <p className="text-sm text-slate-500 mb-2">Medical History</p>
@@ -243,7 +246,7 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="medications" title="Current Medications" icon={Pill} color="blue">
+        <Section sectionId="medications" title="Current Medications" icon={Pill} color="blue" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="pt-4">
             {(consultation.medications || []).length > 0 ? (
               <div className="space-y-2">
@@ -265,7 +268,7 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="allergies" title="Allergies" icon={AlertTriangle} color="red">
+        <Section sectionId="allergies" title="Allergies" icon={AlertTriangle} color="red" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="pt-4">
             {(consultation.allergies || []).length > 0 ? (
               <div className="space-y-2">
@@ -291,7 +294,7 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="eye" title="Eye Screening" icon={Camera} color="violet">
+        <Section sectionId="eye" title="Eye Screening" icon={Camera} color="violet" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="pt-4">
             {consultation.eyeScreening ? (
               <div className="space-y-4">
@@ -336,7 +339,7 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="mental" title="Mental Health" icon={Brain} color="purple">
+        <Section sectionId="mental" title="Mental Health" icon={Brain} color="purple" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="pt-4">
             {consultation.mentalHealth ? (
               <div className="space-y-4">
@@ -376,7 +379,7 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="diagnosis" title="Diagnosis & Prescription" icon={FileText} color="emerald">
+        <Section sectionId="diagnosis" title="Diagnosis & Prescription" icon={FileText} color="emerald" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="pt-4 space-y-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-1.5">Diagnosis</label>
