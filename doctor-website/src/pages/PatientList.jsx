@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Search, Filter, ChevronRight } from 'lucide-react';
 import { getAllPatients } from '../services/patients';
 
@@ -8,6 +8,7 @@ export default function PatientList() {
   const [search, setSearch] = useState('');
   const [filterRisk, setFilterRisk] = useState('all');
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPatients = async () => {
@@ -96,7 +97,11 @@ export default function PatientList() {
                 const consultation = patient.consultations?.[0];
                 const riskLevel = consultation?.eyeScreening?.riskLevel;
                 return (
-                  <tr key={patient.id} className="hover:bg-slate-50 transition-colors">
+                  <tr
+                    key={patient.id}
+                    className="hover:bg-slate-50 transition-colors cursor-pointer"
+                    onClick={() => navigate(`/patients/${patient.id}`)}
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
@@ -107,10 +112,10 @@ export default function PatientList() {
                         <span className="font-medium text-slate-800">{patient.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-500 font-mono">{patient.id?.slice(0, 8)}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{patient.age}y / {patient.gender}</td>
-                    <td className="px-6 py-4 text-sm text-slate-600">{consultation?.chiefComplaint}</td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 text-sm text-slate-500 font-mono hidden sm:table-cell">{patient.id?.slice(0, 8)}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 hidden sm:table-cell">{patient.age}y / {patient.gender}</td>
+                    <td className="px-6 py-4 text-sm text-slate-600 hidden sm:table-cell">{consultation?.chiefComplaint}</td>
+                    <td className="px-6 py-4 hidden sm:table-cell">
                       {riskLevel ? (
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
                           riskLevel === 'High' ? 'bg-red-50 text-red-600' :
@@ -123,14 +128,11 @@ export default function PatientList() {
                         <span className="text-xs text-slate-400">N/A</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-500">{patient.createdAt}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500 hidden sm:table-cell">{patient.createdAt}</td>
                     <td className="px-6 py-4">
-                      <Link
-                        to={`/patients/${patient.id}`}
-                        className="flex items-center gap-1 text-sm font-medium text-emerald-600 hover:text-emerald-700"
-                      >
+                      <span className="flex items-center gap-1 text-sm font-medium text-emerald-600">
                         View <ChevronRight className="w-4 h-4" />
-                      </Link>
+                      </span>
                     </td>
                   </tr>
                 );
