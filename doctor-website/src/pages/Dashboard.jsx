@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Users, FileText, AlertTriangle, Activity, Database } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Users, FileText, AlertTriangle, Activity, Database, ChevronRight } from 'lucide-react';
 import { getAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
 
@@ -106,7 +107,7 @@ export default function Dashboard() {
           {patients.slice(0, 5).map((patient) => {
             const consultation = patient.consultations?.[0];
             return (
-              <div key={patient.id} className="px-6 py-4 hover:bg-slate-50 transition-colors">
+              <Link to={`/patients/${patient.id}`} key={patient.id} className="block px-6 py-4 hover:bg-slate-50 transition-colors cursor-pointer">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -131,10 +132,10 @@ export default function Dashboard() {
                         {consultation.eyeScreening.riskLevel} Risk
                       </span>
                     )}
-                    <span className="text-sm text-slate-400">{patient.createdAt}</span>
+                    <ChevronRight className="w-4 h-4 text-slate-300" />
                   </div>
                 </div>
-              </div>
+              </Link>
             );
           })}
           {patients.length === 0 && (
