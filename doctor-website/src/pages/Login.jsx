@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Activity, Eye, EyeOff } from 'lucide-react';
+import { loginDoctor } from '../services/auth';
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -13,14 +14,21 @@ export default function Login({ onLogin }) {
     setError('');
     setLoading(true);
 
-    await new Promise(r => setTimeout(r, 800));
-
-    if (email === 'doctor@hospital.com' && password === 'doctor123') {
-      onLogin('Sharma');
-    } else if (email && password) {
-      onLogin(email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1));
-    } else {
-      setError('Please enter email and password');
+    try {
+      const user = await loginDoctor(email, password);
+      const name = user.email.split('@')[0];
+      const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+      onLogin(displayName);
+    } catch (err) {
+      if (err.code === 'auth/user-not-found') {
+        setError('No account found with this email');
+      } else if (err.code === 'auth/wrong-password') {
+        setError('Incorrect password');
+      } else if (err.code === 'auth/invalid-email') {
+        setError('Invalid email address');
+      } else {
+        setError('Login failed. Please try again.');
+      }
     }
     setLoading(false);
   };
@@ -95,12 +103,6 @@ export default function Login({ onLogin }) {
               )}
             </button>
           </form>
-
-          <div className="mt-6 pt-6 border-t border-slate-100">
-            <p className="text-xs text-slate-400 text-center">
-              Demo credentials: doctor@hospital.com / doctor123
-            </p>
-          </div>
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6">

@@ -4,12 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "ai-health-companion.firebaseapp.com",
-  projectId: "ai-health-companion",
-  storageBucket: "ai-health-companion.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCWf-EVgGB3py-UiVSbeswu1lWrtb0MfkU",
+  authDomain: "ai-health-companion-c8ba6.firebaseapp.com",
+  projectId: "ai-health-companion-c8ba6",
+  storageBucket: "ai-health-companion-c8ba6.firebasestorage.app",
+  messagingSenderId: "704791131195",
+  appId: "1:704791131195:web:e75f9bcb16c11b98b0581e",
+  measurementId: "G-K0V6699FWT"
 };
 
 const app = initializeApp(firebaseConfig);

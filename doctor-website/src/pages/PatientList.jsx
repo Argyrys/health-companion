@@ -1,25 +1,54 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Filter, ChevronRight } from 'lucide-react';
-import { mockPatients } from '../data/mockData';
+import { getAllPatients } from '../services/patients';
 
 export default function PatientList() {
+  const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState('');
   const [filterRisk, setFilterRisk] = useState('all');
+  const [loading, setLoading] = useState(true);
 
-  const patients = mockPatients.filter(p => {
-    const matchesSearch = p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.id.toLowerCase().includes(search.toLowerCase());
+  useEffect(() => {
+    const fetchPatients = async () => {
+      try {
+        const data = await getAllPatients();
+        setPatients(data);
+      } catch (err) {
+        console.error('Error fetching patients:', err);
+      }
+      setLoading(false);
+    };
+    fetchPatients();
+  }, []);
+
+  const filtered = patients.filter(p => {
+    const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase()) ||
+      p.id?.toLowerCase().includes(search.toLowerCase());
     const matchesRisk = filterRisk === 'all' ||
-      p.consultations[0]?.eyeScreening?.riskLevel?.toLowerCase() === filterRisk;
+      p.consultations?.[0]?.eyeScreening?.riskLevel?.toLowerCase() === filterRisk;
     return matchesSearch && matchesRisk;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <svg className="animate-spin h-8 w-8 text-emerald-600 mx-auto mb-3" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <p className="text-slate-400">Loading patients...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-slate-800">Patients</h1>
-        <p className="text-slate-500 text-sm mt-1">{patients.length} patients found</p>
+        <p className="text-slate-500 text-sm mt-1">{filtered.length} patients found</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -63,8 +92,8 @@ export default function PatientList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {patients.map((patient) => {
-                const consultation = patient.consultations[0];
+              {filtered.map((patient) => {
+                const consultation = patient.consultations?.[0];
                 const riskLevel = consultation?.eyeScreening?.riskLevel;
                 return (
                   <tr key={patient.id} className="hover:bg-slate-50 transition-colors">
@@ -72,13 +101,13 @@ export default function PatientList() {
                       <div className="flex items-center gap-3">
                         <div className="w-9 h-9 bg-emerald-100 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-emerald-700 font-semibold text-sm">
-                            {patient.name.charAt(0)}
+                            {patient.name?.charAt(0)}
                           </span>
                         </div>
                         <span className="font-medium text-slate-800">{patient.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-sm text-slate-500 font-mono">{patient.id}</td>
+                    <td className="px-6 py-4 text-sm text-slate-500 font-mono">{patient.id?.slice(0, 8)}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{patient.age}y / {patient.gender}</td>
                     <td className="px-6 py-4 text-sm text-slate-600">{consultation?.chiefComplaint}</td>
                     <td className="px-6 py-4">
@@ -110,9 +139,9 @@ export default function PatientList() {
           </table>
         </div>
 
-        {patients.length === 0 && (
+        {filtered.length === 0 && (
           <div className="px-6 py-12 text-center">
-            <p className="text-slate-400">No patients found matching your search.</p>
+            <p className="text-slate-400">No patients found.</p>
           </div>
         )}
       </div>
