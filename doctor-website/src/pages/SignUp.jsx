@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, Eye, EyeOff } from 'lucide-react';
+import { Activity, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { registerDoctor } from '../services/auth';
 
 export default function SignUp({ onLogin }) {
@@ -46,47 +46,61 @@ export default function SignUp({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Activity className="w-9 h-9 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 flex items-center justify-center p-4 relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10">
+        <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-emerald-300 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-teal-200 rounded-full blur-3xl" />
+      </div>
+
+      <div className="w-full max-w-md relative z-10">
+        <div className="text-center mb-8 animate-fadeIn">
+          <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-xl border border-white/30">
+            <Activity className="w-11 h-11 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">AI Health Companion</h1>
-          <p className="text-slate-500 mt-1">Doctor Portal</p>
+          <h1 className="text-3xl font-bold text-white tracking-tight">AI Health Companion</h1>
+          <p className="text-emerald-100 mt-2 text-sm font-medium">Healthcare that listens.</p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-100">
-          <h2 className="text-xl font-semibold text-slate-800 mb-6">Create your account</h2>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-8 border border-white/50 animate-slideIn">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
+              <UserPlus className="w-5 h-5 text-emerald-600" />
+            </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Email</label>
+              <h2 className="text-lg font-semibold text-slate-800">Create Account</h2>
+              <p className="text-xs text-slate-400">Register as a doctor</p>
+            </div>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="doctor@hospital.com"
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 6 characters"
-                  className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all pr-12"
+                  className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200 pr-12"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
@@ -94,19 +108,20 @@ export default function SignUp({ onLogin }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1.5">Confirm Password</label>
+              <label className="block text-sm font-medium text-slate-600 mb-1.5">Confirm Password</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Re-enter password"
-                className="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200"
                 required
               />
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100">
+              <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0" />
                 {error}
               </div>
             )}
@@ -114,7 +129,7 @@ export default function SignUp({ onLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-600 text-white py-3 rounded-xl font-medium hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -125,7 +140,7 @@ export default function SignUp({ onLogin }) {
                   Creating account...
                 </span>
               ) : (
-                'Sign Up'
+                'Create Account'
               )}
             </button>
           </form>
@@ -133,14 +148,14 @@ export default function SignUp({ onLogin }) {
           <div className="mt-6 text-center">
             <p className="text-sm text-slate-500">
               Already have an account?{' '}
-              <a href="/" className="text-emerald-600 font-medium hover:underline">
+              <a href="/" className="text-emerald-600 font-semibold hover:underline underline-offset-2">
                 Sign in
               </a>
             </p>
           </div>
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
+        <p className="text-center text-xs text-white/50 mt-6">
           Powered by AI Health Companion &middot; SIH 2026
         </p>
       </div>
