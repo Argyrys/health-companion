@@ -1,20 +1,3 @@
-<<<<<<< HEAD
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
-# dependencies
-node_modules/
-
-# Expo
-.expo/
-dist/
-web-build/
-expo-env.d.ts
-
-# Native
-.kotlin/
-*.orig.*
-*.jks
-=======
 # Android / Gradle
 .gradle/
 build/
@@ -37,7 +20,6 @@ google-services.json
 # Signing keys / certificates
 *.jks
 *.keystore
->>>>>>> f9a1b7c (Initial Patient App Android setup)
 *.p8
 *.p12
 *.key
