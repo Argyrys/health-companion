@@ -16,9 +16,10 @@ function App() {
   const [doctorNum, setDoctorNum] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  const loadDoctorProfile = async (user) => {
+  const loadDoctorProfile = async (user, signupName) => {
     try {
-      const doc = await getOrCreateDoctor(user.uid, user.email);
+      const doc = await getOrCreateDoctor(user.uid, user.email, signupName);
+      setDoctorName(doc.name || user.email.split('@')[0]);
       setDoctorNum(doc.doctorId);
     } catch (err) {
       console.error('Error loading doctor profile:', err);
@@ -28,8 +29,6 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthChange((user) => {
       if (user) {
-        const name = user.email.split('@')[0];
-        setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
         setDoctorId(user.uid);
         setIsLoggedIn(true);
         loadDoctorProfile(user);
@@ -46,10 +45,10 @@ function App() {
 
   const handleLogin = async (name, uid, email) => {
     setIsLoggedIn(true);
-    setDoctorName(name);
     setDoctorId(uid);
     try {
-      const doc = await getOrCreateDoctor(uid, email);
+      const doc = await getOrCreateDoctor(uid, email, name);
+      setDoctorName(doc.name || name);
       setDoctorNum(doc.doctorId);
     } catch (err) {
       console.error('Error loading doctor profile:', err);

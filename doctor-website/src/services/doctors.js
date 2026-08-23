@@ -3,7 +3,7 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 
-export const getOrCreateDoctor = async (uid, email) => {
+export const getOrCreateDoctor = async (uid, email, name) => {
   const doctorRef = doc(db, 'doctors', uid);
   const doctorSnap = await getDoc(doctorRef);
 
@@ -22,6 +22,7 @@ export const getOrCreateDoctor = async (uid, email) => {
   const doctorData = {
     uid,
     email,
+    name: name || email.split('@')[0],
     doctorId: nextId,
     createdAt: new Date().toISOString().split('T')[0],
   };

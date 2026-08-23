@@ -3,6 +3,7 @@ import { Activity, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { registerDoctor } from '../services/auth';
 
 export default function SignUp({ onLogin }) {
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -28,8 +29,7 @@ export default function SignUp({ onLogin }) {
 
     try {
       const user = await registerDoctor(email, password);
-      const name = user.email.split('@')[0];
-      const displayName = name.charAt(0).toUpperCase() + name.slice(1);
+      const displayName = name.trim();
       onLogin(displayName, user.uid, user.email);
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {
@@ -76,6 +76,18 @@ export default function SignUp({ onLogin }) {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Full Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Dr. Smith"
+                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                required
+              />
+            </div>
+
             <div>
               <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Email</label>
               <input
