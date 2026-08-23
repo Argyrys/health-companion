@@ -13,7 +13,7 @@
 │       ├── data/                 # Models & Repositories
 │       ├── di/                   # Hilt Dependency Injection
 │       ├── ui/                   # Activities & Fragments
-│       │   ├── auth/             # Login, OTP verification
+│       │   ├── auth/             # Login (local auth)
 │       │   ├── casetaking/       # Symptom entry & voice recording
 │       │   ├── allergies/        # Allergy tracking
 │       │   ├── eyescreening/     # Eye screening via camera
@@ -23,7 +23,6 @@
 │       │   ├── mentalhealth/     # Mental health check
 │       │   ├── notifications/    # FCM push notifications
 │       │   ├── profile/          # User profile
-│       │   ├── registration/     # Post-signup registration
 │       │   ├── reminder/         # Medication reminders (AlarmManager)
 │       │   ├── report/           # PDF report generation
 │       │   └── splash/           # Splash screen
@@ -76,7 +75,7 @@
 - **Patient List** — Card-based layout with search & risk filter
 - **Patient Reports** — Detailed view with animated sections
 - **Diagnosis & Prescription** — Doctors can write and save diagnoses
-- **Print/Export** — Professional print layout with header, footer, and signature lines
+- **Print/Export** — Clean print layout with footer and signature lines
 - **Loading Skeletons** — Shimmer placeholders on all pages
 - **Seed Data** — Quick test data seeding with 5 patients
 - **Mobile Responsive** — Fully responsive on all screen sizes
