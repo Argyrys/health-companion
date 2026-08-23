@@ -54,12 +54,14 @@ export default function SignUp({ onLogin }) {
       </div>
 
       <div className="w-full max-w-sm sm:max-w-md relative z-10">
-        <div className="text-center mb-6 sm:mb-8 animate-fadeIn">
-          <div className="w-14 h-14 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-5 shadow-xl border border-white/30">
-            <Activity className="w-7 h-7 sm:w-11 sm:h-11 text-white" />
+        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fadeIn">
+          <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl border border-white/30 flex-shrink-0">
+            <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">AI Health Companion</h1>
-          <p className="text-emerald-100 mt-1.5 sm:mt-2 text-xs sm:text-sm font-medium">Healthcare that listens.</p>
+          <div className="text-left">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">AI Health Companion</h1>
+            <p className="text-emerald-100 text-xs sm:text-sm font-medium">Healthcare that listens.</p>
+          </div>
         </div>
 
         <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 sm:p-8 border border-white/50 animate-slideIn">
