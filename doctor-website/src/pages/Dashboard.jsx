@@ -1,8 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, FileText, AlertTriangle, Activity, Database, ChevronRight, TrendingUp } from 'lucide-react';
+import { Users, FileText, AlertTriangle, Activity, Database, ChevronRight, TrendingUp, Clock, Stethoscope, ClipboardList } from 'lucide-react';
 import { getAllPatients, deleteAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
+
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+};
+
+const getDate = () => {
+  return new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+};
 
 export default function Dashboard() {
   const [patients, setPatients] = useState([]);
@@ -58,10 +69,10 @@ export default function Dashboard() {
   const pendingReports = patients.filter(p => !p.consultations?.[0]?.diagnosis).length;
 
   const stats = [
-    { label: 'Total Patients', value: totalPatients, icon: Users, bg: 'bg-blue-50', text: 'text-blue-600', link: '/patients' },
-    { label: "Today's Visits", value: todayPatients, icon: FileText, bg: 'bg-emerald-50', text: 'text-emerald-600', link: '/patients' },
-    { label: 'High Risk', value: highRisk, icon: AlertTriangle, bg: 'bg-red-50', text: 'text-red-600', link: '/patients' },
-    { label: 'Pending Reports', value: pendingReports, icon: Activity, bg: 'bg-amber-50', text: 'text-amber-600', link: '/patients' },
+    { label: 'Total Patients', value: totalPatients, icon: Users, gradient: 'from-blue-500 to-blue-600', bg: 'bg-blue-50', text: 'text-blue-600', link: '/patients' },
+    { label: "Today's Visits", value: todayPatients, icon: FileText, gradient: 'from-emerald-500 to-emerald-600', bg: 'bg-emerald-50', text: 'text-emerald-600', link: '/patients' },
+    { label: 'High Risk', value: highRisk, icon: AlertTriangle, gradient: 'from-red-500 to-red-600', bg: 'bg-red-50', text: 'text-red-600', link: '/patients' },
+    { label: 'Pending Reports', value: pendingReports, icon: Activity, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-50', text: 'text-amber-600', link: '/patients' },
   ];
 
   if (loading) {
@@ -80,10 +91,14 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 animate-fadeIn">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 animate-fadeIn">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-          <p className="text-slate-400 text-sm mt-1">Welcome back, Doctor. Here's your overview.</p>
+          <div className="flex items-center gap-2 text-sm text-slate-400 mb-1">
+            <Clock className="w-3.5 h-3.5" />
+            <span>{getDate()}</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-800">{getGreeting()}, Doctor</h1>
+          <p className="text-slate-400 text-sm mt-1">Here's what's happening at your clinic today.</p>
         </div>
         <div className="flex items-center gap-2">
           {patients.length === 0 && !seeded && (
@@ -108,94 +123,130 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(({ label, value, icon: Icon, bg, text, link }, i) => (
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {stats.map(({ label, value, icon: Icon, gradient, bg, text, link }, i) => (
           <Link
             key={label}
             to={link}
-            className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 group animate-fadeIn cursor-pointer"
+            className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 group animate-fadeIn cursor-pointer overflow-hidden"
             style={{ animationDelay: `${i * 0.05}s` }}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-400 font-medium">{label}</p>
-                <p className="text-3xl font-bold text-slate-800 mt-1.5">{value}</p>
+            <div className={`h-1 bg-gradient-to-r ${gradient}`} />
+            <div className="p-4 sm:p-5">
+              <div className="flex items-center justify-between mb-3">
+                <div className={`w-10 h-10 sm:w-12 sm:h-12 ${bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+                  <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${text}`} />
+                </div>
               </div>
-              <div className={`w-12 h-12 ${bg} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                <Icon className={`w-6 h-6 ${text}`} />
-              </div>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-800">{value}</p>
+              <p className="text-xs sm:text-sm text-slate-400 font-medium mt-1">{label}</p>
             </div>
           </Link>
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-        <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-slate-800">Recent Patients</h2>
-          {patients.length > 0 && (
-            <Link to="/patients" className="text-sm text-emerald-600 font-medium hover:text-emerald-700 flex items-center gap-1 transition-colors">
-              View all <ChevronRight className="w-4 h-4" />
-            </Link>
-          )}
-        </div>
-        <div className="divide-y divide-slate-50">
-          {patients.slice(0, 5).map((patient, i) => {
-            const consultation = patient.consultations?.[0];
-            return (
-              <Link
-                to={`/patients/${patient.id}`}
-                key={patient.id}
-                className="flex items-center justify-between px-6 py-4 hover:bg-slate-50/80 transition-all duration-200 group cursor-pointer"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
-                    <span className="text-white font-semibold text-sm">
-                      {patient.name?.charAt(0)}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-slate-800 group-hover:text-emerald-700 transition-colors">{patient.name}</h3>
-                    <p className="text-sm text-slate-400">{patient.age}y, {patient.gender} &middot; {consultation?.chiefComplaint}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {consultation?.eyeScreening?.riskLevel && (
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      consultation.eyeScreening.riskLevel === 'High'
-                        ? 'bg-red-50 text-red-600'
-                        : consultation.eyeScreening.riskLevel === 'Medium'
-                        ? 'bg-amber-50 text-amber-600'
-                        : 'bg-green-50 text-green-600'
-                    }`}>
-                      {consultation.eyeScreening.riskLevel} Risk
-                    </span>
-                  )}
-                  <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-emerald-500 transition-colors" />
-                </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 className="text-base font-semibold text-slate-800">Recent Patients</h2>
+            {patients.length > 0 && (
+              <Link to="/patients" className="text-sm text-emerald-600 font-medium hover:text-emerald-700 flex items-center gap-1 transition-colors">
+                View all <ChevronRight className="w-4 h-4" />
               </Link>
-            );
-          })}
-          {patients.length === 0 && (
-            <div className="px-6 py-12 text-center">
-              <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <Database className="w-8 h-8 text-slate-300" />
+            )}
+          </div>
+          <div className="divide-y divide-slate-50">
+            {patients.slice(0, 5).map((patient) => {
+              const consultation = patient.consultations?.[0];
+              return (
+                <Link
+                  to={`/patients/${patient.id}`}
+                  key={patient.id}
+                  className="flex items-center justify-between px-5 py-3.5 hover:bg-slate-50/80 transition-all duration-200 group cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow flex-shrink-0">
+                      <span className="text-white font-semibold text-sm">
+                        {patient.name?.charAt(0)}
+                      </span>
+                    </div>
+                    <div className="min-w-0">
+                      <h3 className="font-medium text-slate-800 group-hover:text-emerald-700 transition-colors truncate">{patient.name}</h3>
+                      <p className="text-xs sm:text-sm text-slate-400 truncate">{patient.age}y, {patient.gender} &middot; {consultation?.chiefComplaint}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                    {consultation?.eyeScreening?.riskLevel && (
+                      <span className={`hidden sm:inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${
+                        consultation.eyeScreening.riskLevel === 'High'
+                          ? 'bg-red-50 text-red-600'
+                          : consultation.eyeScreening.riskLevel === 'Medium'
+                          ? 'bg-amber-50 text-amber-600'
+                          : 'bg-green-50 text-green-600'
+                      }`}>
+                        {consultation.eyeScreening.riskLevel}
+                      </span>
+                    )}
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-emerald-500 transition-colors" />
+                  </div>
+                </Link>
+              );
+            })}
+            {patients.length === 0 && (
+              <div className="px-6 py-12 text-center">
+                <div className="w-16 h-16 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                  <Database className="w-8 h-8 text-slate-300" />
+                </div>
+                <p className="text-slate-500 font-medium mb-1">No patients yet</p>
+                <p className="text-slate-400 text-sm mb-5">Seed the database with sample data to get started.</p>
+                <button
+                  onClick={handleSeed}
+                  disabled={seeding}
+                  className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 shadow-md shadow-emerald-600/20 transition-all duration-200"
+                >
+                  {seeding ? 'Seeding...' : seeded ? 'Seeded!' : 'Seed Sample Data'}
+                </button>
               </div>
-              <p className="text-slate-500 font-medium mb-1">No patients yet</p>
-              <p className="text-slate-400 text-sm mb-5">Seed the database with sample data to get started.</p>
-              <button
-                onClick={handleSeed}
-                disabled={seeding}
-                className="px-5 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700 disabled:opacity-50 shadow-md shadow-emerald-600/20 transition-all duration-200"
-              >
-                {seeding ? 'Seeding...' : seeded ? 'Seeded!' : 'Seed Sample Data'}
-              </button>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 animate-fadeIn" style={{ animationDelay: '0.25s' }}>
+          <h3 className="text-base font-semibold text-slate-800 mb-4">Quick Actions</h3>
+          <div className="space-y-2.5">
+            <Link to="/patients" className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all duration-200 group">
+              <div className="w-9 h-9 bg-emerald-100 group-hover:bg-emerald-200 rounded-lg flex items-center justify-center transition-colors">
+                <Stethoscope className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">View Patients</p>
+                <p className="text-xs text-emerald-600/70">{totalPatients} total</p>
+              </div>
+            </Link>
+            <Link to="/patients" className="flex items-center gap-3 p-3 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 transition-all duration-200 group">
+              <div className="w-9 h-9 bg-amber-100 group-hover:bg-amber-200 rounded-lg flex items-center justify-center transition-colors">
+                <ClipboardList className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">Pending Reports</p>
+                <p className="text-xs text-amber-600/70">{pendingReports} need attention</p>
+              </div>
+            </Link>
+            <Link to="/patients" className="flex items-center gap-3 p-3 rounded-xl bg-red-50 text-red-700 hover:bg-red-100 transition-all duration-200 group">
+              <div className="w-9 h-9 bg-red-100 group-hover:bg-red-200 rounded-lg flex items-center justify-center transition-colors">
+                <AlertTriangle className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <p className="text-sm font-semibold">High Risk Cases</p>
+                <p className="text-xs text-red-600/70">{highRisk} patients</p>
+              </div>
+            </Link>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 animate-fadeIn" style={{ animationDelay: '0.3s' }}>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 animate-fadeIn" style={{ animationDelay: '0.3s' }}>
           <div className="flex items-center gap-2 mb-5">
             <TrendingUp className="w-4 h-4 text-emerald-500" />
             <h3 className="text-base font-semibold text-slate-800">Common Symptoms</h3>
@@ -238,7 +289,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 animate-fadeIn" style={{ animationDelay: '0.35s' }}>
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 animate-fadeIn" style={{ animationDelay: '0.35s' }}>
           <div className="flex items-center gap-2 mb-5">
             <AlertTriangle className="w-4 h-4 text-amber-500" />
             <h3 className="text-base font-semibold text-slate-800">Risk Distribution</h3>

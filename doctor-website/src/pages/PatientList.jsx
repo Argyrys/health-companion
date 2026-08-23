@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Filter, ChevronRight, Users, X } from 'lucide-react';
+import { Search, Filter, ChevronRight, Users, X, Calendar, Stethoscope } from 'lucide-react';
 import { getAllPatients } from '../services/patients';
 
 export default function PatientList() {
@@ -31,6 +31,8 @@ export default function PatientList() {
     return matchesSearch && matchesRisk;
   });
 
+  const activeFilters = (search ? 1 : 0) + (filterRisk !== 'all' ? 1 : 0);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -49,7 +51,14 @@ export default function PatientList() {
     <div className="space-y-4 sm:space-y-6">
       <div className="animate-fadeIn">
         <h1 className="text-2xl font-bold text-slate-800">Patients</h1>
-        <p className="text-slate-400 text-sm mt-1">{filtered.length} patient{filtered.length !== 1 ? 's' : ''} found</p>
+        <p className="text-slate-400 text-sm mt-1">
+          {filtered.length} patient{filtered.length !== 1 ? 's' : ''} found
+          {activeFilters > 0 && (
+            <span className="ml-2 inline-flex items-center px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+              {activeFilters} filter{activeFilters !== 1 ? 's' : ''} active
+            </span>
+          )}
+        </p>
       </div>
 
       <div className="flex flex-col sm:flex-row items-center gap-3 animate-fadeIn" style={{ animationDelay: '0.05s' }}>
@@ -94,43 +103,64 @@ export default function PatientList() {
         {filtered.map((patient) => {
           const consultation = patient.consultations?.[0];
           const riskLevel = consultation?.eyeScreening?.riskLevel;
+          const hasDiagnosis = consultation?.diagnosis;
           return (
             <div
               key={patient.id}
               onClick={() => navigate(`/patients/${patient.id}`)}
-              className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 hover:shadow-md hover:border-slate-200 transition-all duration-200 cursor-pointer group"
+              className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-200 cursor-pointer group overflow-hidden"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
-                    <span className="text-white font-semibold text-base">
-                      {patient.name?.charAt(0)}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-slate-800 group-hover:text-emerald-700 transition-colors">{patient.name}</h3>
-                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-sm text-slate-400">
-                      <span>{patient.age}y</span>
-                      <span>&middot;</span>
-                      <span>{patient.gender}</span>
-                      <span className="hidden sm:inline">&middot;</span>
-                      <span className="hidden sm:inline">{consultation?.chiefComplaint}</span>
+              <div className="flex">
+                <div className={`w-1 flex-shrink-0 ${
+                  riskLevel === 'High' ? 'bg-red-500' :
+                  riskLevel === 'Medium' ? 'bg-amber-500' :
+                  riskLevel === 'Low' ? 'bg-green-500' :
+                  'bg-slate-200'
+                }`} />
+                <div className="flex-1 p-4 sm:p-5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="w-11 h-11 sm:w-12 sm:h-12 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                        <span className="text-white font-semibold text-sm sm:text-base">
+                          {patient.name?.charAt(0)}
+                        </span>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-semibold text-slate-800 group-hover:text-emerald-700 transition-colors truncate">{patient.name}</h3>
+                          {!hasDiagnosis && (
+                            <span className="px-1.5 py-0.5 bg-amber-100 text-amber-600 rounded text-[10px] font-semibold uppercase tracking-wide flex-shrink-0">Pending</span>
+                          )}
+                        </div>
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5 text-xs sm:text-sm text-slate-400">
+                          <span>{patient.age}y, {patient.gender}</span>
+                          <span className="hidden sm:inline">&middot;</span>
+                          <span className="hidden sm:inline flex items-center gap-1">
+                            <Stethoscope className="w-3 h-3" />
+                            {consultation?.chiefComplaint}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-2">
+                      {riskLevel ? (
+                        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
+                          riskLevel === 'High' ? 'bg-red-50 text-red-600' :
+                          riskLevel === 'Medium' ? 'bg-amber-50 text-amber-600' :
+                          'bg-green-50 text-green-600'
+                        }`}>
+                          {riskLevel}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-slate-300">N/A</span>
+                      )}
+                      <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  {riskLevel ? (
-                    <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                      riskLevel === 'High' ? 'bg-red-50 text-red-600' :
-                      riskLevel === 'Medium' ? 'bg-amber-50 text-amber-600' :
-                      'bg-green-50 text-green-600'
-                    }`}>
-                      {riskLevel} Risk
-                    </span>
-                  ) : (
-                    <span className="text-xs text-slate-300">N/A</span>
-                  )}
-                  <ChevronRight className="w-5 h-5 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
+                  <div className="flex items-center gap-1 mt-2 text-xs text-slate-300 sm:hidden">
+                    <Stethoscope className="w-3 h-3" />
+                    <span className="truncate">{consultation?.chiefComplaint}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -144,7 +174,7 @@ export default function PatientList() {
             </div>
             <p className="text-slate-500 font-medium mb-1">No patients found</p>
             <p className="text-slate-400 text-sm">
-              {search ? 'Try adjusting your search' : 'Add patients to get started'}
+              {search ? 'Try adjusting your search or filters' : 'Add patients to get started'}
             </p>
           </div>
         )}

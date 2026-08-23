@@ -45,8 +45,8 @@ export default function Navbar({ doctorName, onLogout }) {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-slate-200">
               <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-sm">
                 <span className="text-white font-semibold text-sm">
                   {doctorName.charAt(0)}
@@ -68,7 +68,7 @@ export default function Navbar({ doctorName, onLogout }) {
 
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+              className="md:hidden p-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors relative"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -77,34 +77,43 @@ export default function Navbar({ doctorName, onLogout }) {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-slate-100 bg-white animate-slideIn">
-          <div className="px-4 py-3 space-y-1">
-            {links.map(({ path, label, icon: Icon }) => (
-              <Link
-                key={path}
-                to={path}
-                onClick={() => setMobileOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
-                  isActive(path)
-                    ? 'bg-emerald-50 text-emerald-700'
-                    : 'text-slate-600 hover:bg-slate-50'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                {label}
-              </Link>
-            ))}
-            <div className="flex items-center gap-3 px-4 py-3 border-t border-slate-100 mt-2 pt-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-semibold text-sm">{doctorName.charAt(0)}</span>
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-slate-800">Dr. {doctorName}</p>
-                <p className="text-xs text-slate-400">Doctor</p>
+        <>
+          <div className="md:hidden fixed inset-0 top-16 bg-black/10 backdrop-blur-sm z-40" onClick={() => setMobileOpen(false)} />
+          <div className="md:hidden border-t border-slate-100 bg-white/95 backdrop-blur-xl animate-slideIn relative z-50">
+            <div className="px-4 py-3 space-y-1">
+              {links.map(({ path, label, icon: Icon }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  onClick={() => setMobileOpen(false)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                    isActive(path)
+                      ? 'bg-emerald-50 text-emerald-700 shadow-sm'
+                      : 'text-slate-600 hover:bg-slate-50'
+                  }`}
+                >
+                  <Icon className="w-5 h-5" />
+                  {label}
+                </Link>
+              ))}
+              <div className="flex items-center gap-3 px-4 py-3 border-t border-slate-100 mt-2 pt-3">
+                <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-sm">
+                  <span className="text-white font-semibold text-sm">{doctorName.charAt(0)}</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm font-semibold text-slate-800">Dr. {doctorName}</p>
+                  <p className="text-xs text-slate-400">Doctor</p>
+                </div>
+                <button
+                  onClick={() => { setMobileOpen(false); onLogout(); }}
+                  className="text-sm text-red-500 hover:text-red-600 font-medium"
+                >
+                  Logout
+                </button>
               </div>
             </div>
           </div>
-        </div>
+        </>
       )}
     </nav>
   );

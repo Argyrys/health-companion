@@ -133,6 +133,7 @@ export default function PatientReport() {
   }
 
   const consultation = patient.consultations[0];
+  const hasDiagnosis = consultation.diagnosis;
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -140,29 +141,37 @@ export default function PatientReport() {
         <Link to="/patients" className="p-2.5 hover:bg-slate-100 rounded-xl transition-all duration-200 group">
           <ArrowLeft className="w-5 h-5 text-slate-500 group-hover:text-slate-700" />
         </Link>
-        <div>
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-slate-800">Patient Report</h1>
           <p className="text-slate-400 text-sm mt-0.5">Consultation {consultation.id}</p>
         </div>
+        <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${
+          hasDiagnosis ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+        }`}>
+          {hasDiagnosis ? 'Diagnosed' : 'Pending Diagnosis'}
+        </span>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 animate-fadeIn" style={{ animationDelay: '0.05s' }}>
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20">
-            <span className="text-white font-bold text-xl">{patient.name?.charAt(0)}</span>
-          </div>
-          <div className="flex-1">
-            <h2 className="text-xl font-bold text-slate-800">{patient.name}</h2>
-            <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-sm text-slate-400">
-              <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />{patient.age} years</span>
-              <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />{patient.gender}</span>
-              <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />Blood: {patient.bloodGroup}</span>
-              <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />{patient.phone}</span>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden animate-fadeIn" style={{ animationDelay: '0.05s' }}>
+        <div className="h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20">
+              <span className="text-white font-bold text-lg sm:text-xl">{patient.name?.charAt(0)}</span>
             </div>
-          </div>
-          <div className="text-right text-sm text-slate-400 hidden sm:block">
-            <p>Registered: {patient.createdAt}</p>
-            <p>Consultation: {consultation.createdAt}</p>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-slate-800">{patient.name}</h2>
+              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-sm text-slate-400">
+                <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />{patient.age} years</span>
+                <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />{patient.gender}</span>
+                <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />Blood: {patient.bloodGroup}</span>
+                <span className="flex items-center gap-1"><span className="w-1 h-1 bg-slate-300 rounded-full" />{patient.phone}</span>
+              </div>
+            </div>
+            <div className="text-right text-sm text-slate-400 hidden sm:block">
+              <p>Registered: {patient.createdAt}</p>
+              <p>Consultation: {consultation.createdAt}</p>
+            </div>
           </div>
         </div>
       </div>
