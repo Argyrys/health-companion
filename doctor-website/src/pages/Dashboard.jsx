@@ -58,10 +58,10 @@ export default function Dashboard() {
   const pendingReports = patients.filter(p => !p.consultations?.[0]?.diagnosis).length;
 
   const stats = [
-    { label: 'Total Patients', value: totalPatients, icon: Users, color: 'from-blue-500 to-blue-600', bg: 'bg-blue-50', text: 'text-blue-600' },
-    { label: "Today's Visits", value: todayPatients, icon: FileText, color: 'from-emerald-500 to-emerald-600', bg: 'bg-emerald-50', text: 'text-emerald-600' },
-    { label: 'High Risk', value: highRisk, icon: AlertTriangle, color: 'from-red-500 to-red-600', bg: 'bg-red-50', text: 'text-red-600' },
-    { label: 'Pending Reports', value: pendingReports, icon: Activity, color: 'from-amber-500 to-amber-600', bg: 'bg-amber-50', text: 'text-amber-600' },
+    { label: 'Total Patients', value: totalPatients, icon: Users, bg: 'bg-blue-50', text: 'text-blue-600', link: '/patients' },
+    { label: "Today's Visits", value: todayPatients, icon: FileText, bg: 'bg-emerald-50', text: 'text-emerald-600', link: '/patients' },
+    { label: 'High Risk', value: highRisk, icon: AlertTriangle, bg: 'bg-red-50', text: 'text-red-600', link: '/patients' },
+    { label: 'Pending Reports', value: pendingReports, icon: Activity, bg: 'bg-amber-50', text: 'text-amber-600', link: '/patients' },
   ];
 
   if (loading) {
@@ -109,10 +109,11 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map(({ label, value, icon: Icon, color, bg, text }, i) => (
-          <div
+        {stats.map(({ label, value, icon: Icon, bg, text, link }, i) => (
+          <Link
             key={label}
-            className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 group animate-fadeIn"
+            to={link}
+            className="bg-white rounded-2xl p-5 border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-300 group animate-fadeIn cursor-pointer"
             style={{ animationDelay: `${i * 0.05}s` }}
           >
             <div className="flex items-center justify-between">
@@ -124,7 +125,7 @@ export default function Dashboard() {
                 <Icon className={`w-6 h-6 ${text}`} />
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
 
