@@ -24,7 +24,7 @@ function App() {
   return (
     <Router>
       {isLoggedIn ? (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-50 flex flex-col">
+        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col">
           <Navbar doctorName={doctorName} onLogout={handleLogout} />
           <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
             <Routes>
