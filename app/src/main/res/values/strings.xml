@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Patient Health</string>
+
+    <!-- Auth -->
+    <string name="login_title">Welcome Back</string>
+    <string name="login_subtitle">Enter your phone number to continue</string>
+    <string name="phone_hint">Phone Number</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="otp_title">Verify OTP</string>
+    <string name="otp_subtitle">Enter the 6-digit code sent to your phone</string>
+    <string name="verify_otp">Verify</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="invalid_phone">Please enter a valid phone number</string>
+    <string name="invalid_otp">Please enter a valid OTP</string>
+    <string name="otp_sent">OTP sent successfully</string>
+    <string name="otp_verified">Phone verified successfully</string>
+    <string name="otp_failed">Verification failed. Please try again.</string>
+    <string name="network_error">Network error. Please check your connection.</string>
+
+    <!-- Registration -->
+    <string name="register_title">Complete Registration</string>
+    <string name="full_name_hint">Full Name</string>
+    <string name="age_hint">Age</string>
+    <string name="gender_hint">Gender</string>
+    <string name="blood_group_hint">Blood Group</string>
+    <string name="continue_btn">Continue</string>
+    <string name="fill_all_fields">Please fill all fields</string>
+    <string name="registration_success">Registration completed successfully</string>
+
+    <!-- Home -->
+    <string name="home_title">Health Dashboard</string>
+    <string name="greeting">Hello,</string>
+    <string name="case_taking">Case Taking</string>
+    <string name="medical_history">Medical History</string>
+    <string name="family_history">Family History</string>
+    <string name="medications">Current Medications</string>
+    <string name="allergies">Allergies</string>
+    <string name="eye_screening">Eye Screening</string>
+    <string name="mental_health">Mental Health</string>
+    <string name="my_reports">My Reports</string>
+    <string name="med_reminders">Med Reminders</string>
+    <string name="logout">Logout</string>
+
+    <!-- Case Taking -->
+    <string name="case_taking_title">Case Taking</string>
+    <string name="chief_complaint_hint">Describe your main health concern…</string>
+    <string name="symptoms_title">Select Symptoms</string>
+    <string name="severity_title">Severity</string>
+    <string name="mild">Mild</string>
+    <string name="severe">Severe</string>
+    <string name="duration_title">Duration</string>
+    <string name="save_continue">Save &amp; Continue</string>
+    <string name="case_saved">Case saved successfully</string>
+
+    <!-- Voice Recording -->
+    <string name="voice_title">Voice Recording</string>
+    <string name="describe_symptoms">Describe your symptoms</string>
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="play_recording">Play Recording</string>
+    <string name="delete_recording">Delete</string>
+    <string name="recording_saved">Recording saved</string>
+
+    <!-- Medical History -->
+    <string name="medical_history_title">Medical History</string>
+    <string name="previous_surgeries">Previous Surgeries</string>
+    <string name="chronic_diseases">Chronic Diseases</string>
+    <string name="hospitalizations">Previous Hospitalizations</string>
+    <string name="other_conditions">Other Medical Conditions</string>
+    <string name="add_item">+ Add</string>
+
+    <!-- Family History -->
+    <string name="family_history_title">Family History</string>
+    <string name="condition_hint">Condition</string>
+    <string name="relationship_hint">Relationship</string>
+    <string name="add_family_entry">+ Add Family History</string>
+
+    <!-- Medications -->
+    <string name="medications_title">Current Medications</string>
+    <string name="drug_name_hint">Drug Name</string>
+    <string name="dosage_hint">Dosage</string>
+    <string name="frequency_hint">Frequency</string>
+    <string name="add_medication">+ Add Medication</string>
+
+    <!-- Allergies -->
+    <string name="allergies_title">Allergies</string>
+    <string name="allergy_type_hint">Allergy Type</string>
+    <string name="allergen_hint">Allergen Name</string>
+    <string name="severity_hint">Severity</string>
+    <string name="add_allergy">+ Add Allergy</string>
+
+    <!-- Eye Screening -->
+    <string name="eye_screening_title">Eye Screening</string>
+    <string name="capture_eye_photo">Capture Eye Photo</string>
+    <string name="preview_image">Preview</string>
+    <string name="retake">Retake</string>
+    <string name="confirm_image">Confirm &amp; Upload</string>
+    <string name="uploading">Uploading…</string>
+    <string name="risk_level">Risk Level</string>
+    <string name="ai_assessment">AI Assessment</string>
+    <string name="screening_disclaimer">This screening is not a medical diagnosis.</string>
+
+    <!-- Mental Health -->
+    <string name="mental_health_title">Mental Health Check</string>
+    <string name="stress_score">Stress Score</string>
+    <string name="mental_disclaimer">This screening is not a medical diagnosis.</string>
+
+    <!-- Reports -->
+    <string name="reports_title">My Reports</string>
+    <string name="patient_report">Patient Health Report</string>
+    <string name="generate_pdf">Generate PDF Report</string>
+    <string name="download_pdf">Download PDF</string>
+    <string name="share_report">Share Report</string>
+    <string name="share_via">Share via</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="email">Email</string>
+    <string name="other_apps">Other Apps</string>
+    <string name="pdf_generated">PDF report generated</string>
+    <string name="pdf_generation_failed">Failed to generate PDF</string>
+
+    <!-- Reminders -->
+    <string name="reminder_title">Medication Reminder</string>
+    <string name="taken">TAKEN</string>
+    <string name="skip">SKIP</string>
+    <string name="reminder_set">Reminder set for</string>
+    <string name="no_medications">No medications added yet</string>
+
+    <!-- Common -->
+    <string name="loading">Loading…</string>
+    <string name="error_occurred">Something went wrong</string>
+    <string name="retry">Retry</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="confirm">Confirm</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="camera_permission_required">Camera permission is required for this feature</string>
+    <string name="mic_permission_required">Microphone permission is required for recording</string>
+</resources>

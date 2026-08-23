@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
 
 # dependencies
@@ -13,19 +14,67 @@ expo-env.d.ts
 .kotlin/
 *.orig.*
 *.jks
+=======
+# Android / Gradle
+.gradle/
+build/
+**/build/
+.externalNativeBuild/
+.cxx/
+
+# Android local configuration
+local.properties
+
+# IDE
+.idea/
+*.iml
+
+# Firebase / environment secrets
+.env
+.env.*
+google-services.json
+
+# Signing keys / certificates
+*.jks
+*.keystore
+>>>>>>> f9a1b7c (Initial Patient App Android setup)
 *.p8
 *.p12
 *.key
 *.mobileprovision
+<<<<<<< HEAD
 
 # Metro
 .metro-health-check*
 
 # debug
+=======
+*.pem
+
+# Debug / generated files
+captures/
+*.tsbuildinfo
+
+# Node / dependencies (if used later)
+node_modules/
+
+# Expo / React Native generated files
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+.metro-health-check*
+
+# Native generated folders
+/ios
+
+# Logs
+>>>>>>> f9a1b7c (Initial Patient App Android setup)
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
+<<<<<<< HEAD
 # macOS
 .DS_Store
 *.pem
@@ -39,3 +88,11 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+=======
+# macOS / Windows
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.orig.*
+>>>>>>> f9a1b7c (Initial Patient App Android setup)

@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <!-- Bottom Nav Fragments -->
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.patientapp.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home_to_caseTaking"
+            app:destination="@id/caseTakingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_medicalHistory"
+            app:destination="@id/medicalHistoryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_familyHistory"
+            app:destination="@id/familyHistoryFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_medications"
+            app:destination="@id/medicationsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_allergies"
+            app:destination="@id/allergiesFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_eyeScreening"
+            app:destination="@id/eyeScreeningFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_mentalHealth"
+            app:destination="@id/mentalHealthFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_reports"
+            app:destination="@id/reportsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_reminders"
+            app:destination="@id/reminderFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_doctors"
+            app:destination="@id/doctorsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.patientapp.ui.history.HistoryFragment"
+        android:label="History"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
+        android:id="@+id/reportsFragment"
+        android:name="com.example.patientapp.ui.report.ReportsFragment"
+        android:label="Reports"
+        tools:layout="@layout/fragment_reports" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="com.example.patientapp.ui.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+
+    <!-- Feature Fragments -->
+    <fragment
+        android:id="@+id/caseTakingFragment"
+        android:name="com.example.patientapp.ui.casetaking.CaseTakingFragment"
+        android:label="Case Taking"
+        tools:layout="@layout/fragment_case_taking">
+        <action
+            android:id="@+id/action_caseTaking_to_voiceRecording"
+            app:destination="@id/voiceRecordingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/voiceRecordingFragment"
+        android:name="com.example.patientapp.ui.casetaking.VoiceRecordingFragment"
+        android:label="Voice Recording"
+        tools:layout="@layout/fragment_voice_recording" />
+
+    <fragment
+        android:id="@+id/medicalHistoryFragment"
+        android:name="com.example.patientapp.ui.history.MedicalHistoryFragment"
+        android:label="Medical History"
+        tools:layout="@layout/fragment_medical_history" />
+
+    <fragment
+        android:id="@+id/familyHistoryFragment"
+        android:name="com.example.patientapp.ui.history.FamilyHistoryFragment"
+        android:label="Family History"
+        tools:layout="@layout/fragment_family_history" />
+
+    <fragment
+        android:id="@+id/medicationsFragment"
+        android:name="com.example.patientapp.ui.medications.MedicationsFragment"
+        android:label="Medications"
+        tools:layout="@layout/fragment_medications" />
+
+    <fragment
+        android:id="@+id/allergiesFragment"
+        android:name="com.example.patientapp.ui.allergies.AllergiesFragment"
+        android:label="Allergies"
+        tools:layout="@layout/fragment_allergies" />
+
+    <fragment
+        android:id="@+id/eyeScreeningFragment"
+        android:name="com.example.patientapp.ui.eyescreening.EyeScreeningFragment"
+        android:label="Eye Screening"
+        tools:layout="@layout/fragment_eye_screening" />
+
+    <fragment
+        android:id="@+id/mentalHealthFragment"
+        android:name="com.example.patientapp.ui.mentalhealth.MentalHealthFragment"
+        android:label="Mental Health"
+        tools:layout="@layout/fragment_mental_health" />
+
+    <fragment
+        android:id="@+id/reminderFragment"
+        android:name="com.example.patientapp.ui.reminder.ReminderFragment"
+        android:label="Reminders"
+        tools:layout="@layout/fragment_reminder" />
+
+    <fragment
+        android:id="@+id/shareReportFragment"
+        android:name="com.example.patientapp.ui.report.ShareReportFragment"
+        android:label="Share Report"
+        tools:layout="@layout/fragment_share_report" />
+
+    <!-- Doctors -->
+    <fragment
+        android:id="@+id/doctorsFragment"
+        android:name="com.example.patientapp.ui.doctors.DoctorsFragment"
+        android:label="Doctors"
+        tools:layout="@layout/fragment_doctors">
+        <action
+            android:id="@+id/action_doctors_to_doctorDetail"
+            app:destination="@id/doctorDetailFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/doctorDetailFragment"
+        android:name="com.example.patientapp.ui.doctors.DoctorDetailFragment"
+        android:label="Doctor Details"
+        tools:layout="@layout/fragment_doctor_detail" />
+
+</navigation>
