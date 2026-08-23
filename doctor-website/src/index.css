@@ -68,10 +68,26 @@ input:focus, textarea:focus, select:focus {
   outline: none;
 }
 
+.print-header {
+  display: none;
+}
+
+.print-footer {
+  display: none;
+}
+
 @media print {
-  body { background: white !important; }
+  body { background: white !important; margin: 0; padding: 0; }
   .print\:hidden { display: none !important; }
   .no-print { display: none !important; }
+
+  .print-header { display: block !important; }
+  .print-footer { display: block !important; }
+
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
 
   .space-y-3 > *, .space-y-5 > * {
     break-inside: avoid;
@@ -94,8 +110,31 @@ input:focus, textarea:focus, select:focus {
     break-inside: avoid;
   }
 
-  textarea {
+  textarea, input, select {
     border: 1px solid #e2e8f0 !important;
-    background: #f8fafc !important;
+    background: white !important;
+    box-shadow: none !important;
+  }
+
+  .bg-gradient-to-r.from-emerald-500 {
+    background: #059669 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    height: 3px !important;
+  }
+
+  .bg-gradient-to-br.from-emerald-400 {
+    background: #059669 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  table, .bg-slate-50 {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 }

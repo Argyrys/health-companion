@@ -129,6 +129,26 @@ export default function PatientReport() {
 
   return (
     <div className="space-y-3 sm:space-y-5">
+      <div className="print-header">
+        <div className="flex items-center justify-between border-b-2 border-slate-800 pb-4 mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-emerald-600 to-teal-600 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+              </svg>
+            </div>
+            <div>
+              <p className="text-base font-bold text-slate-800 tracking-tight">AI Health Companion</p>
+              <p className="text-[10px] text-slate-400 font-medium">Smart India Hackathon 2026</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Patient Report</p>
+            <p className="text-[10px] text-slate-400 mt-0.5">{new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+        </div>
+      </div>
+
       <div className="flex items-center gap-2.5 sm:gap-3 animate-fadeIn print:hidden">
         <Link to="/patients" className="p-2 hover:bg-slate-100 rounded-xl transition-all duration-200 group">
           <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 group-hover:text-slate-700" />
@@ -428,6 +448,26 @@ export default function PatientReport() {
             </div>
           </div>
         </Section>
+      </div>
+
+      <div className="print-footer">
+        <div className="border-t border-slate-200 pt-4 mt-4">
+          <div className="flex justify-between items-end">
+            <div>
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mb-6">Doctor's Signature</p>
+              <div className="w-36 border-t border-slate-300" />
+              <p className="text-[10px] text-slate-400 mt-1">Date: {consultation.createdAt}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold mb-6">Patient's Signature</p>
+              <div className="w-36 border-t border-slate-300 ml-auto" />
+              <p className="text-[10px] text-slate-400 mt-1">{patient.name}</p>
+            </div>
+          </div>
+          <div className="mt-6 pt-3 border-t border-slate-200 text-center">
+            <p className="text-[9px] text-slate-300 font-medium">AI Health Companion &middot; Smart India Hackathon 2026 &middot; Generated on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+        </div>
       </div>
     </div>
   );
