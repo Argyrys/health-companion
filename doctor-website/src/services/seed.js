@@ -74,7 +74,12 @@ const samplePatients = [
         allergies: [
           { name: "Dust", severity: "Moderate" }
         ],
-        eyeScreening: null,
+        eyeScreening: {
+          photoUrl: null,
+          riskLevel: "Low",
+          findings: ["Mild conjunctival irritation", "No signs of infection", "Normal tear film"],
+          recommendation: "Mild irritation likely due to dust allergy. Use lubricating eye drops if needed."
+        },
         mentalHealth: {
           stressLevel: "Low",
           mood: 7,
@@ -163,7 +168,12 @@ const samplePatients = [
           { name: "Levothyroxine", dosage: "50mcg", frequency: "Once daily" }
         ],
         allergies: [],
-        eyeScreening: null,
+        eyeScreening: {
+          photoUrl: null,
+          riskLevel: "Medium",
+          findings: ["Mild lens opacity detected", "Slight redness in left eye", "Pupil response normal"],
+          recommendation: "Early signs of lens changes. Recommend follow-up in 3 months. Monitor for progression."
+        },
         mentalHealth: {
           stressLevel: "Moderate",
           mood: 5,
@@ -203,7 +213,12 @@ const samplePatients = [
         allergies: [
           { name: "Lactose", severity: "Moderate" }
         ],
-        eyeScreening: null,
+        eyeScreening: {
+          photoUrl: null,
+          riskLevel: "Low",
+          findings: ["Clear cornea", "No cataract detected", "Healthy optic disc"],
+          recommendation: "Normal eye examination. No concerns. Routine checkup in 1 year."
+        },
         mentalHealth: {
           stressLevel: "Low",
           mood: 7,
