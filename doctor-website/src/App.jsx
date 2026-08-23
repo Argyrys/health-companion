@@ -1,25 +1,55 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import PatientList from './pages/PatientList';
 import PatientReport from './pages/PatientReport';
 import Navbar from './components/Navbar';
+import { logoutDoctor, onAuthChange } from './services/auth';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [doctorName, setDoctorName] = useState('');
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = onAuthChange((user) => {
+      if (user) {
+        const name = user.email.split('@')[0];
+        setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+        setDoctorName('');
+      }
+      setAuthLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const handleLogin = (name) => {
     setIsLoggedIn(true);
     setDoctorName(name);
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setDoctorName('');
+  const handleLogout = async () => {
+    await logoutDoctor();
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 flex items-center justify-center">
+        <div className="text-center">
+          <svg className="animate-spin h-8 w-8 text-white mx-auto mb-3" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <p className="text-white/80 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Router>
@@ -34,6 +64,12 @@ function App() {
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
+          <footer className="border-t border-slate-200/60 bg-white/60 backdrop-blur-sm">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+              <p className="text-xs text-slate-400">AI Health Companion &middot; Smart India Hackathon 2026</p>
+              <p className="text-xs text-slate-300">Healthcare that listens.</p>
+            </div>
+          </footer>
         </div>
       ) : (
         <Routes>

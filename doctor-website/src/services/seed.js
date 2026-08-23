@@ -242,7 +242,9 @@ const samplePatients = [
 export const seedDatabase = async () => {
   const patientsRef = collection(db, 'patients');
   for (const patient of samplePatients) {
-    await addDoc(patientsRef, patient);
+    await addDoc(patientsRef, {
+      ...patient,
+      createdAt: new Date().toISOString().split('T')[0],
+    });
   }
-  console.log('Database seeded with', samplePatients.length, 'patients');
 };

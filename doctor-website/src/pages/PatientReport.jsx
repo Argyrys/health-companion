@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
-  ArrowLeft, Play, Pause, Camera, Brain, Pill, AlertTriangle,
-  Heart, FileText, Save, ChevronDown, ChevronUp, CheckCircle2
+  ArrowLeft, Camera, Brain, Pill, AlertTriangle,
+  Heart, FileText, Save, ChevronDown, ChevronUp, CheckCircle2, Mic
 } from 'lucide-react';
 import { getPatient, updateDiagnosis } from '../services/patients';
 
@@ -46,7 +46,6 @@ export default function PatientReport() {
   const [loading, setLoading] = useState(true);
   const [diagnosis, setDiagnosis] = useState('');
   const [prescription, setPrescription] = useState('');
-  const [isPlaying, setIsPlaying] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [expandedSections, setExpandedSections] = useState({
@@ -213,15 +212,9 @@ export default function PatientReport() {
               </div>
             </div>
             {consultation.voiceRecording && (
-              <div>
-                <p className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1.5">Voice Recording</p>
-                <button
-                  onClick={() => setIsPlaying(!isPlaying)}
-                  className="flex items-center gap-2 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-xl hover:bg-emerald-100 transition-all duration-200 font-medium text-xs"
-                >
-                  {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                  {isPlaying ? 'Pause' : 'Play'} Recording
-                </button>
+              <div className="flex items-center gap-2.5 px-3 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl font-medium text-xs w-fit">
+                <Mic className="w-3.5 h-3.5" />
+                Voice recording available
               </div>
             )}
           </div>

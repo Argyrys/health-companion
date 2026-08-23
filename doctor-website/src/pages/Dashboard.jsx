@@ -18,6 +18,7 @@ const getDate = () => {
 export default function Dashboard() {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [seeding, setSeeding] = useState(false);
   const [seeded, setSeeded] = useState(false);
   const [clearing, setClearing] = useState(false);
@@ -29,6 +30,7 @@ export default function Dashboard() {
         setPatients(data);
       } catch (err) {
         console.error('Error fetching patients:', err);
+        setError('Failed to load data. Check your connection and try again.');
       }
       setLoading(false);
     };
@@ -84,6 +86,26 @@ export default function Dashboard() {
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
           </svg>
           <p className="text-slate-400 text-xs">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <AlertTriangle className="w-7 h-7 text-red-500" />
+          </div>
+          <p className="text-slate-500 font-medium text-sm mb-1">Something went wrong</p>
+          <p className="text-slate-400 text-xs mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-medium hover:bg-emerald-700 transition-all duration-200"
+          >
+            Try Again
+          </button>
         </div>
       </div>
     );
