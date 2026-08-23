@@ -239,11 +239,12 @@ const samplePatients = [
   }
 ];
 
-export const seedDatabase = async () => {
+export const seedDatabase = async (doctorId) => {
   const patientsRef = collection(db, 'patients');
   for (const patient of samplePatients) {
     await addDoc(patientsRef, {
       ...patient,
+      doctorId,
       createdAt: new Date().toISOString().split('T')[0],
     });
   }

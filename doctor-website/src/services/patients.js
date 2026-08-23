@@ -1,12 +1,11 @@
 import {
-  collection, doc, getDocs, getDoc, updateDoc, query, orderBy, deleteDoc
+  collection, doc, getDocs, getDoc, updateDoc, query, orderBy, deleteDoc, where
 } from 'firebase/firestore';
 import { db } from './firebase';
 
-const patientsRef = collection(db, 'patients');
-
-export const getAllPatients = async () => {
-  const q = query(patientsRef, orderBy('createdAt', 'desc'));
+export const getAllPatients = async (doctorId) => {
+  const patientsRef = collection(db, 'patients');
+  const q = query(patientsRef, where('doctorId', '==', doctorId), orderBy('createdAt', 'desc'));
   const snapshot = await getDocs(q);
   return snapshot.docs.map(doc => ({
     id: doc.id,
@@ -38,8 +37,10 @@ export const updateDiagnosis = async (patientId, consultationId, diagnosis, pres
   }
 };
 
-export const deleteAllPatients = async () => {
-  const snapshot = await getDocs(patientsRef);
+export const deleteAllPatients = async (doctorId) => {
+  const patientsRef = collection(db, 'patients');
+  const q = query(patientsRef, where('doctorId', '==', doctorId));
+  const snapshot = await getDocs(q);
   const deletes = snapshot.docs.map(d => deleteDoc(d.ref));
   await Promise.all(deletes);
 };

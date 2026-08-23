@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Filter, ChevronRight, Users, X, Stethoscope, AlertTriangle } from 'lucide-react';
 import { getAllPatients } from '../services/patients';
 
-export default function PatientList() {
+export default function PatientList({ doctorId }) {
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState('');
   const [filterRisk, setFilterRisk] = useState('all');
@@ -12,9 +12,10 @@ export default function PatientList() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!doctorId) return;
     const fetchPatients = async () => {
       try {
-        const data = await getAllPatients();
+        const data = await getAllPatients(doctorId);
         setPatients(data);
       } catch (err) {
         console.error('Error fetching patients:', err);
@@ -23,7 +24,7 @@ export default function PatientList() {
       setLoading(false);
     };
     fetchPatients();
-  }, []);
+  }, [doctorId]);
 
   const filtered = patients.filter(p => {
     const matchesSearch = p.name?.toLowerCase().includes(search.toLowerCase()) ||

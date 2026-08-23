@@ -15,7 +15,7 @@ const getDate = () => {
   return new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 };
 
-export default function Dashboard() {
+export default function Dashboard({ doctorId }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -24,9 +24,10 @@ export default function Dashboard() {
   const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
+    if (!doctorId) return;
     const fetchPatients = async () => {
       try {
-        const data = await getAllPatients();
+        const data = await getAllPatients(doctorId);
         setPatients(data);
       } catch (err) {
         console.error('Error fetching patients:', err);
@@ -35,14 +36,14 @@ export default function Dashboard() {
       setLoading(false);
     };
     fetchPatients();
-  }, []);
+  }, [doctorId]);
 
   const handleSeed = async () => {
     setSeeding(true);
     try {
-      await seedDatabase();
+      await seedDatabase(doctorId);
       setSeeded(true);
-      const data = await getAllPatients();
+      const data = await getAllPatients(doctorId);
       setPatients(data);
     } catch (err) {
       console.error('Error seeding database:', err);
@@ -54,7 +55,7 @@ export default function Dashboard() {
     if (!window.confirm('Delete all patient data? This cannot be undone.')) return;
     setClearing(true);
     try {
-      await deleteAllPatients();
+      await deleteAllPatients(doctorId);
       setPatients([]);
       setSeeded(false);
     } catch (err) {

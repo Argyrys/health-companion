@@ -18,7 +18,7 @@ export default function Login({ onLogin }) {
       const user = await loginDoctor(email, password);
       const name = user.email.split('@')[0];
       const displayName = name.charAt(0).toUpperCase() + name.slice(1);
-      onLogin(displayName);
+      onLogin(displayName, user.uid);
     } catch (err) {
       if (err.code === 'auth/user-not-found') {
         setError('No account found with this email');

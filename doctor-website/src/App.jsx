@@ -11,6 +11,7 @@ import { logoutDoctor, onAuthChange } from './services/auth';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [doctorName, setDoctorName] = useState('');
+  const [doctorId, setDoctorId] = useState('');
   const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
@@ -18,19 +19,22 @@ function App() {
       if (user) {
         const name = user.email.split('@')[0];
         setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
+        setDoctorId(user.uid);
         setIsLoggedIn(true);
       } else {
         setIsLoggedIn(false);
         setDoctorName('');
+        setDoctorId('');
       }
       setAuthLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = (name) => {
+  const handleLogin = (name, uid) => {
     setIsLoggedIn(true);
     setDoctorName(name);
+    setDoctorId(uid);
   };
 
   const handleLogout = async () => {
@@ -58,9 +62,9 @@ function App() {
           <Navbar doctorName={doctorName} onLogout={handleLogout} />
           <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-5">
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/patients" element={<PatientList />} />
-              <Route path="/patients/:id" element={<PatientReport />} />
+              <Route path="/" element={<Dashboard doctorId={doctorId} />} />
+              <Route path="/patients" element={<PatientList doctorId={doctorId} />} />
+              <Route path="/patients/:id" element={<PatientReport doctorId={doctorId} />} />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </main>
