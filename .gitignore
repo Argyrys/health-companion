@@ -15,6 +15,7 @@ local.properties
 # Firebase / environment secrets
 .env
 .env.*
+.env*.local
 google-services.json
 
 # Signing keys / certificates
@@ -24,20 +25,13 @@ google-services.json
 *.p12
 *.key
 *.mobileprovision
-<<<<<<< HEAD
-
-# Metro
-.metro-health-check*
-
-# debug
-=======
 *.pem
 
 # Debug / generated files
 captures/
 *.tsbuildinfo
 
-# Node / dependencies (if used later)
+# Node / dependencies
 node_modules/
 
 # Expo / React Native generated files
@@ -49,32 +43,16 @@ expo-env.d.ts
 
 # Native generated folders
 /ios
+/android
 
 # Logs
->>>>>>> f9a1b7c (Initial Patient App Android setup)
 npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-<<<<<<< HEAD
-# macOS
-.DS_Store
-*.pem
-
-# local env files
-.env*.local
-
-# typescript
-*.tsbuildinfo
-
-# generated native folders
-/ios
-/android
-=======
 # macOS / Windows
 .DS_Store
 Thumbs.db
 
 # Temporary files
 *.orig.*
->>>>>>> f9a1b7c (Initial Patient App Android setup)
