@@ -52,31 +52,35 @@ export default function PatientList() {
         <p className="text-slate-400 text-sm mt-1">{filtered.length} patient{filtered.length !== 1 ? 's' : ''} found</p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 animate-fadeIn" style={{ animationDelay: '0.05s' }}>
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+      <div className="flex flex-col sm:flex-row items-center gap-3 animate-fadeIn" style={{ animationDelay: '0.05s' }}>
+        <div className="flex items-center gap-2 flex-1 sm:flex-none sm:w-auto">
+          <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Search className="w-4 h-4 text-slate-500" />
+          </div>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name or ID..."
-            className="w-full pl-10 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 shadow-sm"
+            placeholder="Search patients..."
+            className="w-full sm:w-64 px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 shadow-sm"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors z-10"
+              className="text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
-        <div className="relative sm:w-48">
-          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center flex-shrink-0">
+            <Filter className="w-4 h-4 text-slate-500" />
+          </div>
           <select
             value={filterRisk}
             onChange={(e) => setFilterRisk(e.target.value)}
-            className="w-full appearance-none pl-10 pr-8 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm cursor-pointer"
+            className="appearance-none px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm cursor-pointer"
           >
             <option value="all">All Risk</option>
             <option value="high">High Risk</option>
