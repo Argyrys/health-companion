@@ -135,8 +135,8 @@ export default function PatientReport() {
   const consultation = patient.consultations[0];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4 animate-fadeIn">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center gap-3 sm:gap-4 animate-fadeIn">
         <Link to="/patients" className="p-2.5 hover:bg-slate-100 rounded-xl transition-all duration-200 group">
           <ArrowLeft className="w-5 h-5 text-slate-500 group-hover:text-slate-700" />
         </Link>
@@ -306,7 +306,7 @@ export default function PatientReport() {
             {consultation.eyeScreening ? (
               <div className="space-y-4">
                 <div className="flex flex-col sm:flex-row items-start gap-4">
-                  <div className="w-32 h-32 bg-violet-100 rounded-2xl flex items-center justify-center border-2 border-dashed border-violet-300 flex-shrink-0">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 bg-violet-100 rounded-2xl flex items-center justify-center border-2 border-dashed border-violet-300 flex-shrink-0">
                     <div className="text-center">
                       <Camera className="w-8 h-8 text-violet-400 mx-auto" />
                       <p className="text-xs text-violet-400 mt-1.5 font-medium">Eye Photo</p>

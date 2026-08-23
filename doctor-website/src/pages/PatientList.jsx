@@ -46,7 +46,7 @@ export default function PatientList() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="animate-fadeIn">
         <h1 className="text-2xl font-bold text-slate-800">Patients</h1>
         <p className="text-slate-400 text-sm mt-1">{filtered.length} patient{filtered.length !== 1 ? 's' : ''} found</p>
