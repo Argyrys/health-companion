@@ -26,7 +26,7 @@ function App() {
       {isLoggedIn ? (
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col">
           <Navbar doctorName={doctorName} onLogout={handleLogout} />
-          <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <main className="flex-1 max-w-7xl mx-auto w-full px-5 sm:px-6 lg:px-8 py-4 sm:py-6">
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/patients" element={<PatientList />} />
