@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Activity, Users, LayoutDashboard, LogOut, Menu, X } from 'lucide-react';
 
-export default function Navbar({ doctorName, onLogout }) {
+export default function Navbar({ doctorName, doctorNum, onLogout }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -54,7 +54,7 @@ export default function Navbar({ doctorName, onLogout }) {
               </div>
               <div className="text-right">
                 <p className="text-sm font-semibold text-slate-800 leading-tight">Dr. {doctorName}</p>
-                <p className="text-xs text-slate-400">Doctor</p>
+                <p className="text-[10px] text-slate-400">ID #{doctorNum || '...'}</p>
               </div>
             </div>
 
@@ -102,7 +102,7 @@ export default function Navbar({ doctorName, onLogout }) {
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-slate-800">Dr. {doctorName}</p>
-                  <p className="text-xs text-slate-400">Doctor</p>
+                  <p className="text-[10px] text-slate-400">ID #{doctorNum || '...'}</p>
                 </div>
                 <button
                   onClick={() => { setMobileOpen(false); onLogout(); }}

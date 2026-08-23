@@ -7,12 +7,23 @@ import PatientList from './pages/PatientList';
 import PatientReport from './pages/PatientReport';
 import Navbar from './components/Navbar';
 import { logoutDoctor, onAuthChange } from './services/auth';
+import { getOrCreateDoctor } from './services/doctors';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [doctorName, setDoctorName] = useState('');
   const [doctorId, setDoctorId] = useState('');
+  const [doctorNum, setDoctorNum] = useState(null);
   const [authLoading, setAuthLoading] = useState(true);
+
+  const loadDoctorProfile = async (user) => {
+    try {
+      const doc = await getOrCreateDoctor(user.uid, user.email);
+      setDoctorNum(doc.doctorId);
+    } catch (err) {
+      console.error('Error loading doctor profile:', err);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthChange((user) => {
@@ -21,20 +32,28 @@ function App() {
         setDoctorName(name.charAt(0).toUpperCase() + name.slice(1));
         setDoctorId(user.uid);
         setIsLoggedIn(true);
+        loadDoctorProfile(user);
       } else {
         setIsLoggedIn(false);
         setDoctorName('');
         setDoctorId('');
+        setDoctorNum(null);
       }
       setAuthLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  const handleLogin = (name, uid) => {
+  const handleLogin = async (name, uid, email) => {
     setIsLoggedIn(true);
     setDoctorName(name);
     setDoctorId(uid);
+    try {
+      const doc = await getOrCreateDoctor(uid, email);
+      setDoctorNum(doc.doctorId);
+    } catch (err) {
+      console.error('Error loading doctor profile:', err);
+    }
   };
 
   const handleLogout = async () => {
@@ -59,7 +78,7 @@ function App() {
     <Router>
       {isLoggedIn ? (
         <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 flex flex-col">
-          <Navbar doctorName={doctorName} onLogout={handleLogout} />
+          <Navbar doctorName={doctorName} doctorNum={doctorNum} onLogout={handleLogout} />
           <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-3 sm:py-5">
             <Routes>
               <Route path="/" element={<Dashboard doctorId={doctorId} />} />

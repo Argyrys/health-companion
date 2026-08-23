@@ -30,7 +30,7 @@ export default function SignUp({ onLogin }) {
       const user = await registerDoctor(email, password);
       const name = user.email.split('@')[0];
       const displayName = name.charAt(0).toUpperCase() + name.slice(1);
-      onLogin(displayName, user.uid);
+      onLogin(displayName, user.uid, user.email);
     } catch (err) {
       if (err.code === 'auth/email-already-in-use') {
         setError('An account with this email already exists');
