@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Users, FileText, AlertTriangle, Activity, Database, ChevronRight, TrendingUp, Clock, Stethoscope, ClipboardList } from 'lucide-react';
 import { getAllPatients, deleteAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
+import DashboardSkeleton from '../components/Skeleton';
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -79,17 +80,7 @@ export default function Dashboard({ doctorId }) {
   ];
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <svg className="animate-spin h-7 w-7 text-emerald-600 mx-auto mb-2" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p className="text-slate-400 text-xs">Loading...</p>
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   if (error) {

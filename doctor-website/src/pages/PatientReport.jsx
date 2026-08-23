@@ -2,9 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, Camera, Brain, Pill, AlertTriangle,
-  Heart, FileText, Save, ChevronDown, ChevronUp, CheckCircle2, Mic
+  Heart, FileText, Save, ChevronDown, ChevronUp, CheckCircle2, Mic, Printer
 } from 'lucide-react';
 import { getPatient, updateDiagnosis } from '../services/patients';
+import { PatientReportSkeleton } from '../components/Skeleton';
 
 const sectionColorMap = {
   emerald: { light: 'bg-emerald-50', icon: 'text-emerald-600', border: 'border-emerald-100' },
@@ -104,17 +105,7 @@ export default function PatientReport() {
   };
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <svg className="animate-spin h-7 w-7 text-emerald-600 mx-auto mb-2" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p className="text-slate-400 text-xs">Loading...</p>
-        </div>
-      </div>
-    );
+    return <PatientReportSkeleton />;
   }
 
   if (!patient || !patient.consultations?.[0]) {
@@ -134,9 +125,11 @@ export default function PatientReport() {
   const consultation = patient.consultations[0];
   const hasDiagnosis = consultation.diagnosis;
 
+  const handlePrint = () => window.print();
+
   return (
     <div className="space-y-3 sm:space-y-5">
-      <div className="flex items-center gap-2.5 sm:gap-3 animate-fadeIn">
+      <div className="flex items-center gap-2.5 sm:gap-3 animate-fadeIn print:hidden">
         <Link to="/patients" className="p-2 hover:bg-slate-100 rounded-xl transition-all duration-200 group">
           <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500 group-hover:text-slate-700" />
         </Link>
@@ -144,6 +137,13 @@ export default function PatientReport() {
           <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-slate-800 truncate">Patient Report</h1>
           <p className="text-slate-400 text-[11px] sm:text-xs mt-0.5 truncate">Consultation {consultation.id}</p>
         </div>
+        <button
+          onClick={handlePrint}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-medium hover:bg-slate-200 transition-all duration-200 flex-shrink-0"
+        >
+          <Printer className="w-3.5 h-3.5" />
+          Print
+        </button>
         <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold flex-shrink-0 ${
           hasDiagnosis ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
         }`}>
@@ -410,7 +410,7 @@ export default function PatientReport() {
                 className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200 resize-none leading-relaxed"
               />
             </div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2.5 print:hidden">
               <button
                 onClick={handleSave}
                 disabled={saving}

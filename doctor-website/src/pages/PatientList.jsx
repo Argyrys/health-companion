@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, ChevronRight, Users, X, Stethoscope, AlertTriangle } from 'lucide-react';
 import { getAllPatients } from '../services/patients';
+import { PatientListSkeleton } from '../components/Skeleton';
 
 export default function PatientList({ doctorId }) {
   const [patients, setPatients] = useState([]);
@@ -37,17 +38,7 @@ export default function PatientList({ doctorId }) {
   const activeFilters = (search ? 1 : 0) + (filterRisk !== 'all' ? 1 : 0);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <svg className="animate-spin h-7 w-7 text-emerald-600 mx-auto mb-2" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p className="text-slate-400 text-xs">Loading patients...</p>
-        </div>
-      </div>
-    );
+    return <PatientListSkeleton />;
   }
 
   if (error) {
