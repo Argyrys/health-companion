@@ -1,16 +1,17 @@
 import {
-  collection, doc, getDocs, getDoc, updateDoc, query, orderBy, deleteDoc, where
+  collection, doc, getDocs, getDoc, updateDoc, query, where, deleteDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
 
 export const getAllPatients = async (doctorId) => {
   const patientsRef = collection(db, 'patients');
-  const q = query(patientsRef, where('doctorId', '==', doctorId), orderBy('createdAt', 'desc'));
+  const q = query(patientsRef, where('doctorId', '==', doctorId));
   const snapshot = await getDocs(q);
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
+  const patients = snapshot.docs.map(d => ({
+    id: d.id,
+    ...d.data()
   }));
+  return patients.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''));
 };
 
 export const getPatient = async (patientId) => {
