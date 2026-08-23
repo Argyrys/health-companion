@@ -68,10 +68,6 @@ input:focus, textarea:focus, select:focus {
   outline: none;
 }
 
-.print-header {
-  display: none;
-}
-
 .print-footer {
   display: none;
 }
@@ -81,7 +77,6 @@ input:focus, textarea:focus, select:focus {
   .print\:hidden { display: none !important; }
   .no-print { display: none !important; }
 
-  .print-header { display: block !important; }
   .print-footer { display: block !important; }
 
   @page {
