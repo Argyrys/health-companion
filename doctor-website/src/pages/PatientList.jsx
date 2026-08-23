@@ -54,33 +54,29 @@ export default function PatientList() {
 
       <div className="flex flex-col sm:flex-row gap-3 animate-fadeIn" style={{ animationDelay: '0.05s' }}>
         <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-            <Search className="w-4 h-4 text-slate-400" />
-          </div>
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name or ID..."
-            className="w-full pl-11 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 shadow-sm"
+            className="w-full pl-10 pr-10 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 shadow-sm"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors z-10"
             >
               <X className="w-4 h-4" />
             </button>
           )}
         </div>
         <div className="relative sm:w-48">
-          <div className="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
-            <Filter className="w-4 h-4 text-slate-400" />
-          </div>
+          <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none z-10" />
           <select
             value={filterRisk}
             onChange={(e) => setFilterRisk(e.target.value)}
-            className="w-full appearance-none pl-11 pr-8 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm cursor-pointer"
+            className="w-full appearance-none pl-10 pr-8 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm cursor-pointer"
           >
             <option value="all">All Risk</option>
             <option value="high">High Risk</option>
