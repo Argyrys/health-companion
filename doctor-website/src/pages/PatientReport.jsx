@@ -9,11 +9,11 @@ import { PatientReportSkeleton } from '../components/Skeleton';
 
 const sectionColorMap = {
   emerald: { light: 'bg-emerald-50', icon: 'text-emerald-600', border: 'border-emerald-100' },
-  rose: { light: 'bg-rose-50', icon: 'text-rose-600', border: 'border-rose-100' },
-  blue: { light: 'bg-blue-50', icon: 'text-blue-600', border: 'border-blue-100' },
+  teal: { light: 'bg-teal-50', icon: 'text-teal-600', border: 'border-teal-100' },
+  slate: { light: 'bg-slate-50', icon: 'text-slate-600', border: 'border-slate-200' },
   red: { light: 'bg-red-50', icon: 'text-red-600', border: 'border-red-100' },
-  violet: { light: 'bg-violet-50', icon: 'text-violet-600', border: 'border-violet-100' },
-  purple: { light: 'bg-purple-50', icon: 'text-purple-600', border: 'border-purple-100' },
+  cyan: { light: 'bg-cyan-50', icon: 'text-cyan-600', border: 'border-cyan-100' },
+  green: { light: 'bg-emerald-50', icon: 'text-emerald-600', border: 'border-emerald-100' },
 };
 
 const Section = ({ sectionId, title, icon: Icon, children, color = 'emerald', expandedSections, toggleSection }) => {
@@ -220,15 +220,15 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="history" title="Medical & Family History" icon={Heart} color="rose" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <Section sectionId="history" title="Medical & Family History" icon={Heart} color="teal" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Medical History</p>
               {(consultation.medicalHistory || []).length > 0 ? (
                 <ul className="space-y-1.5">
                   {consultation.medicalHistory.map((h, i) => (
-                    <li key={i} className="text-xs sm:text-sm text-slate-600 flex items-center gap-2 p-2 bg-rose-50/50 rounded-lg">
-                      <span className="w-1.5 h-1.5 bg-rose-400 rounded-full flex-shrink-0" />
+                    <li key={i} className="text-xs sm:text-sm text-slate-600 flex items-center gap-2 p-2 bg-teal-50/50 rounded-lg">
+                      <span className="w-1.5 h-1.5 bg-teal-400 rounded-full flex-shrink-0" />
                       {h}
                     </li>
                   ))}
@@ -255,17 +255,17 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="medications" title="Current Medications" icon={Pill} color="blue" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <Section sectionId="medications" title="Current Medications" icon={Pill} color="slate" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div>
             {(consultation.medications || []).length > 0 ? (
               <div className="space-y-2">
                 {consultation.medications.map((med, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
+                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-200/50">
                     <div className="min-w-0">
                       <p className="font-medium text-slate-800 text-sm truncate">{med.name}</p>
                       <p className="text-xs text-slate-400 mt-0.5">{med.dosage}</p>
                     </div>
-                    <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-lg text-[10px] sm:text-xs font-semibold flex-shrink-0 ml-2">
+                    <span className="px-2 py-0.5 bg-slate-200 text-slate-700 rounded-lg text-[10px] sm:text-xs font-semibold flex-shrink-0 ml-2">
                       {med.frequency}
                     </span>
                   </div>
@@ -303,15 +303,15 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="eye" title="Eye Screening" icon={Camera} color="violet" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <Section sectionId="eye" title="Eye Screening" icon={Camera} color="cyan" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div>
             {consultation.eyeScreening ? (
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row items-start gap-3">
-                  <div className="w-20 h-20 sm:w-28 sm:h-28 bg-violet-100 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 border-dashed border-violet-300 flex-shrink-0">
+                  <div className="w-20 h-20 sm:w-28 sm:h-28 bg-cyan-50 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 border-dashed border-cyan-300 flex-shrink-0">
                     <div className="text-center">
-                      <Camera className="w-6 h-6 sm:w-7 sm:h-7 text-violet-400 mx-auto" />
-                      <p className="text-[10px] text-violet-400 mt-1 font-medium">Eye Photo</p>
+                      <Camera className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 mx-auto" />
+                      <p className="text-[10px] text-cyan-400 mt-1 font-medium">Eye Photo</p>
                     </div>
                   </div>
                   <div className="flex-1">
@@ -329,7 +329,7 @@ export default function PatientReport() {
                       <ul className="space-y-1">
                         {(consultation.eyeScreening.findings || []).map((f, i) => (
                           <li key={i} className="text-xs sm:text-sm text-slate-600 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 bg-violet-400 rounded-full flex-shrink-0" />
+                            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full flex-shrink-0" />
                             {f}
                           </li>
                         ))}
@@ -337,7 +337,7 @@ export default function PatientReport() {
                     </div>
                   </div>
                 </div>
-                <div className="p-3 bg-violet-50/50 rounded-xl border border-violet-100/50">
+                <div className="p-3 bg-cyan-50/50 rounded-xl border border-cyan-100/50">
                   <p className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Recommendation</p>
                   <p className="text-xs sm:text-sm text-slate-600">{consultation.eyeScreening.recommendation}</p>
                 </div>
@@ -348,20 +348,20 @@ export default function PatientReport() {
           </div>
         </Section>
 
-        <Section sectionId="mental" title="Mental Health" icon={Brain} color="purple" expandedSections={expandedSections} toggleSection={toggleSection}>
+        <Section sectionId="mental" title="Mental Health" icon={Brain} color="green" expandedSections={expandedSections} toggleSection={toggleSection}>
           <div>
             {consultation.mentalHealth ? (
               <div className="space-y-3">
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="p-3 bg-purple-50/50 rounded-xl text-center border border-purple-100/50">
-                    <p className="text-lg sm:text-xl font-bold text-purple-600">{consultation.mentalHealth.mood}/10</p>
+                  <div className="p-3 bg-emerald-50/50 rounded-xl text-center border border-emerald-100/50">
+                    <p className="text-lg sm:text-xl font-bold text-emerald-600">{consultation.mentalHealth.mood}/10</p>
                     <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 font-medium">Mood</p>
                   </div>
-                  <div className="p-3 bg-purple-50/50 rounded-xl text-center border border-purple-100/50">
-                    <p className="text-lg sm:text-xl font-bold text-purple-600">{consultation.mentalHealth.sleepHours}h</p>
+                  <div className="p-3 bg-emerald-50/50 rounded-xl text-center border border-emerald-100/50">
+                    <p className="text-lg sm:text-xl font-bold text-emerald-600">{consultation.mentalHealth.sleepHours}h</p>
                     <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 font-medium">Sleep</p>
                   </div>
-                  <div className="p-3 bg-purple-50/50 rounded-xl text-center border border-purple-100/50">
+                  <div className="p-3 bg-emerald-50/50 rounded-xl text-center border border-emerald-100/50">
                     <p className={`text-sm sm:text-base font-bold ${
                       consultation.mentalHealth.stressLevel === 'High' ? 'text-red-600' :
                       consultation.mentalHealth.stressLevel === 'Moderate' ? 'text-amber-600' :

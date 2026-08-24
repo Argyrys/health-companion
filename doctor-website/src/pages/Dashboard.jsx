@@ -73,7 +73,7 @@ export default function Dashboard({ doctorId }) {
   const pendingReports = patients.filter(p => !p.consultations?.[0]?.diagnosis).length;
 
   const stats = [
-    { label: 'Total Patients', value: totalPatients, icon: Users, gradient: 'from-blue-500 to-blue-600', bg: 'bg-blue-50', text: 'text-blue-600', link: '/patients' },
+    { label: 'Total Patients', value: totalPatients, icon: Users, gradient: 'from-slate-500 to-slate-600', bg: 'bg-slate-100', text: 'text-slate-600', link: '/patients' },
     { label: "Today's Visits", value: todayPatients, icon: FileText, gradient: 'from-emerald-500 to-emerald-600', bg: 'bg-emerald-50', text: 'text-emerald-600', link: '/patients' },
     { label: 'High Risk', value: highRisk, icon: AlertTriangle, gradient: 'from-red-500 to-red-600', bg: 'bg-red-50', text: 'text-red-600', link: '/patients' },
     { label: 'Pending', value: pendingReports, icon: Activity, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-50', text: 'text-amber-600', link: '/patients' },
@@ -284,7 +284,7 @@ export default function Dashboard({ doctorId }) {
                 );
               }
               const maxCount = sorted[0]?.[1] || 1;
-              const colors = ['bg-emerald-500', 'bg-teal-500', 'bg-cyan-500', 'bg-blue-500', 'bg-indigo-500'];
+              const colors = ['bg-emerald-500', 'bg-emerald-400', 'bg-teal-500', 'bg-teal-400', 'bg-emerald-300'];
               return sorted.map(([symptom, count], i) => (
                 <div key={symptom}>
                   <div className="flex justify-between text-xs sm:text-sm mb-1">
