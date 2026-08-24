@@ -143,7 +143,7 @@ export default function PatientList({ doctorId }) {
                         <div className="flex items-center gap-1.5">
                           <h3 className="font-semibold text-sm sm:text-base text-slate-800 group-hover:text-emerald-700 transition-colors truncate">{patient.name}</h3>
                           {!hasDiagnosis && (
-                            <span className="px-1 py-0.5 bg-amber-100 text-amber-600 rounded text-[9px] font-semibold uppercase tracking-wide flex-shrink-0">Pending</span>
+                            <span className="px-1 py-0.5 bg-amber-100 text-amber-600 rounded text-xs font-semibold uppercase tracking-wide flex-shrink-0">Pending</span>
                           )}
                         </div>
                         <div className="flex items-center gap-1 mt-0.5 text-[11px] sm:text-xs text-slate-400">
