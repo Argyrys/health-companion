@@ -12,19 +12,20 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
 
-    // Patients collection
+    // Patients collection — any authenticated user can read (for app-website linking)
+    // Writes restricted to owner or assigned doctor
     match /patients/{patientId} {
-      // Doctor can read/write patients assigned to them
-      // Patient can read/write their own data
-      allow read, write: if request.auth != null && (
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (
         request.auth.uid == patientId ||
         request.resource.data.doctorId == request.auth.uid ||
         resource.data.doctorId == request.auth.uid
       );
 
-      // Data subcollection
+      // Data subcollection — any authenticated user can read, owner or doctor can write
       match /data/{document=**} {
-        allow read, write: if request.auth != null && (
+        allow read: if request.auth != null;
+        allow write: if request.auth != null && (
           request.auth.uid == patientId ||
           request.resource.data.doctorId == request.auth.uid ||
           resource.data.doctorId == request.auth.uid

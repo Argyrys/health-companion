@@ -1,4 +1,4 @@
-import { collection, addDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
 import { db } from './firebase';
 
 const samplePatients = [
@@ -239,8 +239,27 @@ const samplePatients = [
   }
 ];
 
+const appStylePatient = {
+  uid: "demo-app-patient-001",
+  fullName: "Anita Sharma",
+  age: 35,
+  gender: "Female",
+  phoneNumber: "+91 99887 76655",
+  email: "anita.sharma@email.com",
+  bloodGroup: "O+",
+  height: "162",
+  weight: "58",
+  address: "45 MG Road",
+  city: "Bangalore",
+  emergencyContactName: "Rajesh Sharma",
+  emergencyContactNumber: "+91 99887 76656",
+  existingConditions: "Migraine",
+  preferredLanguage: "Hindi",
+};
+
 export const seedDatabase = async (doctorId) => {
   const patientsRef = collection(db, 'patients');
+
   for (const patient of samplePatients) {
     await addDoc(patientsRef, {
       ...patient,
@@ -248,4 +267,79 @@ export const seedDatabase = async (doctorId) => {
       createdAt: new Date().toISOString().split('T')[0],
     });
   }
+
+  const appUid = appStylePatient.uid;
+  const appBase = `patients/${appUid}/data`;
+
+  await setDoc(doc(db, 'patients', appUid), { createdAt: new Date().toISOString().split('T')[0] });
+  await setDoc(doc(db, appBase, 'profile'), appStylePatient);
+
+  await setDoc(doc(db, appBase, 'caseTaking'), {
+    id: appUid,
+    patientId: appUid,
+    chiefComplaint: "Recurring migraines with nausea",
+    symptoms: ["Headache", "Nausea", "Light sensitivity"],
+    severity: 7,
+    durationValue: 5,
+    durationUnit: "Days",
+    createdAt: new Date().toISOString(),
+  });
+
+  await setDoc(doc(db, appBase, 'medicalHistory'), {
+    id: appUid,
+    patientId: appUid,
+    diabetes: false,
+    hypertension: false,
+    asthma: false,
+    heartDisease: false,
+    previousSurgery: false,
+    hospitalization: false,
+    otherConditions: ["Migraine since 2019"],
+  });
+
+  await setDoc(doc(db, appBase, 'familyHistory'), {
+    id: appUid,
+    patientId: appUid,
+    entries: [
+      { id: "fh1", condition: "Migraine", relationship: "Mother" },
+      { id: "fh2", condition: "Hypertension", relationship: "Father" },
+    ],
+  });
+
+  await setDoc(doc(db, appBase, 'medications'), {
+    patientId: appUid,
+    medications: [
+      { id: "m1", drugName: "Sumatriptan", dosage: "50mg", frequency: "As needed" },
+      { id: "m2", drugName: "Propranolol", dosage: "40mg", frequency: "Once daily" },
+    ],
+  });
+
+  await setDoc(doc(db, appBase, 'allergies'), {
+    patientId: appUid,
+    allergies: [
+      { id: "a1", allergen: "Codeine", allergyType: "Drug", severity: "Moderate" },
+    ],
+  });
+
+  await setDoc(doc(db, appBase, 'eyeScreening'), {
+    id: appUid,
+    patientId: appUid,
+    riskLevel: "Low",
+    aiAssessment: "No abnormalities detected. Healthy optic disc and clear cornea.",
+    findings: ["Clear cornea", "Normal optic disc", "No signs of glaucoma"],
+  });
+
+  await setDoc(doc(db, appBase, 'mentalHealth'), {
+    id: appUid,
+    patientId: appUid,
+    questions: [
+      { question: "How would you rate your mood today?", answer: 5 },
+      { question: "How well did you sleep last night?", answer: 4 },
+      { question: "How stressed do you feel?", answer: 6 },
+      { question: "Can you concentrate on daily tasks?", answer: 5 },
+      { question: "How is your appetite?", answer: 6 },
+    ],
+    score: 26,
+    status: "Moderate",
+  });
 };
