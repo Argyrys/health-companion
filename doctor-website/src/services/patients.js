@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDocs, getDoc, updateDoc, query, where, deleteDoc, setDoc, onSnapshot
+  collection, doc, getDocs, getDoc, updateDoc, query, where, deleteDoc, setDoc
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -178,53 +178,49 @@ export const getPatient = async (patientId) => {
 };
 
 export const subscribeAllPatients = (callback) => {
-  const unsubRoot = onSnapshot(collection(db, 'patients'), async (snapshot) => {
-    const patients = [];
-    const appUnsubs = new Map();
+  let active = true;
+  let timer = null;
 
-    for (const d of snapshot.docs) {
-      const data = d.data();
-
-      if (data.consultations && Array.isArray(data.consultations)) {
-        patients.push({ id: d.id, ...data });
-        continue;
-      }
-
-      if (!data.consultations) {
-        const appPatient = await mapAppPatient(d.id);
-        if (appPatient) patients.push(appPatient);
-      }
+  const fetch = async () => {
+    if (!active) return;
+    try {
+      const data = await getAllPatients();
+      if (active) callback(data);
+    } catch (err) {
+      console.error('subscribeAllPatients error:', err);
     }
+  };
 
-    callback(patients.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')));
-  });
+  fetch();
+  timer = setInterval(fetch, 30000);
 
-  return () => unsubRoot();
+  return () => {
+    active = false;
+    if (timer) clearInterval(timer);
+  };
 };
 
 export const subscribePatient = (patientId, callback) => {
-  const docRef = doc(db, 'patients', patientId);
+  let active = true;
+  let timer = null;
 
-  const unsubRoot = onSnapshot(docRef, async (docSnap) => {
-    if (!docSnap.exists()) { callback(null); return; }
-    const data = docSnap.data();
-
-    if (data.consultations && Array.isArray(data.consultations)) {
-      callback({ id: docSnap.id, ...data });
-      return;
+  const fetch = async () => {
+    if (!active) return;
+    try {
+      const data = await getPatient(patientId);
+      if (active) callback(data);
+    } catch (err) {
+      console.error('subscribePatient error:', err);
     }
+  };
 
-    if (!data.consultations) {
-      const appPatient = await mapAppPatient(patientId);
-      if (appPatient) {
-        callback(appPatient);
-      } else {
-        callback({ id: docSnap.id, ...data });
-      }
-    }
-  });
+  fetch();
+  timer = setInterval(fetch, 15000);
 
-  return () => unsubRoot();
+  return () => {
+    active = false;
+    if (timer) clearInterval(timer);
+  };
 };
 
 export const updateDiagnosis = async (patientId, consultationId, diagnosis, prescription) => {
