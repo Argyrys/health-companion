@@ -38,6 +38,90 @@ export const updateDiagnosis = async (patientId, consultationId, diagnosis, pres
   }
 };
 
+export const updatePatientProfile = async (patientId, profileData) => {
+  const docRef = doc(db, 'patients', patientId);
+  await updateDoc(docRef, profileData);
+};
+
+export const updateConsultationField = async (patientId, consultationId, field, value) => {
+  const docRef = doc(db, 'patients', patientId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const updatedConsultations = data.consultations.map(c => {
+      if (c.id === consultationId) {
+        return { ...c, [field]: value };
+      }
+      return c;
+    });
+    await updateDoc(docRef, { consultations: updatedConsultations });
+  }
+};
+
+export const addMedication = async (patientId, consultationId, medication) => {
+  const docRef = doc(db, 'patients', patientId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const updatedConsultations = data.consultations.map(c => {
+      if (c.id === consultationId) {
+        return { ...c, medications: [...(c.medications || []), medication] };
+      }
+      return c;
+    });
+    await updateDoc(docRef, { consultations: updatedConsultations });
+  }
+};
+
+export const removeMedication = async (patientId, consultationId, index) => {
+  const docRef = doc(db, 'patients', patientId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const updatedConsultations = data.consultations.map(c => {
+      if (c.id === consultationId) {
+        const meds = [...(c.medications || [])];
+        meds.splice(index, 1);
+        return { ...c, medications: meds };
+      }
+      return c;
+    });
+    await updateDoc(docRef, { consultations: updatedConsultations });
+  }
+};
+
+export const addAllergy = async (patientId, consultationId, allergy) => {
+  const docRef = doc(db, 'patients', patientId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const updatedConsultations = data.consultations.map(c => {
+      if (c.id === consultationId) {
+        return { ...c, allergies: [...(c.allergies || []), allergy] };
+      }
+      return c;
+    });
+    await updateDoc(docRef, { consultations: updatedConsultations });
+  }
+};
+
+export const removeAllergy = async (patientId, consultationId, index) => {
+  const docRef = doc(db, 'patients', patientId);
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    const data = docSnap.data();
+    const updatedConsultations = data.consultations.map(c => {
+      if (c.id === consultationId) {
+        const allergies = [...(c.allergies || [])];
+        allergies.splice(index, 1);
+        return { ...c, allergies };
+      }
+      return c;
+    });
+    await updateDoc(docRef, { consultations: updatedConsultations });
+  }
+};
+
 export const deleteAllPatients = async (doctorId) => {
   const patientsRef = collection(db, 'patients');
   const q = query(patientsRef, where('doctorId', '==', doctorId));
