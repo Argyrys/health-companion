@@ -63,8 +63,8 @@ export default function Login({ onLogin }) {
         </div>
       </div>
 
-      <div className="flex-1 flex items-center justify-center px-4 py-8 sm:p-8">
-        <div className="w-full max-w-md">
+      <div className="flex-1 flex items-center justify-center px-5 py-10 sm:px-8 sm:py-12">
+        <div className="w-full max-w-sm sm:max-w-md lg:max-w-lg">
           <div className="lg:hidden flex items-center gap-3 mb-8">
             <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/25">
               <Activity className="w-5.5 h-5.5 text-white" />
@@ -76,7 +76,7 @@ export default function Login({ onLogin }) {
           </div>
 
           <div className="animate-fadeIn">
-            <h2 className="text-2xl font-bold text-slate-800 mb-1">Sign in</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mb-1">Sign in</h2>
             <p className="text-sm text-slate-400 mb-8">Enter your credentials to access the doctor portal</p>
           </div>
 
