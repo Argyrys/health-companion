@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, FileText, AlertTriangle, Activity, Database, TrendingUp, Clock, Stethoscope, ClipboardList, ChevronRight, User, Droplets, BarChart3 } from 'lucide-react';
-import { subscribeAllPatients, deleteAllPatients } from '../services/patients';
+import { getAllPatients, deleteAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
 import DashboardSkeleton from '../components/Skeleton';
 
@@ -25,12 +25,23 @@ export default function Dashboard({ doctorId }) {
   const [clearing, setClearing] = useState(false);
 
   useEffect(() => {
-    if (!doctorId) return;
-    const unsub = subscribeAllPatients((data) => {
-      setPatients(data);
+    if (!doctorId) {
       setLoading(false);
-    });
-    return () => unsub();
+      return;
+    }
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const data = await getAllPatients(doctorId);
+        if (!cancelled) setPatients(data);
+      } catch (err) {
+        console.error('Error fetching patients:', err);
+      }
+      if (!cancelled) setLoading(false);
+    };
+    run();
+    const timer = setInterval(run, 30000);
+    return () => { cancelled = true; clearInterval(timer); };
   }, [doctorId]);
 
   const handleSeed = async () => {

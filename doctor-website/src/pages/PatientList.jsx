@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, ChevronRight, Users, X, Stethoscope, AlertTriangle } from 'lucide-react';
-import { subscribeAllPatients } from '../services/patients';
+import { getAllPatients } from '../services/patients';
 import { PatientListSkeleton } from '../components/Skeleton';
 
 export default function PatientList({ doctorId }) {
@@ -13,12 +13,23 @@ export default function PatientList({ doctorId }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!doctorId) return;
-    const unsub = subscribeAllPatients((data) => {
-      setPatients(data);
+    if (!doctorId) {
       setLoading(false);
-    });
-    return () => unsub();
+      return;
+    }
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const data = await getAllPatients(doctorId);
+        if (!cancelled) setPatients(data);
+      } catch (err) {
+        console.error('Error fetching patients:', err);
+      }
+      if (!cancelled) setLoading(false);
+    };
+    run();
+    const timer = setInterval(run, 30000);
+    return () => { cancelled = true; clearInterval(timer); };
   }, [doctorId]);
 
   const filtered = patients.filter(p => {

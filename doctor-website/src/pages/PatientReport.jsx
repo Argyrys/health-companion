@@ -7,7 +7,7 @@ import {
   Activity, Stethoscope, ClipboardList, Shield, Droplets, Ruler, Weight
 } from 'lucide-react';
 import {
-  getPatient, subscribePatient, updateDiagnosis, updatePatientProfile, updateConsultationField,
+  getPatient, updateDiagnosis, updatePatientProfile, updateConsultationField,
   addMedication, removeMedication, addAllergy, removeAllergy
 } from '../services/patients';
 import { PatientReportSkeleton } from '../components/Skeleton';
@@ -134,15 +134,23 @@ export default function PatientReport() {
   const [activeSection, setActiveSection] = useState('profile');
 
   useEffect(() => {
-    const unsub = subscribePatient(id, (data) => {
-      setPatient(data);
-      if (data) {
-        setDiagnosis(data?.consultations?.[0]?.diagnosis || '');
-        setPrescription(data?.consultations?.[0]?.prescription || '');
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const data = await getPatient(id);
+        if (!cancelled) {
+          setPatient(data);
+          setDiagnosis(data?.consultations?.[0]?.diagnosis || '');
+          setPrescription(data?.consultations?.[0]?.prescription || '');
+        }
+      } catch (err) {
+        console.error('Error fetching patient:', err);
       }
-      setLoading(false);
-    });
-    return () => unsub();
+      if (!cancelled) setLoading(false);
+    };
+    run();
+    const timer = setInterval(run, 15000);
+    return () => { cancelled = true; clearInterval(timer); };
   }, [id]);
 
   useEffect(() => {

@@ -143,16 +143,20 @@ export const getAllPatients = async (doctorId) => {
   const patients = [];
 
   for (const d of snapshot.docs) {
-    const data = d.data();
+    try {
+      const data = d.data();
 
-    if (data.consultations && Array.isArray(data.consultations)) {
-      patients.push({ id: d.id, ...data });
-      continue;
-    }
+      if (data.consultations && Array.isArray(data.consultations)) {
+        patients.push({ id: d.id, ...data });
+        continue;
+      }
 
-    if (!data.consultations) {
-      const appPatient = await mapAppPatient(d.id);
-      if (appPatient) patients.push(appPatient);
+      if (!data.consultations) {
+        const appPatient = await mapAppPatient(d.id);
+        if (appPatient) patients.push(appPatient);
+      }
+    } catch (err) {
+      console.warn('Skipping patient', d.id, err);
     }
   }
 
@@ -188,6 +192,7 @@ export const subscribeAllPatients = (callback) => {
       if (active) callback(data);
     } catch (err) {
       console.error('subscribeAllPatients error:', err);
+      if (active) callback([]);
     }
   };
 
@@ -211,6 +216,7 @@ export const subscribePatient = (patientId, callback) => {
       if (active) callback(data);
     } catch (err) {
       console.error('subscribePatient error:', err);
+      if (active) callback(null);
     }
   };
 
