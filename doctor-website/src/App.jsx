@@ -79,7 +79,7 @@ function App() {
       {isLoggedIn ? (
         <div className="min-h-screen bg-slate-50">
           <Sidebar doctorName={doctorName} doctorNum={doctorNum} onLogout={handleLogout} />
-          <div className="lg:pl-60">
+          <div className="main-content">
             <main className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 min-h-screen">
               <Routes>
                 <Route path="/" element={<Dashboard doctorId={doctorId} />} />

@@ -63,6 +63,16 @@ input:focus, textarea:focus, select:focus {
   outline: none;
 }
 
+.main-content {
+  padding-left: 0;
+}
+
+@media (min-width: 1024px) {
+  .main-content {
+    padding-left: 240px;
+  }
+}
+
 .print-footer {
   display: none;
 }
