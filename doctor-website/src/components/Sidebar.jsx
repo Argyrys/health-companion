@@ -21,7 +21,7 @@ export default function Sidebar({ doctorName, doctorNum, onLogout }) {
             <Activity className="w-5 h-5 text-white" />
           </div>
           <div>
-            <span className="text-sm font-bold text-slate-800 tracking-tight block leading-tight">AI Health</span>
+            <span className="text-sm font-bold text-slate-800 tracking-tight block leading-tight">Health</span>
             <span className="text-[10px] text-slate-400 font-medium">Companion</span>
           </div>
         </Link>

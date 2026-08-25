@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Activity, Eye, EyeOff, Shield, Clock, Stethoscope } from 'lucide-react';
-import { loginDoctor } from '../services/auth';
+import { loginDoctor, resetPassword } from '../services/auth';
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -8,6 +8,8 @@ export default function Login({ onLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,6 +29,24 @@ export default function Login({ onLogin }) {
     setLoading(false);
   };
 
+  const handleForgotPassword = async () => {
+    setError('');
+    if (!email || !email.includes('@')) {
+      setError('Enter your email address first');
+      return;
+    }
+    setResetLoading(true);
+    try {
+      await resetPassword(email);
+      setResetSent(true);
+    } catch (err) {
+      if (err.code === 'auth/user-not-found') setError('No account found with this email');
+      else if (err.code === 'auth/invalid-email') setError('Invalid email address');
+      else setError('Failed to send reset email. Please try again.');
+    }
+    setResetLoading(false);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 flex">
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 relative overflow-hidden flex-col justify-between p-12">
@@ -40,7 +60,7 @@ export default function Login({ onLogin }) {
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">AI Health Companion</h1>
+              <h1 className="text-xl font-bold text-white">Health Companion</h1>
               <p className="text-blue-100 text-xs">Healthcare that listens.</p>
             </div>
           </div>
@@ -70,7 +90,7 @@ export default function Login({ onLogin }) {
               <Activity className="w-5.5 h-5.5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-800">AI Health Companion</h1>
+              <h1 className="text-lg font-bold text-slate-800">Health Companion</h1>
               <p className="text-xs text-slate-400">Healthcare that listens.</p>
             </div>
           </div>
@@ -108,6 +128,21 @@ export default function Login({ onLogin }) {
               </div>
             </div>
 
+            <div className="flex items-center justify-end -mt-2">
+              {resetSent ? (
+                <p className="text-xs text-emerald-600 font-medium">Reset link sent! Check your email.</p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={resetLoading}
+                  className="text-xs text-blue-600 font-medium hover:underline underline-offset-2 transition-colors disabled:opacity-50"
+                >
+                  {resetLoading ? 'Sending...' : 'Forgot Password?'}
+                </button>
+              )}
+            </div>
+
             {error && (
               <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0" />
@@ -140,7 +175,7 @@ export default function Login({ onLogin }) {
           </div>
 
           <p className="text-center text-xs text-slate-300 mt-8">
-            Powered by AI Health Companion &middot; SIH 2026
+            Powered by Health Companion &middot; SIH 2026
           </p>
         </div>
       </div>

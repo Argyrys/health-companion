@@ -341,7 +341,7 @@ export default function PatientReport() {
 
     doc.setFontSize(18);
     doc.setFont('helvetica', 'bold');
-    doc.text('AI Health Companion - Patient Report', 105, y, { align: 'center' });
+    doc.text('Health Companion - Patient Report', 105, y, { align: 'center' });
     y += 8;
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
@@ -484,7 +484,7 @@ export default function PatientReport() {
     doc.text("Patient's Signature", 120, y + 12);
     doc.line(120, y + 14, 180, y + 14);
     y += 20;
-    doc.text('AI Health Companion - Smart India Hackathon 2026', 105, y, { align: 'center' });
+    doc.text('Health Companion - Smart India Hackathon 2026', 105, y, { align: 'center' });
 
     doc.save(`Patient_Report_${p.name?.replace(/\s+/g, '_') || id}.pdf`);
   };
@@ -988,7 +988,7 @@ export default function PatientReport() {
             </div>
           </div>
           <div className="mt-6 pt-3 border-t border-slate-200 text-center">
-            <p className="text-[10px] text-slate-300 font-medium">AI Health Companion &middot; Smart India Hackathon 2026 &middot; Generated on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="text-[10px] text-slate-300 font-medium">Health Companion &middot; Smart India Hackathon 2026 &middot; Generated on {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
           </div>
         </div>
       </div>

@@ -49,7 +49,7 @@ export default function SignUp({ onLogin }) {
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">AI Health Companion</h1>
+              <h1 className="text-xl font-bold text-white">Health Companion</h1>
               <p className="text-blue-100 text-xs">Healthcare that listens.</p>
             </div>
           </div>
@@ -75,7 +75,7 @@ export default function SignUp({ onLogin }) {
               <Activity className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-800">AI Health Companion</h1>
+              <h1 className="text-lg font-bold text-slate-800">Health Companion</h1>
               <p className="text-xs text-slate-400">Healthcare that listens.</p>
             </div>
           </div>
@@ -138,7 +138,7 @@ export default function SignUp({ onLogin }) {
             </p>
           </div>
 
-          <p className="text-center text-xs text-slate-300 mt-8">Powered by AI Health Companion &middot; SIH 2026</p>
+          <p className="text-center text-xs text-slate-300 mt-8">Powered by Health Companion &middot; SIH 2026</p>
         </div>
       </div>
     </div>

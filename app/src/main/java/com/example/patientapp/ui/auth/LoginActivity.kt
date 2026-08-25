@@ -32,6 +32,8 @@ class LoginActivity : AppCompatActivity() {
 
         binding.btnLogin.setOnClickListener { login() }
 
+        binding.tvForgotPassword.setOnClickListener { forgotPassword() }
+
         binding.tvCreateAccount.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
@@ -100,5 +102,27 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoading(show: Boolean) {
         binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
         binding.btnLogin.isEnabled = !show
+    }
+
+    private fun forgotPassword() {
+        val email = binding.etEmail.text.toString().trim()
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.tilEmail.error = "Enter your email first"
+            return
+        }
+        showLoading(true)
+        auth.sendPasswordResetEmail(email)
+            .addOnSuccessListener {
+                if (!isFinishing) {
+                    showLoading(false)
+                    showToast("Reset link sent to $email")
+                }
+            }
+            .addOnFailureListener { e ->
+                if (!isFinishing) {
+                    showLoading(false)
+                    showToast(e.message ?: "Failed to send reset email")
+                }
+            }
     }
 }

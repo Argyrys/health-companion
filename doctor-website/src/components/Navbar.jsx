@@ -23,7 +23,7 @@ export default function Navbar({ doctorName, doctorNum, onLogout }) {
                 <Activity className="w-5 h-5 text-white" />
               </div>
               <div className="hidden sm:block">
-                <span className="text-base font-bold text-slate-800 tracking-tight">AI Health Companion</span>
+                <span className="text-base font-bold text-slate-800 tracking-tight">Health Companion</span>
               </div>
             </Link>
 

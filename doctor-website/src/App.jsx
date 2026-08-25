@@ -90,7 +90,7 @@ function App() {
             </main>
             <footer className="border-t border-slate-200 bg-white px-6 py-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-                <p className="text-xs text-slate-400">AI Health Companion &middot; Smart India Hackathon 2026</p>
+                <p className="text-xs text-slate-400">Health Companion &middot; Smart India Hackathon 2026</p>
                 <p className="text-xs text-slate-300">Healthcare that listens.</p>
               </div>
             </footer>
