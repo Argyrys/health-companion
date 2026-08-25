@@ -16,6 +16,7 @@ import com.example.patientapp.utils.SessionManager
 import com.example.patientapp.utils.showToast
 import com.example.patientapp.utils.LocalAuthManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -90,6 +91,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnLogout.setOnClickListener {
+            FirebaseAuth.getInstance().signOut()
             localAuthManager.logout()
             sessionManager.clear()
             showGuestView()

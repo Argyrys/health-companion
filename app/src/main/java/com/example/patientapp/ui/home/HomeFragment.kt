@@ -51,7 +51,6 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Set dynamic greeting
         setGreeting()
 
         val adapter = FeatureAdapter(features) { feature ->
@@ -68,7 +67,13 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_home_to_doctors)
         }
 
-        loadPatientData()
+        val uid = sessionManager.getUid()
+        if (uid.isNullOrEmpty()) {
+            binding.btnSignIn.visibility = View.VISIBLE
+        } else {
+            binding.btnSignIn.visibility = View.GONE
+            loadPatientData()
+        }
     }
 
     private fun setGreeting() {
