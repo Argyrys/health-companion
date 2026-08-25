@@ -7,11 +7,19 @@ import com.example.patientapp.data.model.Doctor
 import com.example.patientapp.databinding.ItemDoctorBinding
 
 class DoctorAdapter(
-    private val allDoctors: List<Doctor>,
+    initialDoctors: List<Doctor>,
     private val onClick: (Doctor) -> Unit
 ) : RecyclerView.Adapter<DoctorAdapter.DoctorViewHolder>() {
 
+    private val allDoctors = initialDoctors.toMutableList()
     private var filteredDoctors = allDoctors.toMutableList()
+
+    fun updateDoctors(newDoctors: List<Doctor>) {
+        allDoctors.clear()
+        allDoctors.addAll(newDoctors)
+        filteredDoctors = allDoctors.toMutableList()
+        notifyDataSetChanged()
+    }
 
     inner class DoctorViewHolder(private val binding: ItemDoctorBinding) :
         RecyclerView.ViewHolder(binding.root) {

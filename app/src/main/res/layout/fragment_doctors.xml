@@ -36,6 +36,14 @@
 
     </com.google.android.material.card.MaterialCardView>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="48dp" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDoctors"
         android:layout_width="match_parent"

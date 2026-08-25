@@ -6,7 +6,9 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import com.example.patientapp.R
+import com.example.patientapp.ui.auth.LoginActivity
 import com.example.patientapp.ui.main.MainActivity
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -17,7 +19,13 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            startActivity(Intent(this, MainActivity::class.java))
+            val isLoggedIn = FirebaseAuth.getInstance().currentUser != null
+            val intent = if (isLoggedIn) {
+                Intent(this, MainActivity::class.java)
+            } else {
+                Intent(this, LoginActivity::class.java)
+            }
+            startActivity(intent)
             finish()
         }, 2000)
     }

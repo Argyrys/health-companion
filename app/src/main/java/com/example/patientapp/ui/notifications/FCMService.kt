@@ -25,7 +25,12 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        // Upload token to Firestore for this patient
+        val uid = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser?.uid
+        if (uid != null) {
+            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                .collection("patients").document(uid)
+                .update("fcmToken", token)
+        }
     }
 
     private fun showNotification(title: String, body: String, data: Map<String, String>) {

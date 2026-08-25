@@ -33,6 +33,13 @@ service cloud.firestore {
       }
     }
 
+    // Appointments collection — patients create, doctors read/update
+    match /appointments/{appointmentId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null;
+    }
+
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;

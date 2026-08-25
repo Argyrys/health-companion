@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Users, FileText, AlertTriangle, Activity, Database, TrendingUp, Clock, Stethoscope, ClipboardList, ChevronRight, User, Droplets, BarChart3 } from 'lucide-react';
+import { Users, FileText, AlertTriangle, Activity, Database, TrendingUp, Clock, Stethoscope, ClipboardList, ChevronRight, User, Droplets, BarChart3, Calendar, CheckCircle, XCircle, Hourglass } from 'lucide-react';
 import { getAllPatients, deleteAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
 import DashboardSkeleton from '../components/Skeleton';
+import { collection, getDocs, updateDoc, doc, query, orderBy } from 'firebase/firestore';
+import { db } from '../services/firebase';
 
 const getGreeting = () => {
   const hour = new Date().getHours();
@@ -23,6 +25,7 @@ export default function Dashboard({ doctorId }) {
   const [seeding, setSeeding] = useState(false);
   const [seeded, setSeeded] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [appointments, setAppointments] = useState([]);
 
   useEffect(() => {
     if (!doctorId) {
@@ -43,6 +46,33 @@ export default function Dashboard({ doctorId }) {
     const timer = setInterval(run, 30000);
     return () => { cancelled = true; clearInterval(timer); };
   }, [doctorId]);
+
+  useEffect(() => {
+    if (!doctorId) return;
+    let cancelled = false;
+    const fetchAppointments = async () => {
+      try {
+        const snap = await getDocs(query(collection(db, 'appointments'), orderBy('createdAt', 'desc')));
+        if (!cancelled) {
+          setAppointments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+        }
+      } catch (err) {
+        console.error('Error fetching appointments:', err);
+      }
+    };
+    fetchAppointments();
+    const timer = setInterval(fetchAppointments, 15000);
+    return () => { cancelled = true; clearInterval(timer); };
+  }, [doctorId]);
+
+  const handleAppointmentStatus = async (appointmentId, status) => {
+    try {
+      await updateDoc(doc(db, 'appointments', appointmentId), { status });
+      setAppointments(prev => prev.map(a => a.id === appointmentId ? { ...a, status } : a));
+    } catch (err) {
+      console.error('Error updating appointment:', err);
+    }
+  };
 
   const handleSeed = async () => {
     setSeeding(true);
@@ -431,6 +461,70 @@ export default function Dashboard({ doctorId }) {
             </div>
           );
         })()}
+      </div>
+
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-fadeIn" style={{ animationDelay: '0.6s' }}>
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Calendar className="w-4 h-4 text-blue-500" />
+            <h3 className="text-base font-semibold text-slate-800">Appointment Requests</h3>
+          </div>
+          <span className="text-xs text-slate-400 font-medium">{appointments.filter(a => a.status === 'Pending').length} pending</span>
+        </div>
+        <div className="divide-y divide-slate-50">
+          {appointments.length === 0 && (
+            <div className="px-5 py-10 text-center">
+              <div className="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+                <Calendar className="w-6 h-6 text-slate-300" />
+              </div>
+              <p className="text-slate-500 font-medium text-sm">No appointment requests yet</p>
+              <p className="text-slate-400 text-xs mt-0.5">Requests from the patient app will appear here.</p>
+            </div>
+          )}
+          {appointments.map((apt) => (
+            <div key={apt.id} className="px-5 py-4 hover:bg-slate-50/80 transition-all">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-medium text-sm text-slate-800">{apt.patientName || apt.patientId}</span>
+                    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                      apt.status === 'Pending' ? 'bg-amber-50 text-amber-600 border border-amber-200' :
+                      apt.status === 'Accepted' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
+                      'bg-red-50 text-red-600 border border-red-200'
+                    }`}>
+                      {apt.status === 'Pending' && <Hourglass className="w-3 h-3" />}
+                      {apt.status === 'Accepted' && <CheckCircle className="w-3 h-3" />}
+                      {apt.status === 'Rejected' && <XCircle className="w-3 h-3" />}
+                      {apt.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-500 mt-0.5">{apt.message}</p>
+                  {apt.createdAt && (
+                    <p className="text-xs text-slate-400 mt-1">
+                      {apt.createdAt.seconds ? new Date(apt.createdAt.seconds * 1000).toLocaleString() : 'Just now'}
+                    </p>
+                  )}
+                </div>
+                {apt.status === 'Pending' && (
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <button
+                      onClick={() => handleAppointmentStatus(apt.id, 'Accepted')}
+                      className="px-3 py-1.5 bg-emerald-500 text-white text-xs font-medium rounded-lg hover:bg-emerald-600 transition-all"
+                    >
+                      Accept
+                    </button>
+                    <button
+                      onClick={() => handleAppointmentStatus(apt.id, 'Rejected')}
+                      className="px-3 py-1.5 bg-white text-red-600 border border-red-200 text-xs font-medium rounded-lg hover:bg-red-50 transition-all"
+                    >
+                      Reject
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

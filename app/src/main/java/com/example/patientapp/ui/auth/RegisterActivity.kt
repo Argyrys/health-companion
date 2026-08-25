@@ -4,12 +4,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.patientapp.databinding.ActivityRegisterBinding
 import com.example.patientapp.ui.main.MainActivity
-import com.example.patientapp.utils.LocalAuthManager
 import com.example.patientapp.utils.SessionManager
 import com.example.patientapp.utils.showToast
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -18,7 +22,8 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRegisterBinding
 
     @Inject lateinit var sessionManager: SessionManager
-    @Inject lateinit var localAuthManager: LocalAuthManager
+    @Inject lateinit var auth: FirebaseAuth
+    @Inject lateinit var firestore: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +41,6 @@ class RegisterActivity : AppCompatActivity() {
         val password = binding.etPassword.text.toString().trim()
         val confirmPassword = binding.etConfirmPassword.text.toString().trim()
 
-        // Clear previous errors
         binding.tilName.error = null
         binding.tilEmail.error = null
         binding.tilPassword.error = null
@@ -69,23 +73,44 @@ class RegisterActivity : AppCompatActivity() {
 
         showLoading(true)
 
-        val result = localAuthManager.createAccount(name, email, password)
-        showLoading(false)
+        lifecycleScope.launch {
+            try {
+                val result = auth.createUserWithEmailAndPassword(email, password).await()
+                val uid = result.user?.uid
+                if (uid != null) {
+                    // Create patient profile in Firestore (app subcollection format)
+                    val patientProfile = hashMapOf(
+                        "fullName" to name,
+                        "email" to email,
+                        "phoneNumber" to "",
+                        "dateOfBirth" to "",
+                        "gender" to "",
+                        "bloodGroup" to "",
+                        "height" to "",
+                        "weight" to "",
+                        "createdAt" to com.google.firebase.Timestamp.now()
+                    )
+                    firestore.collection("patients").document(uid)
+                        .collection("data").document("profile")
+                        .set(patientProfile).await()
 
-        result.fold(
-            onSuccess = { uid ->
-                sessionManager.saveUid(uid)
-                sessionManager.saveEmail(email)
-                showToast("Account created successfully")
-                startActivity(Intent(this, MainActivity::class.java).apply {
-                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                })
-                finish()
-            },
-            onFailure = { e ->
+                    sessionManager.saveUid(uid)
+                    sessionManager.saveEmail(email)
+                    showToast("Account created successfully")
+                    startActivity(Intent(this@RegisterActivity, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    })
+                    finish()
+                } else {
+                    showToast("Registration failed — no user returned")
+                }
+            } catch (e: Exception) {
                 showToast(e.message ?: "Registration failed")
+            } finally {
+                if (isFinishing) return@launch
+                showLoading(false)
             }
-        )
+        }
     }
 
     private fun showLoading(show: Boolean) {
