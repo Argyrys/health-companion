@@ -19,7 +19,7 @@ export default function Navbar({ doctorName, doctorNum, onLogout }) {
         <div className="flex justify-between h-14 sm:h-16">
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-md shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-shadow">
+              <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:shadow-blue-500/40 transition-shadow">
                 <Activity className="w-5 h-5 text-white" />
               </div>
               <div className="hidden sm:block">
@@ -34,7 +34,7 @@ export default function Navbar({ doctorName, doctorNum, onLogout }) {
                   to={path}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                     isActive(path)
-                      ? 'bg-white text-emerald-700 shadow-sm'
+                      ? 'bg-white text-blue-700 shadow-sm'
                       : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
                   }`}
                 >
@@ -47,7 +47,7 @@ export default function Navbar({ doctorName, doctorNum, onLogout }) {
 
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden sm:flex items-center gap-2.5 pl-3 border-l border-slate-200">
-              <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-sm">
+              <div className="w-9 h-9 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center shadow-sm">
                 <span className="text-white font-semibold text-sm">
                   {doctorName.charAt(0)}
                 </span>
@@ -88,7 +88,7 @@ export default function Navbar({ doctorName, doctorNum, onLogout }) {
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 ${
                     isActive(path)
-                      ? 'bg-emerald-50 text-emerald-700 shadow-sm'
+                      ? 'bg-blue-50 text-blue-700 shadow-sm'
                       : 'text-slate-600 hover:bg-slate-50'
                   }`}
                 >
@@ -97,7 +97,7 @@ export default function Navbar({ doctorName, doctorNum, onLogout }) {
                 </Link>
               ))}
               <div className="flex items-center gap-3 px-4 py-3 border-t border-slate-100 mt-2 pt-3">
-                <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-sm">
+                <div className="w-9 h-9 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center shadow-sm">
                   <span className="text-white font-semibold text-sm">{doctorName.charAt(0)}</span>
                 </div>
                 <div className="flex-1">

@@ -34,11 +34,11 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 flex items-center justify-center px-4 py-8 sm:p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center px-4 py-8 sm:p-4 relative overflow-hidden">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-emerald-300 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-teal-200 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-200 rounded-full blur-3xl" />
       </div>
 
       <div className="w-full max-w-sm sm:max-w-md relative z-10">
@@ -48,14 +48,14 @@ export default function Login({ onLogin }) {
           </div>
           <div className="text-left">
             <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">AI Health Companion</h1>
-            <p className="text-emerald-100 text-xs sm:text-sm font-medium">Healthcare that listens.</p>
+            <p className="text-blue-100 text-xs sm:text-sm font-medium">Healthcare that listens.</p>
           </div>
         </div>
 
         <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 sm:p-8 border border-white/50 animate-slideIn">
           <div className="flex items-center gap-3 mb-5 sm:mb-6">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-emerald-100 rounded-xl flex items-center justify-center">
-              <Stethoscope className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-emerald-600" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+              <Stethoscope className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-blue-600" />
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-semibold text-slate-800">Doctor Portal</h2>
@@ -71,7 +71,7 @@ export default function Login({ onLogin }) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="doctor@hospital.com"
-                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200"
+                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200"
               />
             </div>
 
@@ -83,7 +83,7 @@ export default function Login({ onLogin }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
-                  className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200 pr-12"
+                  className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200 pr-12"
                 />
                 <button
                   type="button"
@@ -105,7 +105,7 @@ export default function Login({ onLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-emerald-600 text-white py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base hover:bg-emerald-700 focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40"
+              className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">

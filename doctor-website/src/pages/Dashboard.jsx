@@ -74,7 +74,7 @@ export default function Dashboard({ doctorId }) {
 
   const stats = [
     { label: 'Total Patients', value: totalPatients, icon: Users, gradient: 'from-slate-500 to-slate-600', bg: 'bg-slate-100', text: 'text-slate-600', link: '/patients' },
-    { label: "Today's Visits", value: todayPatients, icon: FileText, gradient: 'from-emerald-500 to-emerald-600', bg: 'bg-emerald-50', text: 'text-emerald-600', link: '/patients' },
+    { label: "Today's Visits", value: todayPatients, icon: FileText, gradient: 'from-blue-500 to-blue-600', bg: 'bg-blue-50', text: 'text-blue-600', link: '/patients' },
     { label: 'High Risk', value: highRisk, icon: AlertTriangle, gradient: 'from-red-500 to-red-600', bg: 'bg-red-50', text: 'text-red-600', link: '/patients' },
     { label: 'Pending', value: pendingReports, icon: Activity, gradient: 'from-amber-500 to-amber-600', bg: 'bg-amber-50', text: 'text-amber-600', link: '/patients' },
   ];
@@ -94,7 +94,7 @@ export default function Dashboard({ doctorId }) {
           <p className="text-slate-400 text-xs mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-medium hover:bg-emerald-700 transition-all duration-200"
+            className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition-all duration-200"
           >
             Try Again
           </button>
@@ -119,7 +119,7 @@ export default function Dashboard({ doctorId }) {
             <button
               onClick={handleSeed}
               disabled={seeding}
-              className="flex items-center gap-1.5 px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs font-medium hover:bg-emerald-700 disabled:opacity-50 shadow-md shadow-emerald-600/20 transition-all duration-200"
+              className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-600/20 transition-all duration-200"
             >
               <Database className="w-3.5 h-3.5" />
               {seeding ? 'Seeding...' : 'Seed Data'}
@@ -164,7 +164,7 @@ export default function Dashboard({ doctorId }) {
           <div className="px-4 sm:px-5 py-3 border-b border-slate-100 flex items-center justify-between">
             <h2 className="text-sm sm:text-base font-semibold text-slate-800">Recent Patients</h2>
             {patients.length > 0 && (
-              <Link to="/patients" className="text-xs sm:text-sm text-emerald-600 font-medium hover:text-emerald-700 flex items-center gap-1 transition-colors">
+              <Link to="/patients" className="text-xs sm:text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center gap-1 transition-colors">
                 View all <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             )}
@@ -179,13 +179,13 @@ export default function Dashboard({ doctorId }) {
                   className="flex items-center justify-between px-4 sm:px-5 py-3 hover:bg-slate-50/80 transition-all duration-200 group cursor-pointer"
                 >
                   <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow flex-shrink-0">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow flex-shrink-0">
                       <span className="text-white font-semibold text-xs sm:text-sm">
                         {patient.name?.charAt(0)}
                       </span>
                     </div>
                     <div className="min-w-0">
-                      <h3 className="font-medium text-sm sm:text-base text-slate-800 group-hover:text-emerald-700 transition-colors truncate">{patient.name}</h3>
+                      <h3 className="font-medium text-sm sm:text-base text-slate-800 group-hover:text-blue-700 transition-colors truncate">{patient.name}</h3>
                       <p className="text-[11px] sm:text-xs text-slate-400 truncate">{patient.age}y, {patient.gender} &middot; {consultation?.chiefComplaint}</p>
                     </div>
                   </div>
@@ -196,12 +196,12 @@ export default function Dashboard({ doctorId }) {
                           ? 'bg-red-50 text-red-600'
                           : consultation.eyeScreening.riskLevel === 'Medium'
                           ? 'bg-amber-50 text-amber-600'
-                          : 'bg-green-50 text-green-600'
+                          : 'bg-blue-50 text-blue-600'
                       }`}>
                         {consultation.eyeScreening.riskLevel}
                       </span>
                     )}
-                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-emerald-500 transition-colors" />
+                    <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 transition-colors" />
                   </div>
                 </Link>
               );
@@ -216,7 +216,7 @@ export default function Dashboard({ doctorId }) {
                 <button
                   onClick={handleSeed}
                   disabled={seeding}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-medium hover:bg-emerald-700 disabled:opacity-50 shadow-md shadow-emerald-600/20 transition-all duration-200"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-600/20 transition-all duration-200"
                 >
                   {seeding ? 'Seeding...' : seeded ? 'Seeded!' : 'Seed Sample Data'}
                 </button>
@@ -228,13 +228,13 @@ export default function Dashboard({ doctorId }) {
         <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 animate-fadeIn" style={{ animationDelay: '0.25s' }}>
           <h3 className="text-sm sm:text-base font-semibold text-slate-800 mb-3">Quick Actions</h3>
           <div className="space-y-2">
-            <Link to="/patients" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-all duration-200 group">
-              <div className="w-8 h-8 bg-emerald-100 group-hover:bg-emerald-200 rounded-lg flex items-center justify-center transition-colors">
+            <Link to="/patients" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-200 group">
+              <div className="w-8 h-8 bg-blue-100 group-hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors">
                 <Stethoscope className="w-4 h-4" />
               </div>
               <div>
                 <p className="text-xs sm:text-sm font-semibold">View Patients</p>
-                <p className="text-[11px] text-emerald-600/70">{totalPatients} total</p>
+                <p className="text-[11px] text-blue-600/70">{totalPatients} total</p>
               </div>
             </Link>
             <Link to="/patients" className="flex items-center gap-2.5 p-2.5 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 transition-all duration-200 group">
@@ -262,7 +262,7 @@ export default function Dashboard({ doctorId }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4">
         <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm p-4 sm:p-5 animate-fadeIn" style={{ animationDelay: '0.3s' }}>
           <div className="flex items-center gap-2 mb-4">
-            <TrendingUp className="w-4 h-4 text-emerald-500" />
+            <TrendingUp className="w-4 h-4 text-blue-500" />
             <h3 className="text-sm sm:text-base font-semibold text-slate-800">Common Symptoms</h3>
           </div>
           <div className="space-y-3">
@@ -284,7 +284,7 @@ export default function Dashboard({ doctorId }) {
                 );
               }
               const maxCount = sorted[0]?.[1] || 1;
-              const colors = ['bg-emerald-500', 'bg-emerald-400', 'bg-teal-500', 'bg-teal-400', 'bg-emerald-300'];
+              const colors = ['bg-blue-500', 'bg-blue-400', 'bg-blue-300', 'bg-blue-200', 'bg-blue-100'];
               return sorted.map(([symptom, count], i) => (
                 <div key={symptom}>
                   <div className="flex justify-between text-xs sm:text-sm mb-1">
@@ -312,7 +312,7 @@ export default function Dashboard({ doctorId }) {
             {[
               { label: 'High Risk', count: highRisk, color: 'bg-red-500', dot: 'bg-red-100' },
               { label: 'Medium Risk', count: patients.filter(p => p.consultations?.[0]?.eyeScreening?.riskLevel === 'Medium').length, color: 'bg-amber-500', dot: 'bg-amber-100' },
-              { label: 'Low Risk', count: patients.filter(p => p.consultations?.[0]?.eyeScreening?.riskLevel === 'Low').length, color: 'bg-green-500', dot: 'bg-green-100' },
+              { label: 'Low Risk', count: patients.filter(p => p.consultations?.[0]?.eyeScreening?.riskLevel === 'Low').length, color: 'bg-blue-500', dot: 'bg-blue-100' },
               { label: 'Not Screened', count: patients.filter(p => !p.consultations?.[0]?.eyeScreening).length, color: 'bg-slate-300', dot: 'bg-slate-100' },
             ].map(({ label, count, color, dot }) => (
               <div key={label} className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-slate-50 transition-colors">

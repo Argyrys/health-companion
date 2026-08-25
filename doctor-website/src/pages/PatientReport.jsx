@@ -8,12 +8,12 @@ import { getPatient, updateDiagnosis } from '../services/patients';
 import { PatientReportSkeleton } from '../components/Skeleton';
 
 const sectionColorMap = {
-  emerald: { light: 'bg-emerald-50', icon: 'text-emerald-600', border: 'border-emerald-100' },
-  teal: { light: 'bg-teal-50', icon: 'text-teal-600', border: 'border-teal-100' },
+  emerald: { light: 'bg-blue-50', icon: 'text-blue-600', border: 'border-blue-100' },
+  teal: { light: 'bg-blue-50', icon: 'text-blue-600', border: 'border-blue-100' },
   slate: { light: 'bg-slate-50', icon: 'text-slate-600', border: 'border-slate-200' },
   red: { light: 'bg-red-50', icon: 'text-red-600', border: 'border-red-100' },
-  cyan: { light: 'bg-cyan-50', icon: 'text-cyan-600', border: 'border-cyan-100' },
-  green: { light: 'bg-emerald-50', icon: 'text-emerald-600', border: 'border-emerald-100' },
+  cyan: { light: 'bg-blue-50', icon: 'text-blue-600', border: 'border-blue-100' },
+  green: { light: 'bg-blue-50', icon: 'text-blue-600', border: 'border-blue-100' },
 };
 
 const Section = ({ sectionId, title, icon: Icon, children, color = 'emerald', expandedSections, toggleSection }) => {
@@ -25,8 +25,8 @@ const Section = ({ sectionId, title, icon: Icon, children, color = 'emerald', ex
         className="w-full flex items-center justify-between px-4 sm:px-5 py-3 sm:py-4 hover:bg-slate-50/80 transition-all duration-200 group"
       >
         <div className="flex items-center gap-2.5 sm:gap-3">
-          <div className={`w-8 h-8 sm:w-9 sm:h-9 ${sectionColorMap[color]?.light || 'bg-emerald-50'} rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
-            <Icon className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${sectionColorMap[color]?.icon || 'text-emerald-600'}`} />
+          <div className={`w-8 h-8 sm:w-9 sm:h-9 ${sectionColorMap[color]?.light || 'bg-blue-50'} rounded-lg sm:rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform`}>
+            <Icon className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${sectionColorMap[color]?.icon || 'text-blue-600'}`} />
           </div>
           <h3 className="font-semibold text-sm sm:text-base text-slate-800">{title}</h3>
         </div>
@@ -115,7 +115,7 @@ export default function PatientReport() {
           <FileText className="w-7 h-7 text-slate-300" />
         </div>
         <p className="text-slate-500 font-medium text-base">Patient not found</p>
-        <Link to="/patients" className="text-emerald-600 text-sm mt-2 inline-block hover:underline font-medium">
+        <Link to="/patients" className="text-blue-600 text-sm mt-2 inline-block hover:underline font-medium">
           Back to patients
         </Link>
       </div>
@@ -145,17 +145,17 @@ export default function PatientReport() {
           Print
         </button>
         <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold flex-shrink-0 ${
-          hasDiagnosis ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+          hasDiagnosis ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
         }`}>
           {hasDiagnosis ? 'Diagnosed' : 'Pending'}
         </span>
       </div>
 
       <div className="bg-white rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm overflow-hidden animate-fadeIn" style={{ animationDelay: '0.05s' }}>
-        <div className="h-1 sm:h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+        <div className="h-1 sm:h-1.5 bg-gradient-to-r from-blue-500 via-blue-500 to-blue-600" />
         <div className="p-4 sm:p-5">
           <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/20">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-400 to-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
               <span className="text-white font-bold text-base sm:text-lg lg:text-xl">{patient.name?.charAt(0)}</span>
             </div>
             <div className="flex-1 min-w-0">
@@ -212,7 +212,7 @@ export default function PatientReport() {
               </div>
             </div>
             {consultation.voiceRecording && (
-              <div className="flex items-center gap-2.5 px-3 py-2.5 bg-emerald-50 text-emerald-700 rounded-xl font-medium text-xs w-fit">
+              <div className="flex items-center gap-2.5 px-3 py-2.5 bg-blue-50 text-blue-700 rounded-xl font-medium text-xs w-fit">
                 <Mic className="w-3.5 h-3.5" />
                 Voice recording available
               </div>
@@ -227,8 +227,8 @@ export default function PatientReport() {
               {(consultation.medicalHistory || []).length > 0 ? (
                 <ul className="space-y-1.5">
                   {consultation.medicalHistory.map((h, i) => (
-                    <li key={i} className="text-xs sm:text-sm text-slate-600 flex items-center gap-2 p-2 bg-teal-50/50 rounded-lg">
-                      <span className="w-1.5 h-1.5 bg-teal-400 rounded-full flex-shrink-0" />
+                    <li key={i} className="text-xs sm:text-sm text-slate-600 flex items-center gap-2 p-2 bg-blue-50/50 rounded-lg">
+                      <span className="w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0" />
                       {h}
                     </li>
                   ))}
@@ -308,10 +308,10 @@ export default function PatientReport() {
             {consultation.eyeScreening ? (
               <div className="space-y-3">
                 <div className="flex flex-col sm:flex-row items-start gap-3">
-                  <div className="w-20 h-20 sm:w-28 sm:h-28 bg-cyan-50 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 border-dashed border-cyan-300 flex-shrink-0">
+                  <div className="w-20 h-20 sm:w-28 sm:h-28 bg-blue-50 rounded-xl sm:rounded-2xl flex items-center justify-center border-2 border-dashed border-blue-300 flex-shrink-0">
                     <div className="text-center">
-                      <Camera className="w-6 h-6 sm:w-7 sm:h-7 text-cyan-400 mx-auto" />
-                      <p className="text-[10px] text-cyan-400 mt-1 font-medium">Eye Photo</p>
+                      <Camera className="w-6 h-6 sm:w-7 sm:h-7 text-blue-400 mx-auto" />
+                      <p className="text-[10px] text-blue-400 mt-1 font-medium">Eye Photo</p>
                     </div>
                   </div>
                   <div className="flex-1">
@@ -329,7 +329,7 @@ export default function PatientReport() {
                       <ul className="space-y-1">
                         {(consultation.eyeScreening.findings || []).map((f, i) => (
                           <li key={i} className="text-xs sm:text-sm text-slate-600 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full flex-shrink-0" />
+                            <span className="w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0" />
                             {f}
                           </li>
                         ))}
@@ -337,7 +337,7 @@ export default function PatientReport() {
                     </div>
                   </div>
                 </div>
-                <div className="p-3 bg-cyan-50/50 rounded-xl border border-cyan-100/50">
+                <div className="p-3 bg-blue-50/50 rounded-xl border border-blue-100/50">
                   <p className="text-[10px] sm:text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Recommendation</p>
                   <p className="text-xs sm:text-sm text-slate-600">{consultation.eyeScreening.recommendation}</p>
                 </div>
@@ -353,15 +353,15 @@ export default function PatientReport() {
             {consultation.mentalHealth ? (
               <div className="space-y-3">
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="p-3 bg-emerald-50/50 rounded-xl text-center border border-emerald-100/50">
-                    <p className="text-lg sm:text-xl font-bold text-emerald-600">{consultation.mentalHealth.mood}/10</p>
+                  <div className="p-3 bg-blue-50/50 rounded-xl text-center border border-blue-100/50">
+                    <p className="text-lg sm:text-xl font-bold text-blue-600">{consultation.mentalHealth.mood}/10</p>
                     <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 font-medium">Mood</p>
                   </div>
-                  <div className="p-3 bg-emerald-50/50 rounded-xl text-center border border-emerald-100/50">
-                    <p className="text-lg sm:text-xl font-bold text-emerald-600">{consultation.mentalHealth.sleepHours}h</p>
+                  <div className="p-3 bg-blue-50/50 rounded-xl text-center border border-blue-100/50">
+                    <p className="text-lg sm:text-xl font-bold text-blue-600">{consultation.mentalHealth.sleepHours}h</p>
                     <p className="text-[10px] sm:text-xs text-slate-400 mt-0.5 font-medium">Sleep</p>
                   </div>
-                  <div className="p-3 bg-emerald-50/50 rounded-xl text-center border border-emerald-100/50">
+                  <div className="p-3 bg-blue-50/50 rounded-xl text-center border border-blue-100/50">
                     <p className={`text-sm sm:text-base font-bold ${
                       consultation.mentalHealth.stressLevel === 'High' ? 'text-red-600' :
                       consultation.mentalHealth.stressLevel === 'Moderate' ? 'text-amber-600' :
@@ -397,7 +397,7 @@ export default function PatientReport() {
                 onChange={(e) => setDiagnosis(e.target.value)}
                 placeholder="Enter your diagnosis here..."
                 rows={3}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200 resize-none leading-relaxed"
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200 resize-none leading-relaxed"
               />
             </div>
             <div>
@@ -407,20 +407,20 @@ export default function PatientReport() {
                 onChange={(e) => setPrescription(e.target.value)}
                 placeholder="Enter prescription here..."
                 rows={4}
-                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:bg-white transition-all duration-200 resize-none leading-relaxed"
+                className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200 resize-none leading-relaxed"
               />
             </div>
             <div className="flex items-center gap-2.5 print:hidden">
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-1.5 px-4 py-2 bg-emerald-600 text-white rounded-xl font-medium text-sm hover:bg-emerald-700 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/30"
+                className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-md shadow-blue-600/20 hover:shadow-blue-600/30"
               >
                 <Save className="w-3.5 h-3.5" />
                 {saving ? 'Saving...' : 'Save'}
               </button>
               {saved && (
-                <span className="flex items-center gap-1 text-xs sm:text-sm text-emerald-600 font-medium animate-fadeIn">
+                <span className="flex items-center gap-1 text-xs sm:text-sm text-blue-600 font-medium animate-fadeIn">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Saved!
                 </span>

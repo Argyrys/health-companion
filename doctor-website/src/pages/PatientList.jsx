@@ -52,7 +52,7 @@ export default function PatientList({ doctorId }) {
           <p className="text-slate-400 text-xs mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-emerald-600 text-white rounded-xl text-xs font-medium hover:bg-emerald-700 transition-all duration-200"
+            className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition-all duration-200"
           >
             Try Again
           </button>
@@ -68,7 +68,7 @@ export default function PatientList({ doctorId }) {
         <p className="text-slate-400 text-xs sm:text-sm mt-0.5">
           {filtered.length} patient{filtered.length !== 1 ? 's' : ''} found
           {activeFilters > 0 && (
-            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-[10px] font-medium">
+            <span className="ml-2 inline-flex items-center px-1.5 py-0.5 bg-blue-100 text-blue-700 rounded-full text-[10px] font-medium">
               {activeFilters} filter{activeFilters !== 1 ? 's' : ''}
             </span>
           )}
@@ -85,7 +85,7 @@ export default function PatientList({ doctorId }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search patients..."
-            className="w-full sm:w-56 px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all duration-200 shadow-sm"
+            className="w-full sm:w-56 px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm"
           />
           {search && (
             <button
@@ -103,7 +103,7 @@ export default function PatientList({ doctorId }) {
           <select
             value={filterRisk}
             onChange={(e) => setFilterRisk(e.target.value)}
-            className="appearance-none px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-sm cursor-pointer"
+            className="appearance-none px-3 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm cursor-pointer"
           >
             <option value="all">All Risk</option>
             <option value="high">High Risk</option>
@@ -134,14 +134,14 @@ export default function PatientList({ doctorId }) {
                 <div className="flex-1 p-3 sm:p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
                         <span className="text-white font-semibold text-xs sm:text-sm">
                           {patient.name?.charAt(0)}
                         </span>
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <h3 className="font-semibold text-sm sm:text-base text-slate-800 group-hover:text-emerald-700 transition-colors truncate">{patient.name}</h3>
+                          <h3 className="font-semibold text-sm sm:text-base text-slate-800 group-hover:text-blue-700 transition-colors truncate">{patient.name}</h3>
                           {!hasDiagnosis && (
                             <span className="px-1 py-0.5 bg-amber-100 text-amber-600 rounded text-xs font-semibold uppercase tracking-wide flex-shrink-0">Pending</span>
                           )}
@@ -168,7 +168,7 @@ export default function PatientList({ doctorId }) {
                       ) : (
                         <span className="text-[10px] text-slate-300">N/A</span>
                       )}
-                      <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all" />
+                      <ChevronRight className="w-4 h-4 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all" />
                     </div>
                   </div>
                   <div className="flex items-center gap-1 mt-2 text-[10px] text-slate-300 sm:hidden">
