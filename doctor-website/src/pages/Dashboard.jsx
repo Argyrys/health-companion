@@ -4,7 +4,7 @@ import { Users, FileText, AlertTriangle, Activity, Database, TrendingUp, Clock, 
 import { getAllPatients, deleteAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
 import DashboardSkeleton from '../components/Skeleton';
-import { collection, getDocs, updateDoc, doc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, updateDoc, doc, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../services/firebase';
 
 const getGreeting = () => {
@@ -52,7 +52,7 @@ export default function Dashboard({ doctorId }) {
     let cancelled = false;
     const fetchAppointments = async () => {
       try {
-        const snap = await getDocs(query(collection(db, 'appointments'), orderBy('createdAt', 'desc')));
+        const snap = await getDocs(query(collection(db, 'appointments'), where('doctorId', '==', doctorId), orderBy('createdAt', 'desc')));
         if (!cancelled) {
           setAppointments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         }

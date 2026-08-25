@@ -69,36 +69,76 @@ class DoctorDetailFragment : Fragment() {
         val patientId = sessionManager.getUid() ?: ""
         val patientEmail = sessionManager.getEmail() ?: ""
 
-        val request = AppointmentRequest(
-            patientId = patientId,
-            patientName = patientEmail,
-            doctorId = doctorId,
-            doctorName = doctorName,
-            message = message,
-            status = "Pending",
-            createdAt = Timestamp.now()
-        )
+        // Fetch patient's real name from Firestore profile
+        firestore.collection("patients").document(patientId)
+            .collection("data").document("profile")
+            .get()
+            .addOnSuccessListener { profileDoc ->
+                val patientName = profileDoc.getString("fullName")?.ifEmpty { null }
+                    ?: patientEmail.substringBefore("@").replaceFirstChar { it.uppercase() }
 
-        firestore.collection("appointments")
-            .add(request)
-            .addOnSuccessListener { docRef ->
-                if (!isAdded) return@addOnSuccessListener
-                binding.progressBar.visibility = View.GONE
-                binding.btnSendRequest.isEnabled = true
-                requireContext().showToast("Appointment request sent to $doctorName")
-                binding.etMessage.text?.clear()
+                val request = AppointmentRequest(
+                    patientId = patientId,
+                    patientName = patientName,
+                    doctorId = doctorId,
+                    doctorName = doctorName,
+                    message = message,
+                    status = "Pending",
+                    createdAt = Timestamp.now()
+                )
 
-                // Also link patient to doctor in patients collection
-                if (patientId.isNotEmpty()) {
-                    firestore.collection("patients").document(patientId)
-                        .update("doctorId", doctorId, "doctorName", doctorName)
-                }
+                firestore.collection("appointments")
+                    .add(request)
+                    .addOnSuccessListener {
+                        if (!isAdded) return@addOnSuccessListener
+                        binding.progressBar.visibility = View.GONE
+                        binding.btnSendRequest.isEnabled = true
+                        requireContext().showToast("Appointment request sent to $doctorName")
+                        binding.etMessage.text?.clear()
+
+                        // Link patient to doctor (set with merge so it doesn't fail if doc doesn't exist)
+                        if (patientId.isNotEmpty()) {
+                            firestore.collection("patients").document(patientId)
+                                .set(
+                                    hashMapOf("doctorId" to doctorId, "doctorName" to doctorName),
+                                    com.google.firebase.firestore.SetOptions.merge()
+                                )
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        if (!isAdded) return@addOnFailureListener
+                        binding.progressBar.visibility = View.GONE
+                        binding.btnSendRequest.isEnabled = true
+                        requireContext().showToast("Failed to send request: ${e.message}")
+                    }
             }
-            .addOnFailureListener { e ->
-                if (!isAdded) return@addOnFailureListener
-                binding.progressBar.visibility = View.GONE
-                binding.btnSendRequest.isEnabled = true
-                requireContext().showToast("Failed to send request: ${e.message}")
+            .addOnFailureListener {
+                // Fallback: use email-based name if profile fetch fails
+                val fallbackName = patientEmail.substringBefore("@").replaceFirstChar { it.uppercase() }
+                val request = AppointmentRequest(
+                    patientId = patientId,
+                    patientName = fallbackName,
+                    doctorId = doctorId,
+                    doctorName = doctorName,
+                    message = message,
+                    status = "Pending",
+                    createdAt = Timestamp.now()
+                )
+                firestore.collection("appointments")
+                    .add(request)
+                    .addOnSuccessListener {
+                        if (!isAdded) return@addOnSuccessListener
+                        binding.progressBar.visibility = View.GONE
+                        binding.btnSendRequest.isEnabled = true
+                        requireContext().showToast("Appointment request sent to $doctorName")
+                        binding.etMessage.text?.clear()
+                    }
+                    .addOnFailureListener { e2 ->
+                        if (!isAdded) return@addOnFailureListener
+                        binding.progressBar.visibility = View.GONE
+                        binding.btnSendRequest.isEnabled = true
+                        requireContext().showToast("Failed to send request: ${e2.message}")
+                    }
             }
     }
 

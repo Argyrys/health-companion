@@ -23,6 +23,11 @@ export const getOrCreateDoctor = async (uid, email, name) => {
     uid,
     email,
     name: name || email.split('@')[0],
+    specialty: '',
+    qualification: '',
+    experience: '',
+    hospital: '',
+    available: true,
     doctorId: nextId,
     createdAt: new Date().toISOString().split('T')[0],
   };

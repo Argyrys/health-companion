@@ -1,5 +1,13 @@
-import { collection, addDoc, doc, setDoc } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, getDocs, query, limit } from 'firebase/firestore';
 import { db } from './firebase';
+
+const sampleDoctors = [
+  { uid: "seed-doc-001", name: "Dr. Priya Mehta", specialty: "General Physician", qualification: "MBBS, MD", experience: "12 years", hospital: "City Hospital", available: true },
+  { uid: "seed-doc-002", name: "Dr. Arjun Singh", specialty: "Cardiologist", qualification: "MBBS, DM Cardiology", experience: "15 years", hospital: "Heart Care Center", available: true },
+  { uid: "seed-doc-003", name: "Dr. Neha Gupta", specialty: "Dermatologist", qualification: "MBBS, MD Dermatology", experience: "8 years", hospital: "Skin & Wellness Clinic", available: true },
+  { uid: "seed-doc-004", name: "Dr. Rajesh Kumar", specialty: "Orthopedic Surgeon", qualification: "MS Orthopedics", experience: "20 years", hospital: "Bone & Joint Hospital", available: true },
+  { uid: "seed-doc-005", name: "Dr. Ananya Patel", specialty: "Psychiatrist", qualification: "MBBS, MD Psychiatry", experience: "10 years", hospital: "Mind Care Hospital", available: true },
+];
 
 const samplePatients = [
   {
@@ -258,6 +266,18 @@ const appStylePatient = {
 };
 
 export const seedDatabase = async (doctorId) => {
+  // Seed sample doctors if none exist
+  const doctorsSnap = await getDocs(query(collection(db, 'doctors'), limit(1)));
+  if (doctorsSnap.empty) {
+    for (const docData of sampleDoctors) {
+      await setDoc(doc(db, 'doctors', docData.uid), {
+        ...docData,
+        email: `${docData.name.replace(/Dr\.\s/, '').toLowerCase().replace(/\s/g, '.')}@hospital.com`,
+        createdAt: new Date().toISOString().split('T')[0],
+      });
+    }
+  }
+
   const patientsRef = collection(db, 'patients');
 
   for (const patient of samplePatients) {
