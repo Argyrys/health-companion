@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Filter, ChevronRight, Users, X, Stethoscope, AlertTriangle } from 'lucide-react';
-import { getAllPatients } from '../services/patients';
+import { subscribeAllPatients } from '../services/patients';
 import { PatientListSkeleton } from '../components/Skeleton';
 
 export default function PatientList({ doctorId }) {
@@ -14,17 +14,11 @@ export default function PatientList({ doctorId }) {
 
   useEffect(() => {
     if (!doctorId) return;
-    const fetchPatients = async () => {
-      try {
-        const data = await getAllPatients(doctorId);
-        setPatients(data);
-      } catch (err) {
-        console.error('Error fetching patients:', err);
-        setError('Failed to load patients. Check your connection and try again.');
-      }
+    const unsub = subscribeAllPatients((data) => {
+      setPatients(data);
       setLoading(false);
-    };
-    fetchPatients();
+    });
+    return () => unsub();
   }, [doctorId]);
 
   const filtered = patients.filter(p => {

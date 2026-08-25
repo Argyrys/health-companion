@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDocs, getDoc, updateDoc, query, where, deleteDoc, setDoc
+  collection, doc, getDocs, getDoc, updateDoc, query, where, deleteDoc, setDoc, onSnapshot
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -26,114 +26,115 @@ const mapAppPatient = async (docId) => {
     ]);
 
     if (!profileSnap.exists()) return null;
-    const p = profileSnap.data();
-    const ct = caseSnap.exists() ? caseSnap.data() : {};
-    const meds = medSnap.exists() ? medSnap.data() : {};
-    const allergyData = allergySnap.exists() ? allergySnap.data() : {};
-    const fam = famSnap.exists() ? famSnap.data() : {};
-    const medHist = medHistSnap.exists() ? medHistSnap.data() : {};
-    const eye = eyeSnap.exists() ? eyeSnap.data() : {};
-    const mental = mentalSnap.exists() ? mentalSnap.data() : {};
-
-    const medicalHistory = [];
-    if (medHist.diabetes) medicalHistory.push('Diabetes');
-    if (medHist.hypertension) medicalHistory.push('Hypertension');
-    if (medHist.asthma) medicalHistory.push('Asthma');
-    if (medHist.heartDisease) medicalHistory.push('Heart Disease');
-    if (medHist.previousSurgery) medicalHistory.push('Previous Surgery');
-    if (medHist.hospitalization) medicalHistory.push('Hospitalization');
-    if (medHist.otherConditions) medicalHistory.push(...(Array.isArray(medHist.otherConditions) ? medHist.otherConditions : []));
-
-    const familyHistory = (fam.entries || []).map(e => `${e.relationship || ''}: ${e.condition || ''}`.trim());
-
-    const medications = (meds.medications || []).map(m => ({
-      name: m.drugName || m.name || '',
-      dosage: m.dosage || '',
-      frequency: m.frequency || 'Once daily',
-    }));
-
-    const allergies = (allergyData.allergies || []).map(a => ({
-      name: a.allergen || a.name || '',
-      severity: a.severity || 'Mild',
-    }));
-
-    const questions = (mental.questions || []).map(q => ({
-      q: q.question || q.q || '',
-      a: q.answer ?? q.a ?? 0,
-    }));
-
-    const duration = ct.durationValue && ct.durationUnit
-      ? `${ct.durationValue} ${ct.durationUnit}`
-      : ct.duration || '';
-
-    const findings = [];
-    if (eye.aiAssessment) findings.push(eye.aiAssessment);
-    if (eye.findings) findings.push(...(Array.isArray(eye.findings) ? eye.findings : []));
-
-    const reportDocs = reportSnap.docs;
-    let diagnosis = '';
-    let prescription = '';
-    if (reportDocs.length > 0) {
-      const latest = reportDocs[reportDocs.length - 1].data();
-      diagnosis = latest.diagnosis || '';
-      prescription = latest.prescription || '';
-    }
-
-    const consultationId = `app-${docId}`;
-
-    return {
-      id: docId,
-      uid: docId,
-      name: p.fullName || p.name || '',
-      age: p.age || 0,
-      gender: p.gender || '',
-      phone: p.phoneNumber || p.phone || '',
-      bloodGroup: p.bloodGroup || '',
-      height: p.height || '',
-      weight: p.weight || '',
-      address: p.address || '',
-      city: p.city || '',
-      emergencyContactName: p.emergencyContactName || '',
-      emergencyContactNumber: p.emergencyContactNumber || '',
-      existingConditions: p.existingConditions || '',
-      preferredLanguage: p.preferredLanguage || '',
-      email: p.email || '',
-      createdAt: fmtDate(p.updatedAt) || fmtDate(ct.createdAt) || '',
-      source: 'app',
-      consultations: [
-        {
-          id: consultationId,
-          chiefComplaint: ct.chiefComplaint || '',
-          symptoms: ct.symptoms || [],
-          severity: ct.severity || 0,
-          duration,
-          voiceRecording: ct.voiceRecordingUrl || null,
-          voiceRecordingTranscription: null,
-          medicalHistory,
-          familyHistory,
-          medications,
-          allergies,
-          eyeScreening: eye.riskLevel ? {
-            riskLevel: eye.riskLevel || 'Pending',
-            findings,
-            recommendation: eye.aiAssessment || '',
-          } : null,
-          mentalHealth: questions.length > 0 ? {
-            stressLevel: mental.status || 'Unknown',
-            mood: mental.score || 0,
-            sleepHours: 0,
-            questions,
-          } : null,
-          diagnosis,
-          prescription,
-          createdAt: fmtDate(ct.createdAt) || '',
-        }
-      ],
-    };
+    return assembleAppPatient(docId, profileSnap.data(), caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap);
   } catch (err) {
     console.warn('Could not read app patient subcollections for', docId, err);
     return null;
   }
+};
+
+const assembleAppPatient = (docId, p, caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap) => {
+  const ct = caseSnap?.exists() ? caseSnap.data() : {};
+  const meds = medSnap?.exists() ? medSnap.data() : {};
+  const allergyData = allergySnap?.exists() ? allergySnap.data() : {};
+  const fam = famSnap?.exists() ? famSnap.data() : {};
+  const medHist = medHistSnap?.exists() ? medHistSnap.data() : {};
+  const eye = eyeSnap?.exists() ? eyeSnap.data() : {};
+  const mental = mentalSnap?.exists() ? mentalSnap.data() : {};
+
+  const medicalHistory = [];
+  if (medHist.diabetes) medicalHistory.push('Diabetes');
+  if (medHist.hypertension) medicalHistory.push('Hypertension');
+  if (medHist.asthma) medicalHistory.push('Asthma');
+  if (medHist.heartDisease) medicalHistory.push('Heart Disease');
+  if (medHist.previousSurgery) medicalHistory.push('Previous Surgery');
+  if (medHist.hospitalization) medicalHistory.push('Hospitalization');
+  if (medHist.otherConditions) medicalHistory.push(...(Array.isArray(medHist.otherConditions) ? medHist.otherConditions : []));
+
+  const familyHistory = (fam.entries || []).map(e => `${e.relationship || ''}: ${e.condition || ''}`.trim());
+
+  const medications = (meds.medications || []).map(m => ({
+    name: m.drugName || m.name || '',
+    dosage: m.dosage || '',
+    frequency: m.frequency || 'Once daily',
+  }));
+
+  const allergies = (allergyData.allergies || []).map(a => ({
+    name: a.allergen || a.name || '',
+    severity: a.severity || 'Mild',
+  }));
+
+  const questions = (mental.questions || []).map(q => ({
+    q: q.question || q.q || '',
+    a: q.answer ?? q.a ?? 0,
+  }));
+
+  const duration = ct.durationValue && ct.durationUnit
+    ? `${ct.durationValue} ${ct.durationUnit}`
+    : ct.duration || '';
+
+  const findings = [];
+  if (eye.aiAssessment) findings.push(eye.aiAssessment);
+  if (eye.findings) findings.push(...(Array.isArray(eye.findings) ? eye.findings : []));
+
+  const reportDocs = reportSnap?.docs || [];
+  let diagnosis = '';
+  let prescription = '';
+  if (reportDocs.length > 0) {
+    const latest = reportDocs[reportDocs.length - 1].data();
+    diagnosis = latest.diagnosis || '';
+    prescription = latest.prescription || '';
+  }
+
+  return {
+    id: docId,
+    uid: docId,
+    name: p.fullName || p.name || '',
+    age: p.age || 0,
+    gender: p.gender || '',
+    phone: p.phoneNumber || p.phone || '',
+    bloodGroup: p.bloodGroup || '',
+    height: p.height || '',
+    weight: p.weight || '',
+    address: p.address || '',
+    city: p.city || '',
+    emergencyContactName: p.emergencyContactName || '',
+    emergencyContactNumber: p.emergencyContactNumber || '',
+    existingConditions: p.existingConditions || '',
+    preferredLanguage: p.preferredLanguage || '',
+    email: p.email || '',
+    createdAt: fmtDate(p.updatedAt) || fmtDate(ct.createdAt) || '',
+    source: 'app',
+    consultations: [
+      {
+        id: `app-${docId}`,
+        chiefComplaint: ct.chiefComplaint || '',
+        symptoms: ct.symptoms || [],
+        severity: ct.severity || 0,
+        duration,
+        voiceRecording: ct.voiceRecordingUrl || null,
+        voiceRecordingTranscription: null,
+        medicalHistory,
+        familyHistory,
+        medications,
+        allergies,
+        eyeScreening: eye.riskLevel ? {
+          riskLevel: eye.riskLevel || 'Pending',
+          findings,
+          recommendation: eye.aiAssessment || '',
+        } : null,
+        mentalHealth: questions.length > 0 ? {
+          stressLevel: mental.status || 'Unknown',
+          mood: mental.score || 0,
+          sleepHours: 0,
+          questions,
+        } : null,
+        diagnosis,
+        prescription,
+        createdAt: fmtDate(ct.createdAt) || '',
+      }
+    ],
+  };
 };
 
 export const getAllPatients = async (doctorId) => {
@@ -174,6 +175,56 @@ export const getPatient = async (patientId) => {
   }
 
   return { id: docSnap.id, ...data };
+};
+
+export const subscribeAllPatients = (callback) => {
+  const unsubRoot = onSnapshot(collection(db, 'patients'), async (snapshot) => {
+    const patients = [];
+    const appUnsubs = new Map();
+
+    for (const d of snapshot.docs) {
+      const data = d.data();
+
+      if (data.consultations && Array.isArray(data.consultations)) {
+        patients.push({ id: d.id, ...data });
+        continue;
+      }
+
+      if (!data.consultations) {
+        const appPatient = await mapAppPatient(d.id);
+        if (appPatient) patients.push(appPatient);
+      }
+    }
+
+    callback(patients.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')));
+  });
+
+  return () => unsubRoot();
+};
+
+export const subscribePatient = (patientId, callback) => {
+  const docRef = doc(db, 'patients', patientId);
+
+  const unsubRoot = onSnapshot(docRef, async (docSnap) => {
+    if (!docSnap.exists()) { callback(null); return; }
+    const data = docSnap.data();
+
+    if (data.consultations && Array.isArray(data.consultations)) {
+      callback({ id: docSnap.id, ...data });
+      return;
+    }
+
+    if (!data.consultations) {
+      const appPatient = await mapAppPatient(patientId);
+      if (appPatient) {
+        callback(appPatient);
+      } else {
+        callback({ id: docSnap.id, ...data });
+      }
+    }
+  });
+
+  return () => unsubRoot();
 };
 
 export const updateDiagnosis = async (patientId, consultationId, diagnosis, prescription) => {

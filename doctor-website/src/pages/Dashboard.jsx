@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, FileText, AlertTriangle, Activity, Database, TrendingUp, Clock, Stethoscope, ClipboardList, ChevronRight, User, Droplets, BarChart3 } from 'lucide-react';
-import { getAllPatients, deleteAllPatients } from '../services/patients';
+import { subscribeAllPatients, deleteAllPatients } from '../services/patients';
 import { seedDatabase } from '../services/seed';
 import DashboardSkeleton from '../components/Skeleton';
 
@@ -26,17 +26,11 @@ export default function Dashboard({ doctorId }) {
 
   useEffect(() => {
     if (!doctorId) return;
-    const fetchPatients = async () => {
-      try {
-        const data = await getAllPatients(doctorId);
-        setPatients(data);
-      } catch (err) {
-        console.error('Error fetching patients:', err);
-        setError('Failed to load data. Check your connection and try again.');
-      }
+    const unsub = subscribeAllPatients((data) => {
+      setPatients(data);
       setLoading(false);
-    };
-    fetchPatients();
+    });
+    return () => unsub();
   }, [doctorId]);
 
   const handleSeed = async () => {
@@ -44,8 +38,6 @@ export default function Dashboard({ doctorId }) {
     try {
       await seedDatabase(doctorId);
       setSeeded(true);
-      const data = await getAllPatients(doctorId);
-      setPatients(data);
     } catch (err) {
       console.error('Error seeding database:', err);
     }
