@@ -14,44 +14,44 @@ html {
 
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #F5F7FA;
+  background-color: #F8FAFC;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(12px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.4s ease-out forwards;
+  animation: fadeIn 0.35s ease-out forwards;
 }
 
 .animate-slideIn {
-  animation: slideIn 0.5s ease-out forwards;
+  animation: slideIn 0.4s ease-out forwards;
 }
 
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #CBD5E1;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #94A3B8;
 }
 
 ::selection {
@@ -71,7 +71,6 @@ input:focus, textarea:focus, select:focus {
   body { background: white !important; margin: 0; padding: 0; }
   .print\:hidden { display: none !important; }
   .no-print { display: none !important; }
-
   .print-footer { display: block !important; }
 
   @page {
@@ -89,12 +88,11 @@ input:focus, textarea:focus, select:focus {
     transform: none !important;
   }
 
-  #root > div > div > nav,
   footer {
     display: none !important;
   }
 
-  .bg-white.rounded-xl, .bg-white.rounded-2xl {
+  .bg-white.rounded-xl {
     box-shadow: none !important;
     border: 1px solid #E0E0E0 !important;
     break-inside: avoid;

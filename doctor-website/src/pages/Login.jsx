@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, Eye, EyeOff, Stethoscope } from 'lucide-react';
+import { Activity, Eye, EyeOff, Shield, Clock, Stethoscope } from 'lucide-react';
 import { loginDoctor } from '../services/auth';
 
 export default function Login({ onLogin }) {
@@ -13,90 +13,103 @@ export default function Login({ onLogin }) {
     e.preventDefault();
     setError('');
     setLoading(true);
-
     try {
       const user = await loginDoctor(email, password);
       const name = user.email.split('@')[0];
       const displayName = name.charAt(0).toUpperCase() + name.slice(1);
       onLogin(displayName, user.uid, user.email);
     } catch (err) {
-      if (err.code === 'auth/user-not-found') {
-        setError('No account found with this email');
-      } else if (err.code === 'auth/wrong-password') {
-        setError('Incorrect password');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Invalid email address');
-      } else {
-        setError('Login failed. Please try again.');
-      }
+      if (err.code === 'auth/user-not-found') setError('No account found with this email');
+      else if (err.code === 'auth/wrong-password') setError('Incorrect password');
+      else if (err.code === 'auth/invalid-email') setError('Invalid email address');
+      else setError('Login failed. Please try again.');
     }
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center px-4 py-8 sm:p-4 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-200 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-slate-50 flex">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 relative overflow-hidden flex-col justify-between p-12">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
+              <Activity className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">AI Health Companion</h1>
+              <p className="text-blue-100 text-xs">Healthcare that listens.</p>
+            </div>
+          </div>
+          <h2 className="text-4xl font-bold text-white leading-tight mb-4">Welcome back to your clinical dashboard.</h2>
+          <p className="text-blue-100 text-base leading-relaxed max-w-md">Access patient records, manage diagnoses, and provide better care — all in one place.</p>
+        </div>
+        <div className="relative z-10 space-y-4">
+          {[
+            { icon: Shield, text: 'HIPAA compliant & secure' },
+            { icon: Clock, text: 'Real-time patient monitoring' },
+            { icon: Stethoscope, text: 'AI-powered diagnostics' },
+          ].map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-3 text-white/80">
+              <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                <Icon className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-medium">{text}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="w-full max-w-sm sm:max-w-md relative z-10">
-        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fadeIn">
-          <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl border border-white/30 flex-shrink-0">
-            <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-          </div>
-          <div className="text-left">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">AI Health Companion</h1>
-            <p className="text-blue-100 text-xs sm:text-sm font-medium">Healthcare that listens.</p>
-          </div>
-        </div>
-
-        <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 sm:p-8 border border-white/50 animate-slideIn">
-          <div className="flex items-center gap-3 mb-5 sm:mb-6">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-              <Stethoscope className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-blue-600" />
+      <div className="flex-1 flex items-center justify-center px-4 py-8 sm:p-8">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden flex items-center gap-3 mb-8">
+            <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/25">
+              <Activity className="w-5.5 h-5.5 text-white" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-semibold text-slate-800">Doctor Portal</h2>
-              <p className="text-[11px] sm:text-xs text-slate-400">Sign in to your account</p>
+              <h1 className="text-lg font-bold text-slate-800">AI Health Companion</h1>
+              <p className="text-xs text-slate-400">Healthcare that listens.</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
+          <div className="animate-fadeIn">
+            <h2 className="text-2xl font-bold text-slate-800 mb-1">Sign in</h2>
+            <p className="text-sm text-slate-400 mb-8">Enter your credentials to access the doctor portal</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5 animate-slideIn">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Email</label>
+              <label className="block text-sm font-medium text-slate-600 mb-2">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="doctor@hospital.com"
-                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200"
+                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-slate-600 mb-2">Password</label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Enter password"
-                  className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200 pr-12"
+                  className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all pr-12"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-xs sm:text-sm px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border border-red-100 flex items-center gap-2">
+              <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0" />
                 {error}
               </div>
@@ -105,7 +118,7 @@ export default function Login({ onLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
+              className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -115,25 +128,21 @@ export default function Login({ onLogin }) {
                   </svg>
                   Signing in...
                 </span>
-              ) : (
-                'Sign In'
-              )}
+              ) : 'Sign In'}
             </button>
           </form>
-        </div>
 
-        <div className="mt-4 sm:mt-5 text-center animate-fadeIn" style={{ animationDelay: '0.2s' }}>
-          <p className="text-xs sm:text-sm text-white/80">
-            Don't have an account?{' '}
-            <a href="/signup" className="text-white font-semibold hover:underline underline-offset-2">
-              Sign up
-            </a>
+          <div className="mt-6 text-center animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+            <p className="text-sm text-slate-500">
+              Don't have an account?{' '}
+              <a href="/signup" className="text-blue-600 font-semibold hover:underline underline-offset-2">Sign up</a>
+            </p>
+          </div>
+
+          <p className="text-center text-xs text-slate-300 mt-8">
+            Powered by AI Health Companion &middot; SIH 2026
           </p>
         </div>
-
-        <p className="text-center text-[10px] sm:text-xs text-white/50 mt-5 sm:mt-6">
-          Powered by AI Health Companion &middot; SIH 2026
-        </p>
       </div>
     </div>
   );

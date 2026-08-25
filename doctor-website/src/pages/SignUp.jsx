@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Activity, Eye, EyeOff, UserPlus } from 'lucide-react';
+import { Activity, Eye, EyeOff, UserPlus, Shield, Clock, Stethoscope } from 'lucide-react';
 import { registerDoctor } from '../services/auth';
 
 export default function SignUp({ onLogin }) {
@@ -14,137 +14,111 @@ export default function SignUp({ onLogin }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
+    if (password.length < 6) { setError('Password must be at least 6 characters'); return; }
+    if (password !== confirmPassword) { setError('Passwords do not match'); return; }
     setLoading(true);
-
     try {
       const user = await registerDoctor(email, password);
       const displayName = name.trim();
       onLogin(displayName, user.uid, user.email);
     } catch (err) {
-      if (err.code === 'auth/email-already-in-use') {
-        setError('An account with this email already exists');
-      } else if (err.code === 'auth/invalid-email') {
-        setError('Invalid email address');
-      } else if (err.code === 'auth/weak-password') {
-        setError('Password is too weak');
-      } else {
-        setError('Sign up failed. Please try again.');
-      }
+      if (err.code === 'auth/email-already-in-use') setError('An account with this email already exists');
+      else if (err.code === 'auth/invalid-email') setError('Invalid email address');
+      else if (err.code === 'auth/weak-password') setError('Password is too weak');
+      else setError('Sign up failed. Please try again.');
     }
     setLoading(false);
   };
 
+  const features = [
+    { icon: Shield, text: 'HIPAA compliant & secure' },
+    { icon: Clock, text: 'Real-time patient monitoring' },
+    { icon: Stethoscope, text: 'AI-powered diagnostics' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 flex items-center justify-center px-4 py-8 sm:p-4 relative overflow-hidden">
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-200 rounded-full blur-3xl" />
+    <div className="min-h-screen bg-slate-50 flex">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 relative overflow-hidden flex-col justify-between p-12">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-white rounded-full blur-3xl" />
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-300 rounded-full blur-3xl" />
+        </div>
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-12">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg border border-white/30">
+              <Activity className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">AI Health Companion</h1>
+              <p className="text-blue-100 text-xs">Healthcare that listens.</p>
+            </div>
+          </div>
+          <h2 className="text-4xl font-bold text-white leading-tight mb-4">Start your journey towards smarter healthcare.</h2>
+          <p className="text-blue-100 text-base leading-relaxed max-w-md">Join thousands of doctors using AI-powered tools to deliver better patient outcomes.</p>
+        </div>
+        <div className="relative z-10 space-y-4">
+          {features.map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-3 text-white/80">
+              <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center">
+                <Icon className="w-4 h-4" />
+              </div>
+              <span className="text-sm font-medium">{text}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="w-full max-w-sm sm:max-w-md relative z-10">
-        <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fadeIn">
-          <div className="w-11 h-11 sm:w-14 sm:h-14 bg-white/20 backdrop-blur-sm rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl border border-white/30 flex-shrink-0">
-            <Activity className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-          </div>
-          <div className="text-left">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">AI Health Companion</h1>
-            <p className="text-blue-100 text-xs sm:text-sm font-medium">Healthcare that listens.</p>
-          </div>
-        </div>
-
-        <div className="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl p-6 sm:p-8 border border-white/50 animate-slideIn">
-          <div className="flex items-center gap-3 mb-5 sm:mb-6">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-              <UserPlus className="w-4.5 h-4.5 sm:w-5 sm:h-5 text-blue-600" />
+      <div className="flex-1 flex items-center justify-center px-4 py-8 sm:p-8">
+        <div className="w-full max-w-md">
+          <div className="lg:hidden flex items-center gap-3 mb-8">
+            <div className="w-11 h-11 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-600/25">
+              <Activity className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-semibold text-slate-800">Create Account</h2>
-              <p className="text-[11px] sm:text-xs text-slate-400">Register as a doctor</p>
+              <h1 className="text-lg font-bold text-slate-800">AI Health Companion</h1>
+              <p className="text-xs text-slate-400">Healthcare that listens.</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-3.5 sm:space-y-4">
+          <div className="animate-fadeIn">
+            <h2 className="text-2xl font-bold text-slate-800 mb-1">Create account</h2>
+            <p className="text-sm text-slate-400 mb-8">Register as a doctor to get started</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-4 animate-slideIn">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Dr. Smith"
-                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200"
-                required
-              />
+              <label className="block text-sm font-medium text-slate-600 mb-2">Full Name</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Dr. Smith" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" required />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="doctor@hospital.com"
-                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200"
-                required
-              />
+              <label className="block text-sm font-medium text-slate-600 mb-2">Email</label>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="doctor@hospital.com" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" required />
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Password</label>
+              <label className="block text-sm font-medium text-slate-600 mb-2">Password</label>
               <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="At least 6 characters"
-                  className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200 pr-12"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4 sm:w-5 sm:h-5" /> : <Eye className="w-4 h-4 sm:w-5 sm:h-5" />}
+                <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all pr-12" required />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-slate-600 mb-1.5">Confirm Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Re-enter password"
-                className="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-all duration-200"
-                required
-              />
+              <label className="block text-sm font-medium text-slate-600 mb-2">Confirm Password</label>
+              <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Re-enter password" className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all" required />
             </div>
 
             {error && (
-              <div className="bg-red-50 text-red-600 text-xs sm:text-sm px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl border border-red-100 flex items-center gap-2">
+              <div className="bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl border border-red-100 flex items-center gap-2">
                 <div className="w-1.5 h-1.5 bg-red-500 rounded-full flex-shrink-0" />
                 {error}
               </div>
             )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-base hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40"
-            >
+            <button type="submit" disabled={loading} className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40">
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
                   <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -153,25 +127,19 @@ export default function SignUp({ onLogin }) {
                   </svg>
                   Creating account...
                 </span>
-              ) : (
-                'Create Account'
-              )}
+              ) : 'Create Account'}
             </button>
           </form>
 
-          <div className="mt-4 sm:mt-6 text-center">
-            <p className="text-xs sm:text-sm text-slate-500">
+          <div className="mt-6 text-center animate-fadeIn" style={{ animationDelay: '0.2s' }}>
+            <p className="text-sm text-slate-500">
               Already have an account?{' '}
-              <a href="/" className="text-blue-600 font-semibold hover:underline underline-offset-2">
-                Sign in
-              </a>
+              <a href="/" className="text-blue-600 font-semibold hover:underline underline-offset-2">Sign in</a>
             </p>
           </div>
-        </div>
 
-        <p className="text-center text-[10px] sm:text-xs text-white/50 mt-5 sm:mt-6">
-          Powered by AI Health Companion &middot; SIH 2026
-        </p>
+          <p className="text-center text-xs text-slate-300 mt-8">Powered by AI Health Companion &middot; SIH 2026</p>
+        </div>
       </div>
     </div>
   );

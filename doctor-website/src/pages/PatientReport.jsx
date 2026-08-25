@@ -17,20 +17,20 @@ const Section = ({ sectionId, title, icon: Icon, children, expandedSections, tog
     <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       <button
         onClick={() => toggleSection(sectionId)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50 transition-colors group"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50/80 transition-all group"
       >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-            <Icon className="w-4.5 h-4.5 text-blue-600" />
+          <div className="w-9 h-9 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+            <Icon className="w-4 h-4 text-blue-600" />
           </div>
           <h3 className="font-semibold text-sm text-slate-800">{title}</h3>
           {badge && <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">{badge}</span>}
         </div>
-        {isExpanded ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
       </button>
-      {isExpanded && (
+      <div className={`transition-all duration-200 ${isExpanded ? 'opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="px-5 pb-5 border-t border-slate-100 pt-4">{children}</div>
-      )}
+      </div>
     </div>
   );
 };
@@ -485,26 +485,28 @@ export default function PatientReport() {
 
       {/* Patient Info Card */}
       <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-fadeIn" style={{ animationDelay: '0.05s' }}>
-        <div className="h-1.5 bg-blue-600" />
-        <div className="p-5">
-          <div className="flex items-start gap-4">
-            <div className="w-14 h-14 bg-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
-              <span className="text-white font-bold text-xl">{patient.name?.charAt(0)}</span>
-            </div>
-            <div className="flex-1 min-w-0">
-              <h2 className="text-lg font-bold text-slate-800">{patient.name}</h2>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-xs text-slate-500">
-                <span>{patient.age} years</span>
-                <span>{patient.gender}</span>
-                <span>Blood: {patient.bloodGroup}</span>
-                <span>{patient.phone}</span>
-                {patient.height && <span>H: {patient.height}</span>}
-                {patient.weight && <span>W: {patient.weight}</span>}
+        <div className="flex">
+          <div className="w-1.5 bg-blue-500 flex-shrink-0" />
+          <div className="flex-1 p-5">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 font-bold text-xl">{patient.name?.charAt(0)}</span>
               </div>
-            </div>
-            <div className="text-right text-xs text-slate-400 hidden sm:block flex-shrink-0">
-              <p>Registered: {patient.createdAt}</p>
-              <p>Consultation: {consultation.createdAt}</p>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg font-bold text-slate-800">{patient.name}</h2>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 mt-1.5 text-xs text-slate-500">
+                  <span>{patient.age} years</span>
+                  <span>{patient.gender}</span>
+                  <span>Blood: {patient.bloodGroup}</span>
+                  <span>{patient.phone}</span>
+                  {patient.height && <span>H: {patient.height}</span>}
+                  {patient.weight && <span>W: {patient.weight}</span>}
+                </div>
+              </div>
+              <div className="text-right text-xs text-slate-400 hidden sm:block flex-shrink-0">
+                <p>Registered: {patient.createdAt}</p>
+                <p>Consultation: {consultation.createdAt}</p>
+              </div>
             </div>
           </div>
         </div>
