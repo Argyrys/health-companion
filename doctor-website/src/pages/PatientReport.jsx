@@ -3,7 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import {
   ArrowLeft, Camera, Brain, Pill, AlertTriangle,
   Heart, FileText, Save, ChevronDown, ChevronUp, CheckCircle2,
-  Mic, Printer, User, MapPin, Phone, Globe, Plus, X, Download, Play, Pause, Square
+  Mic, Printer, User, MapPin, Phone, Globe, Plus, X, Download, Play, Pause, Square,
+  Activity, Stethoscope, ClipboardList, Shield, Droplets, Ruler, Weight
 } from 'lucide-react';
 import {
   getPatient, updateDiagnosis, updatePatientProfile, updateConsultationField,
@@ -11,24 +12,24 @@ import {
 } from '../services/patients';
 import { PatientReportSkeleton } from '../components/Skeleton';
 
-const Section = ({ sectionId, title, icon: Icon, children, expandedSections, toggleSection, badge }) => {
+const Section = ({ sectionId, title, icon: Icon, children, expandedSections, toggleSection, badge, accent }) => {
   const isExpanded = expandedSections[sectionId];
   return (
-    <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div id={`section-${sectionId}`} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden scroll-mt-20">
       <button
         onClick={() => toggleSection(sectionId)}
         className="w-full flex items-center justify-between px-5 py-4 hover:bg-slate-50/80 transition-all group"
       >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 bg-blue-50 border border-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+          <div className={`w-9 h-9 ${accent || 'bg-blue-50 border-blue-100'} border rounded-lg flex items-center justify-center group-hover:scale-105 transition-transform`}>
             <Icon className="w-4 h-4 text-blue-600" />
           </div>
           <h3 className="font-semibold text-sm text-slate-800">{title}</h3>
-          {badge && <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">{badge}</span>}
+          {badge != null && <span className="text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-medium">{badge}</span>}
         </div>
         <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
       </button>
-      <div className={`transition-all duration-200 ${isExpanded ? 'opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+      <div className={`transition-all duration-300 ${isExpanded ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
         <div className="px-5 pb-5 border-t border-slate-100 pt-4">{children}</div>
       </div>
     </div>
@@ -64,6 +65,44 @@ const TextInput = ({ label, value, onChange, placeholder, type = 'text', rows })
   );
 };
 
+const SeverityGauge = ({ value }) => {
+  const v = Math.max(0, Math.min(10, value || 0));
+  const pct = v * 10;
+  const color = v >= 7 ? '#EF4444' : v >= 4 ? '#F59E0B' : '#22C55E';
+  const label = v >= 7 ? 'Severe' : v >= 4 ? 'Moderate' : 'Mild';
+  const r = 28;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (pct / 100) * circ;
+  return (
+    <div className="flex items-center gap-3">
+      <div className="relative w-16 h-16 flex-shrink-0">
+        <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+          <circle cx="32" cy="32" r={r} fill="none" stroke="#E2E8F0" strokeWidth="6" />
+          <circle cx="32" cy="32" r={r} fill="none" stroke={color} strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset} className="transition-all duration-700" />
+        </svg>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-sm font-bold text-slate-800">{v}</span>
+        </div>
+      </div>
+      <div>
+        <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Severity</p>
+        <p className="text-sm font-bold" style={{ color }}>{label}</p>
+      </div>
+    </div>
+  );
+};
+
+const sections = [
+  { id: 'profile', label: 'Profile', icon: User },
+  { id: 'symptoms', label: 'Symptoms', icon: Stethoscope },
+  { id: 'history', label: 'History', icon: Heart },
+  { id: 'medications', label: 'Meds', icon: Pill },
+  { id: 'allergies', label: 'Allergies', icon: AlertTriangle },
+  { id: 'eye', label: 'Eye', icon: Camera },
+  { id: 'mental', label: 'Mental', icon: Brain },
+  { id: 'diagnosis', label: 'Diagnosis', icon: FileText },
+];
+
 export default function PatientReport() {
   const { id } = useParams();
   const [patient, setPatient] = useState(null);
@@ -92,6 +131,7 @@ export default function PatientReport() {
     mental: true,
     diagnosis: true,
   });
+  const [activeSection, setActiveSection] = useState('profile');
 
   useEffect(() => {
     const fetchPatient = async () => {
@@ -108,8 +148,31 @@ export default function PatientReport() {
     fetchPatient();
   }, [id]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id.replace('section-', ''));
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -60% 0px', threshold: 0 }
+    );
+    sections.forEach(s => {
+      const el = document.getElementById(`section-${s.id}`);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [loading]);
+
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({ ...prev, [sectionId]: !prev[sectionId] }));
+  };
+
+  const scrollToSection = (sectionId) => {
+    const el = document.getElementById(`section-${sectionId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   const consultation = patient?.consultations?.[0];
@@ -323,10 +386,7 @@ export default function PatientReport() {
       y += 7;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      c.medicalHistory.forEach(h => {
-        doc.text(`  - ${h}`, 20, y);
-        y += 6;
-      });
+      c.medicalHistory.forEach(h => { doc.text(`  - ${h}`, 20, y); y += 6; });
       y += 4;
     }
 
@@ -337,10 +397,7 @@ export default function PatientReport() {
       y += 7;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      c.familyHistory.forEach(h => {
-        doc.text(`  - ${h}`, 20, y);
-        y += 6;
-      });
+      c.familyHistory.forEach(h => { doc.text(`  - ${h}`, 20, y); y += 6; });
       y += 4;
     }
 
@@ -351,10 +408,7 @@ export default function PatientReport() {
       y += 7;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      c.medications.forEach(m => {
-        doc.text(`  - ${m.name} ${m.dosage} (${m.frequency})`, 20, y);
-        y += 6;
-      });
+      c.medications.forEach(m => { doc.text(`  - ${m.name} ${m.dosage} (${m.frequency})`, 20, y); y += 6; });
       y += 4;
     }
 
@@ -365,10 +419,7 @@ export default function PatientReport() {
       y += 7;
       doc.setFontSize(10);
       doc.setFont('helvetica', 'normal');
-      c.allergies.forEach(a => {
-        doc.text(`  - ${a.name} (${a.severity})`, 20, y);
-        y += 6;
-      });
+      c.allergies.forEach(a => { doc.text(`  - ${a.name} (${a.severity})`, 20, y); y += 6; });
       y += 4;
     }
 
@@ -381,10 +432,7 @@ export default function PatientReport() {
       doc.setFont('helvetica', 'normal');
       doc.text(`Risk Level: ${c.eyeScreening.riskLevel || 'N/A'}`, 20, y);
       y += 6;
-      (c.eyeScreening.findings || []).forEach(f => {
-        doc.text(`  - ${f}`, 20, y);
-        y += 6;
-      });
+      (c.eyeScreening.findings || []).forEach(f => { doc.text(`  - ${f}`, 20, y); y += 6; });
       doc.text(`Recommendation: ${c.eyeScreening.recommendation || 'N/A'}`, 20, y);
       y += 10;
     }
@@ -398,10 +446,7 @@ export default function PatientReport() {
       doc.setFont('helvetica', 'normal');
       doc.text(`Mood: ${c.mentalHealth.mood}/10    Sleep: ${c.mentalHealth.sleepHours}h    Stress: ${c.mentalHealth.stressLevel}`, 20, y);
       y += 6;
-      (c.mentalHealth.questions || []).forEach(q => {
-        doc.text(`  - ${q.q} -> ${q.a}/10`, 20, y);
-        y += 6;
-      });
+      (c.mentalHealth.questions || []).forEach(q => { doc.text(`  - ${q.q} -> ${q.a}/10`, 20, y); y += 6; });
       y += 4;
     }
 
@@ -441,6 +486,16 @@ export default function PatientReport() {
 
   const handlePrint = () => window.print();
 
+  const EmptyState = ({ icon: Icon, text, sub }) => (
+    <div className="text-center py-6">
+      <div className="w-12 h-12 bg-slate-100 rounded-xl flex items-center justify-center mx-auto mb-2">
+        <Icon className="w-5 h-5 text-slate-300" />
+      </div>
+      <p className="text-xs text-slate-400 font-medium">{text}</p>
+      {sub && <p className="text-[10px] text-slate-300 mt-0.5">{sub}</p>}
+    </div>
+  );
+
   if (loading) return <PatientReportSkeleton />;
 
   if (!patient || !consultation) {
@@ -456,6 +511,10 @@ export default function PatientReport() {
   }
 
   const hasDiagnosis = consultation.diagnosis;
+  const bmi = patient.height && patient.weight ? (patient.weight / ((parseFloat(patient.height) / 100) ** 2)).toFixed(1) : null;
+  const riskLevel = consultation.eyeScreening?.riskLevel;
+  const medCount = (consultation.medications || []).length;
+  const allergyCount = (consultation.allergies || []).length;
 
   return (
     <div className="space-y-4">
@@ -469,7 +528,7 @@ export default function PatientReport() {
           <p className="text-slate-400 text-xs mt-0.5">Consultation {consultation.id}</p>
         </div>
         <div className="flex items-center gap-2">
-          <button onClick={handleDownloadPDF} className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 transition-colors">
+          <button onClick={handleDownloadPDF} className="flex items-center gap-1.5 px-3 py-2 bg-blue-600 text-white rounded-xl text-xs font-medium hover:bg-blue-700 shadow-md shadow-blue-600/20 transition-all">
             <Download className="w-3.5 h-3.5" />
             PDF
           </button>
@@ -489,7 +548,7 @@ export default function PatientReport() {
           <div className="w-1.5 bg-blue-500 flex-shrink-0" />
           <div className="flex-1 p-5">
             <div className="flex items-start gap-4">
-              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 ring-2 ring-blue-50">
                 <span className="text-blue-600 font-bold text-xl">{patient.name?.charAt(0)}</span>
               </div>
               <div className="flex-1 min-w-0">
@@ -499,8 +558,6 @@ export default function PatientReport() {
                   <span>{patient.gender}</span>
                   <span>Blood: {patient.bloodGroup}</span>
                   <span>{patient.phone}</span>
-                  {patient.height && <span>H: {patient.height}</span>}
-                  {patient.weight && <span>W: {patient.weight}</span>}
                 </div>
               </div>
               <div className="text-right text-xs text-slate-400 hidden sm:block flex-shrink-0">
@@ -508,7 +565,66 @@ export default function PatientReport() {
                 <p>Consultation: {consultation.createdAt}</p>
               </div>
             </div>
+            {/* Quick Stats Strip */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 pt-4 border-t border-slate-100">
+              <div className="flex items-center gap-2.5 p-2.5 bg-slate-50 rounded-xl">
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Ruler className="w-3.5 h-3.5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase">Height</p>
+                  <p className="text-xs font-bold text-slate-700">{patient.height || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 p-2.5 bg-slate-50 rounded-xl">
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Weight className="w-3.5 h-3.5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase">Weight</p>
+                  <p className="text-xs font-bold text-slate-700">{patient.weight || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 p-2.5 bg-slate-50 rounded-xl">
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Activity className="w-3.5 h-3.5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase">BMI</p>
+                  <p className="text-xs font-bold text-slate-700">{bmi || '—'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 p-2.5 bg-slate-50 rounded-xl">
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Shield className="w-3.5 h-3.5 text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-400 font-semibold uppercase">Risk</p>
+                  <p className={`text-xs font-bold ${riskLevel === 'High' ? 'text-red-600' : riskLevel === 'Medium' ? 'text-amber-600' : 'text-slate-700'}`}>{riskLevel || '—'}</p>
+                </div>
+              </div>
+            </div>
           </div>
+        </div>
+      </div>
+
+      {/* Section Nav */}
+      <div className="print:hidden overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex gap-1.5 min-w-max sm:min-w-0 sm:flex-wrap">
+          {sections.map(({ id: sId, label, icon: SIcon }) => (
+            <button
+              key={sId}
+              onClick={() => scrollToSection(sId)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                activeSection === sId
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-600/20'
+                  : 'bg-white text-slate-500 border border-slate-200 hover:bg-slate-50'
+              }`}
+            >
+              <SIcon className="w-3 h-3" />
+              {label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -539,17 +655,20 @@ export default function PatientReport() {
           <div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
               {[
-                { label: 'Height', value: patient.height },
-                { label: 'Weight', value: patient.weight },
-                { label: 'City', value: patient.city },
-                { label: 'Address', value: patient.address },
-                { label: 'Emergency Contact', value: patient.emergencyContactName && `${patient.emergencyContactName} (${patient.emergencyContactNumber})` },
-                { label: 'Existing Conditions', value: patient.existingConditions },
-                { label: 'Preferred Language', value: patient.preferredLanguage },
+                { label: 'Height', value: patient.height, icon: Ruler },
+                { label: 'Weight', value: patient.weight, icon: Weight },
+                { label: 'City', value: patient.city, icon: MapPin },
+                { label: 'Address', value: patient.address, icon: MapPin },
+                { label: 'Emergency Contact', value: patient.emergencyContactName && `${patient.emergencyContactName} (${patient.emergencyContactNumber})`, icon: Phone },
+                { label: 'Existing Conditions', value: patient.existingConditions, icon: Shield },
+                { label: 'Preferred Language', value: patient.preferredLanguage, icon: Globe },
               ].filter(f => f.value).map(f => (
-                <div key={f.label} className="p-2.5 bg-slate-50 rounded-xl">
-                  <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{f.label}</p>
-                  <p className="text-sm text-slate-700 font-medium mt-0.5">{f.value}</p>
+                <div key={f.label} className="p-3 bg-slate-50 rounded-xl border border-slate-100">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <f.icon className="w-3 h-3 text-blue-400" />
+                    <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">{f.label}</p>
+                  </div>
+                  <p className="text-sm text-slate-700 font-medium">{f.value}</p>
                 </div>
               ))}
             </div>
@@ -558,47 +677,47 @@ export default function PatientReport() {
             </button>
           </div>
         )}
-        {profileSaved && <p className="text-xs text-blue-600 mt-2 font-medium animate-fadeIn">Profile updated!</p>}
+        {profileSaved && <p className="text-xs text-blue-600 mt-2 font-medium animate-fadeIn flex items-center gap-1"><CheckCircle2 className="w-3.5 h-3.5" /> Profile updated!</p>}
       </Section>
 
       {/* Sections Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Symptoms - full width */}
         <div className="lg:col-span-2">
-          <Section sectionId="symptoms" title="Symptoms" icon={FileText} expandedSections={expandedSections} toggleSection={toggleSection}>
-            <div className="space-y-3">
-              <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Chief Complaint</p>
-                <p className="text-slate-800 font-medium text-sm">{consultation.chiefComplaint}</p>
+          <Section sectionId="symptoms" title="Symptoms & Complaint" icon={Stethoscope} expandedSections={expandedSections} toggleSection={toggleSection}>
+            <div className="space-y-4">
+              {/* Chief Complaint - prominent */}
+              <div className="p-4 bg-blue-50 rounded-xl border border-blue-100">
+                <p className="text-xs text-blue-500 uppercase tracking-wider font-semibold mb-1.5">Chief Complaint</p>
+                <p className="text-slate-800 font-semibold text-base">{consultation.chiefComplaint}</p>
               </div>
+              {/* Symptoms */}
               <div>
-                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1.5">Symptoms</p>
+                <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Reported Symptoms</p>
                 <div className="flex flex-wrap gap-1.5">
                   {(consultation.symptoms || []).map(s => (
-                    <span key={s} className="px-2.5 py-1 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium">{s}</span>
+                    <span key={s} className="px-3 py-1.5 bg-slate-100 text-slate-600 rounded-lg text-xs font-medium border border-slate-200">{s}</span>
                   ))}
+                  {(!consultation.symptoms || consultation.symptoms.length === 0) && (
+                    <p className="text-xs text-slate-300 italic">No symptoms recorded</p>
+                  )}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Severity</p>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 bg-slate-100 rounded-full h-2">
-                      <div className={`h-2 rounded-full transition-all duration-500 ${consultation.severity >= 7 ? 'bg-red-500' : consultation.severity >= 4 ? 'bg-amber-500' : 'bg-green-500'}`} style={{ width: `${(consultation.severity || 0) * 10}%` }} />
-                    </div>
-                    <span className="text-xs font-bold text-slate-700">{consultation.severity}/10</span>
-                  </div>
+              {/* Severity + Duration row */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                  <SeverityGauge value={consultation.severity} />
                 </div>
-                <div>
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100">
                   <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Duration</p>
-                  <p className="text-slate-800 font-medium text-sm">{consultation.duration}</p>
+                  <p className="text-slate-800 font-semibold text-sm">{consultation.duration || 'Not specified'}</p>
                 </div>
               </div>
               {/* Voice Recording */}
               {consultation.voiceRecording && (
                 <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
                   <div className="flex items-center gap-3">
-                    <button onClick={toggleAudio} className="w-9 h-9 bg-blue-600 rounded-lg flex items-center justify-center text-white hover:bg-blue-700 transition-colors flex-shrink-0">
+                    <button onClick={toggleAudio} className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white hover:bg-blue-700 transition-colors flex-shrink-0 shadow-md shadow-blue-600/20">
                       {playingAudio ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                     </button>
                     <div className="flex-1 min-w-0">
@@ -621,9 +740,9 @@ export default function PatientReport() {
               {(consultation.medicalHistory || []).length > 0 ? (
                 <ul className="space-y-1.5 mb-3">
                   {consultation.medicalHistory.map((h, i) => (
-                    <li key={i} className="text-sm text-slate-600 flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-lg">
+                    <li key={i} className="text-sm text-slate-600 flex items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-xl border border-slate-100">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full flex-shrink-0" />
+                        <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0" />
                         <span className="truncate">{h}</span>
                       </div>
                       <button onClick={() => handleRemoveMedicalCondition(i)} className="text-slate-300 hover:text-red-500 transition-colors flex-shrink-0"><X className="w-3.5 h-3.5" /></button>
@@ -631,7 +750,7 @@ export default function PatientReport() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-300 italic mb-3">No medical history recorded</p>
+                <EmptyState icon={Heart} text="No medical history recorded" sub="Add conditions below" />
               )}
               <div className="flex gap-2">
                 <input value={newOtherCondition} onChange={e => setNewOtherCondition(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddOtherCondition()} placeholder="Add condition..." className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
@@ -643,9 +762,9 @@ export default function PatientReport() {
               {(consultation.familyHistory || []).length > 0 ? (
                 <ul className="space-y-1.5 mb-3">
                   {consultation.familyHistory.map((h, i) => (
-                    <li key={i} className="text-sm text-slate-600 flex items-center justify-between gap-2 p-2 bg-slate-50 rounded-lg">
+                    <li key={i} className="text-sm text-slate-600 flex items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-xl border border-slate-100">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-1.5 h-1.5 bg-amber-400 rounded-full flex-shrink-0" />
+                        <span className="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0" />
                         <span className="truncate">{h}</span>
                       </div>
                       <button onClick={() => handleRemoveFamilyEntry(i)} className="text-slate-300 hover:text-red-500 transition-colors flex-shrink-0"><X className="w-3.5 h-3.5" /></button>
@@ -653,7 +772,7 @@ export default function PatientReport() {
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-slate-300 italic mb-3">No family history recorded</p>
+                <EmptyState icon={Heart} text="No family history recorded" sub="Add entries below" />
               )}
               <div className="flex gap-2 mb-2">
                 <input value={newFamilyEntry.relationship} onChange={e => setNewFamilyEntry(p => ({ ...p, relationship: e.target.value }))} placeholder="Relation (e.g. Father)" className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" />
@@ -665,25 +784,30 @@ export default function PatientReport() {
         </Section>
 
         {/* Medications - editable */}
-        <Section sectionId="medications" title="Current Medications" icon={Pill} expandedSections={expandedSections} toggleSection={toggleSection} badge={(consultation.medications || []).length}>
+        <Section sectionId="medications" title="Current Medications" icon={Pill} expandedSections={expandedSections} toggleSection={toggleSection} badge={medCount}>
           <div className="space-y-3">
             {(consultation.medications || []).length > 0 ? (
               <div className="space-y-2">
                 {consultation.medications.map((med, i) => (
                   <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <div className="min-w-0">
-                      <p className="font-medium text-slate-800 text-sm truncate">{med.name}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">{med.dosage}</p>
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Pill className="w-3.5 h-3.5 text-blue-600" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-slate-800 text-sm truncate">{med.name}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{med.dosage}</p>
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 ml-2">
-                      <span className="px-2.5 py-1 bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">{med.frequency}</span>
+                      <span className="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold">{med.frequency}</span>
                       <button onClick={() => handleRemoveMedication(i)} className="text-slate-300 hover:text-red-500 transition-colors"><X className="w-3.5 h-3.5" /></button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-300 italic">No current medications</p>
+              <EmptyState icon={Pill} text="No current medications" sub="Add medications below" />
             )}
             <div className="p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200">
               <p className="text-xs text-slate-400 font-semibold mb-2">Add Medication</p>
@@ -706,7 +830,7 @@ export default function PatientReport() {
         </Section>
 
         {/* Allergies - editable */}
-        <Section sectionId="allergies" title="Allergies" icon={AlertTriangle} expandedSections={expandedSections} toggleSection={toggleSection} badge={(consultation.allergies || []).length}>
+        <Section sectionId="allergies" title="Allergies" icon={AlertTriangle} expandedSections={expandedSections} toggleSection={toggleSection} badge={allergyCount}>
           <div className="space-y-3">
             {(consultation.allergies || []).length > 0 ? (
               <div className="space-y-2">
@@ -724,7 +848,7 @@ export default function PatientReport() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-slate-300 italic">No known allergies</p>
+              <EmptyState icon={AlertTriangle} text="No known allergies" sub="Add allergies below" />
             )}
             <div className="p-3 bg-slate-50 rounded-xl border border-dashed border-slate-200">
               <p className="text-xs text-slate-400 font-semibold mb-2">Add Allergy</p>
@@ -757,7 +881,7 @@ export default function PatientReport() {
                   </div>
                   <div className="flex-1">
                     <div className="mb-2">
-                      <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${consultation.eyeScreening.riskLevel === 'High' ? 'bg-red-100 text-red-700' : consultation.eyeScreening.riskLevel === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'}`}>{consultation.eyeScreening.riskLevel} Risk</span>
+                      <span className={`px-3 py-1.5 rounded-lg text-xs font-bold ${consultation.eyeScreening.riskLevel === 'High' ? 'bg-red-100 text-red-700 border border-red-200' : consultation.eyeScreening.riskLevel === 'Medium' ? 'bg-amber-100 text-amber-700 border border-amber-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>{consultation.eyeScreening.riskLevel} Risk</span>
                     </div>
                     <div>
                       <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1.5">Findings</p>
@@ -770,18 +894,18 @@ export default function PatientReport() {
                   </div>
                 </div>
                 <div className="p-3 bg-blue-50 rounded-xl border border-blue-100">
-                  <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1">Recommendation</p>
-                  <p className="text-sm text-slate-600">{consultation.eyeScreening.recommendation}</p>
+                  <p className="text-xs text-blue-500 uppercase tracking-wider font-semibold mb-1">Recommendation</p>
+                  <p className="text-sm text-slate-700 font-medium">{consultation.eyeScreening.recommendation}</p>
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-slate-300 italic">No eye screening performed</p>
+              <EmptyState icon={Camera} text="No eye screening performed" sub="Screening data will appear here" />
             )}
           </div>
         </Section>
 
         {/* Mental Health */}
-        <Section sectionId="mental" title="Mental Health" icon={Brain} expandedSections={expandedSections} toggleSection={toggleSection}>
+        <Section sectionId="mental" title="Mental Health Assessment" icon={Brain} expandedSections={expandedSections} toggleSection={toggleSection}>
           <div>
             {consultation.mentalHealth ? (
               <div className="space-y-3">
@@ -794,7 +918,7 @@ export default function PatientReport() {
                     <p className="text-xl font-bold text-blue-600">{consultation.mentalHealth.sleepHours}h</p>
                     <p className="text-xs text-slate-400 mt-0.5 font-medium">Sleep</p>
                   </div>
-                  <div className="p-3 bg-blue-50 rounded-xl text-center border border-blue-100">
+                  <div className={`p-3 rounded-xl text-center border ${consultation.mentalHealth.stressLevel === 'High' ? 'bg-red-50 border-red-100' : consultation.mentalHealth.stressLevel === 'Moderate' ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'}`}>
                     <p className={`text-base font-bold ${consultation.mentalHealth.stressLevel === 'High' ? 'text-red-600' : consultation.mentalHealth.stressLevel === 'Moderate' ? 'text-amber-600' : 'text-green-600'}`}>{consultation.mentalHealth.stressLevel}</p>
                     <p className="text-xs text-slate-400 mt-0.5 font-medium">Stress</p>
                   </div>
@@ -803,7 +927,7 @@ export default function PatientReport() {
                   <p className="text-xs text-slate-400 uppercase tracking-wider font-semibold mb-2">Responses</p>
                   <div className="space-y-1.5">
                     {(consultation.mentalHealth.questions || []).map((q, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 bg-slate-50 rounded-lg">
+                      <div key={i} className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-100">
                         <span className="text-sm text-slate-500 truncate mr-2">{q.q}</span>
                         <span className="text-sm font-bold text-slate-700 bg-white px-2 py-0.5 rounded-md shadow-sm flex-shrink-0">{q.a}/10</span>
                       </div>
@@ -812,7 +936,7 @@ export default function PatientReport() {
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-slate-300 italic">No mental health assessment performed</p>
+              <EmptyState icon={Brain} text="No mental health assessment" sub="Assessment data will appear here" />
             )}
           </div>
         </Section>
@@ -821,22 +945,22 @@ export default function PatientReport() {
       {/* Diagnosis - full width, prominent */}
       <Section sectionId="diagnosis" title="Diagnosis & Prescription" icon={FileText} expandedSections={expandedSections} toggleSection={toggleSection}>
         <div className="space-y-4">
-          <div>
-            <label className="block text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1.5">Diagnosis</label>
-            <textarea value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Enter your diagnosis here..." rows={3} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-colors resize-none leading-relaxed" />
+          <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+            <label className="block text-xs text-blue-500 uppercase tracking-wider font-semibold mb-1.5">Diagnosis</label>
+            <textarea value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} placeholder="Enter your diagnosis here..." rows={3} className="w-full px-3 py-2.5 bg-white border border-blue-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none leading-relaxed" />
           </div>
-          <div>
-            <label className="block text-xs text-slate-400 uppercase tracking-wider font-semibold mb-1.5">Prescription</label>
-            <textarea value={prescription} onChange={(e) => setPrescription(e.target.value)} placeholder="Enter prescription here..." rows={4} className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white transition-colors resize-none leading-relaxed" />
+          <div className="p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+            <label className="block text-xs text-blue-500 uppercase tracking-wider font-semibold mb-1.5">Prescription</label>
+            <textarea value={prescription} onChange={(e) => setPrescription(e.target.value)} placeholder="Enter prescription here..." rows={4} className="w-full px-3 py-2.5 bg-white border border-blue-100 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none leading-relaxed" />
           </div>
           <div className="flex items-center gap-2.5 print:hidden">
-            <button onClick={handleSaveDiagnosis} disabled={saving} className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 transition-colors disabled:opacity-60 disabled:cursor-not-allowed">
+            <button onClick={handleSaveDiagnosis} disabled={saving} className="flex items-center gap-1.5 px-5 py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 shadow-md shadow-blue-600/20 transition-all disabled:opacity-60 disabled:cursor-not-allowed">
               <Save className="w-3.5 h-3.5" />
-              {saving ? 'Saving...' : 'Save'}
+              {saving ? 'Saving...' : 'Save Diagnosis'}
             </button>
             {saved && (
-              <span className="flex items-center gap-1 text-sm text-blue-600 font-medium animate-fadeIn">
-                <CheckCircle2 className="w-4 h-4" /> Saved!
+              <span className="flex items-center gap-1.5 text-sm text-blue-600 font-semibold animate-fadeIn">
+                <CheckCircle2 className="w-4 h-4" /> Saved successfully!
               </span>
             )}
           </div>
