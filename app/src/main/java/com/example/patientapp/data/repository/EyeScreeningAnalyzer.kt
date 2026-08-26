@@ -147,14 +147,15 @@ Be professional and clinical. Always recommend consulting an ophthalmologist for
     }
 
     private fun parseResponse(text: String): EyeScreeningResult {
-        val riskLevel = extractAfter(text, "RISK_LEVEL:")
+        val riskLevel = extractBetween(text, "RISK_LEVEL:", "FINDINGS:")
             ?.trim()?.uppercase()?.split(" ")?.firstOrNull() ?: "MODERATE"
 
-        val findingsBlock = extractAfter(text, "FINDINGS:")
+        val findings = extractBetween(text, "FINDINGS:", "RECOMMENDATION:")?.trim()
+            ?: extractAfter(text, "FINDINGS:")?.trim()
+            ?: "Analysis completed. Please review with a specialist."
+
         val recommendation = extractAfter(text, "RECOMMENDATION:")?.trim()
             ?: "Please consult an ophthalmologist for a comprehensive eye examination."
-
-        val findings = findingsBlock?.trim() ?: "Analysis completed. Please review with a specialist."
 
         val validLevels = setOf("LOW", "MODERATE", "HIGH", "CRITICAL")
         val finalRisk = if (riskLevel in validLevels) riskLevel else "MODERATE"
@@ -164,6 +165,14 @@ Be professional and clinical. Always recommend consulting an ophthalmologist for
             findings = findings,
             recommendation = recommendation
         )
+    }
+
+    private fun extractBetween(text: String, startMarker: String, endMarker: String): String? {
+        val startIndex = text.indexOf(startMarker, ignoreCase = true)
+        if (startIndex == -1) return null
+        val fromStart = startIndex + startMarker.length
+        val endIndex = text.indexOf(endMarker, fromStart, ignoreCase = true)
+        return if (endIndex == -1) text.substring(fromStart) else text.substring(fromStart, endIndex)
     }
 
     private fun extractAfter(text: String, marker: String): String? {
