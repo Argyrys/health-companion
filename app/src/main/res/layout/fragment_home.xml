@@ -169,13 +169,14 @@
                 android:padding="@dimen/spacing_md"
                 android:gravity="center_vertical">
 
-                <TextView
+                <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:gravity="center"
-                    android:textSize="28sp"
-                    android:text="\uD83E\uDE7A"
-                    android:background="@drawable/bg_dashboard_card" />
+                    android:src="@drawable/ic_doctor"
+                    android:background="@drawable/bg_dashboard_card"
+                    android:padding="10dp"
+                    android:contentDescription="Find a Doctor" />
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -232,13 +233,14 @@
                 android:padding="@dimen/spacing_md"
                 android:gravity="center_vertical">
 
-                <TextView
+                <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:gravity="center"
-                    android:textSize="28sp"
-                    android:text="📅"
-                    android:background="@drawable/bg_dashboard_card" />
+                    android:src="@drawable/ic_calendar"
+                    android:background="@drawable/bg_dashboard_card"
+                    android:padding="10dp"
+                    android:contentDescription="My Appointments" />
 
                 <LinearLayout
                     android:layout_width="0dp"
