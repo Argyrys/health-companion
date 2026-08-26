@@ -97,6 +97,7 @@ class PatientRepository @Inject constructor(
                         return@addSnapshotListener
                     }
                     val patient = snapshot?.toObject(Patient::class.java)
+                        ?: snapshot?.data?.let { parsePatientFromMap(it, uid) }
                     if (patient != null) {
                         localAuthManager.savePatientProfile(uid, patient)
                     }
@@ -107,6 +108,35 @@ class PatientRepository @Inject constructor(
                 trySend(local)
             }
         }
+    }
+
+    private fun parsePatientFromMap(data: Map<String, Any>, uid: String): Patient {
+        return Patient(
+            uid = uid,
+            fullName = (data["fullName"] as? String) ?: "",
+            age = when (val v = data["age"]) {
+                is Int -> v
+                is Long -> v.toInt()
+                is String -> v.toIntOrNull() ?: 0
+                else -> 0
+            },
+            gender = (data["gender"] as? String) ?: "",
+            phoneNumber = (data["phoneNumber"] as? String) ?: "",
+            email = (data["email"] as? String) ?: "",
+            bloodGroup = (data["bloodGroup"] as? String) ?: "",
+            height = (data["height"] as? String) ?: "",
+            weight = (data["weight"] as? String) ?: "",
+            address = (data["address"] as? String) ?: "",
+            city = (data["city"] as? String) ?: "",
+            emergencyContactName = (data["emergencyContactName"] as? String) ?: "",
+            emergencyContactNumber = (data["emergencyContactNumber"] as? String) ?: "",
+            existingConditions = when (val v = data["existingConditions"]) {
+                is String -> v
+                is List<*> -> v.joinToString(", ")
+                else -> ""
+            },
+            preferredLanguage = (data["preferredLanguage"] as? String) ?: ""
+        )
     }
 
     suspend fun getProfile(uid: String): Patient? {

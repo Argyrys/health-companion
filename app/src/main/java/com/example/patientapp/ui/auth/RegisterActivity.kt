@@ -91,9 +91,9 @@ class RegisterActivity : AppCompatActivity() {
                         "city" to "",
                         "emergencyContactName" to "",
                         "emergencyContactNumber" to "",
-                        "existingConditions" to emptyList<String>(),
+                        "existingConditions" to "",
                         "preferredLanguage" to "English",
-                        "age" to "",
+                        "age" to 0,
                         "updatedAt" to com.google.firebase.Timestamp.now()
                     )
                     firestore.collection("patients").document(uid)
