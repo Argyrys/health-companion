@@ -6,11 +6,15 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Base64
 import com.example.patientapp.BuildConfig
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
+import java.io.ByteArrayOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 data class EyeScreeningResult(
     val riskLevel: String,
@@ -47,28 +51,65 @@ Be professional and clinical. Always recommend consulting an ophthalmologist for
             try {
                 val apiKey = BuildConfig.GEMINI_API_KEY
                 if (apiKey.isBlank()) {
-                    return@withContext Result.failure(Exception("Gemini API key not configured. Set GEMINI_API_KEY in local.properties"))
+                    return@withContext Result.failure(Exception("Gemini API key not configured"))
                 }
-
-                val model = GenerativeModel(
-                    modelName = "gemini-2.5-flash",
-                    apiKey = apiKey
-                )
 
                 val bitmap = uriToBitmap(context, imageUri)
                     ?: return@withContext Result.failure(Exception("Could not load image"))
 
-                val response = model.generateContent(
-                    content {
-                        image(bitmap)
-                        text(PROMPT)
-                    }
-                )
+                val base64Image = bitmapToBase64(bitmap)
 
-                val text = response.text ?: return@withContext Result.failure(Exception("Empty response from AI"))
+                val requestBody = JSONObject().apply {
+                    put("contents", JSONArray().put(
+                        JSONObject().apply {
+                            put("parts", JSONArray()
+                                .put(JSONObject().apply {
+                                    put("inline_data", JSONObject().apply {
+                                        put("mime_type", "image/jpeg")
+                                        put("data", base64Image)
+                                    })
+                                })
+                                .put(JSONObject().apply {
+                                    put("text", PROMPT)
+                                })
+                            )
+                        }
+                    ))
+                    put("generationConfig", JSONObject().apply {
+                        put("temperature", 0.4)
+                        put("maxOutputTokens", 1024)
+                    })
+                }
 
-                val result = parseResponse(text)
-                Result.success(result)
+                val url = URL("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$apiKey")
+                val conn = url.openConnection() as HttpURLConnection
+                conn.requestMethod = "POST"
+                conn.setRequestProperty("Content-Type", "application/json")
+                conn.doOutput = true
+                conn.connectTimeout = 30000
+                conn.readTimeout = 60000
+
+                conn.outputStream.use { os ->
+                    os.write(requestBody.toString().toByteArray(Charsets.UTF_8))
+                }
+
+                val code = conn.responseCode
+                val responseBody = if (code in 200..299) {
+                    conn.inputStream.bufferedReader().readText()
+                } else {
+                    val error = conn.errorStream?.bufferedReader()?.readText() ?: "Unknown error"
+                    return@withContext Result.failure(Exception("API error $code: $error"))
+                }
+
+                val json = JSONObject(responseBody)
+                val text = json.getJSONArray("candidates")
+                    .getJSONObject(0)
+                    .getJSONObject("content")
+                    .getJSONArray("parts")
+                    .getJSONObject(0)
+                    .getString("text")
+
+                Result.success(parseResponse(text))
             } catch (e: Exception) {
                 Result.failure(e)
             }
@@ -90,6 +131,19 @@ Be professional and clinical. Always recommend consulting an ophthalmologist for
         } catch (e: Exception) {
             null
         }
+    }
+
+    private fun bitmapToBase64(bitmap: Bitmap): String {
+        val maxSize = 1024
+        val scaled = if (bitmap.width > maxSize || bitmap.height > maxSize) {
+            val ratio = minOf(maxSize.toFloat() / bitmap.width, maxSize.toFloat() / bitmap.height)
+            Bitmap.createScaledBitmap(bitmap, (bitmap.width * ratio).toInt(), (bitmap.height * ratio).toInt(), true)
+        } else {
+            bitmap
+        }
+        val stream = ByteArrayOutputStream()
+        scaled.compress(Bitmap.CompressFormat.JPEG, 85, stream)
+        return Base64.encodeToString(stream.toByteArray(), Base64.NO_WRAP)
     }
 
     private fun parseResponse(text: String): EyeScreeningResult {
