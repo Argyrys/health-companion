@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Users, LayoutDashboard, LogOut, Menu, X, ChevronRight } from 'lucide-react';
+import { Activity, Users, LayoutDashboard, LogOut, Menu, X, ChevronRight, User } from 'lucide-react';
 
 export default function Sidebar({ doctorName, doctorNum, onLogout }) {
   const location = useLocation();
@@ -9,6 +9,7 @@ export default function Sidebar({ doctorName, doctorNum, onLogout }) {
   const links = [
     { path: '/', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/patients', label: 'Patients', icon: Users },
+    { path: '/profile', label: 'Profile', icon: User },
   ];
 
   const isActive = (path) => location.pathname === path;

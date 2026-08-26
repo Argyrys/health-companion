@@ -81,6 +81,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_appointments"
+            app:destination="@id/appointmentsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -100,6 +107,12 @@
         android:name="com.example.patientapp.ui.profile.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
+
+    <fragment
+        android:id="@+id/appointmentsFragment"
+        android:name="com.example.patientapp.ui.appointments.AppointmentsFragment"
+        android:label="My Appointments"
+        tools:layout="@layout/fragment_appointments" />
 
     <!-- Feature Fragments -->
     <fragment

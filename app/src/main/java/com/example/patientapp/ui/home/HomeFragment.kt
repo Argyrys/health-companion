@@ -67,6 +67,10 @@ class HomeFragment : Fragment() {
             findNavController().navigate(R.id.action_home_to_doctors)
         }
 
+        binding.cardAppointments.setOnClickListener {
+            findNavController().navigate(R.id.action_home_to_appointments)
+        }
+
         val uid = sessionManager.getUid()
         if (uid.isNullOrEmpty()) {
             binding.btnSignIn.visibility = View.VISIBLE

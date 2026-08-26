@@ -5,6 +5,7 @@ import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
 import PatientList from './pages/PatientList';
 import PatientReport from './pages/PatientReport';
+import Profile from './pages/Profile';
 import Sidebar from './components/Sidebar';
 import { logoutDoctor, onAuthChange } from './services/auth';
 import { getOrCreateDoctor } from './services/doctors';
@@ -85,6 +86,7 @@ function App() {
                 <Route path="/" element={<Dashboard doctorId={doctorId} />} />
                 <Route path="/patients" element={<PatientList doctorId={doctorId} />} />
                 <Route path="/patients/:id" element={<PatientReport doctorId={doctorId} />} />
+                <Route path="/profile" element={<Profile doctorId={doctorId} />} />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>
             </main>
