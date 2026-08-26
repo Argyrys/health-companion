@@ -14,6 +14,6 @@
         android:title="Reports" />
     <item
         android:id="@+id/profileFragment"
-        android:icon="@android:drawable/ic_menu_myplaces"
+        android:icon="@drawable/ic_person"
         android:title="Profile" />
 </menu>
