@@ -111,65 +111,58 @@ class EyeScreeningFragment : Fragment() {
 
     private fun uploadAndAnalyze() {
         val uri = photoUri ?: return
-        val uid = sessionManager.getUid() ?: return
 
         binding.progressBar.visibility = View.VISIBLE
         binding.btnCapture.isEnabled = false
 
         CoroutineScope(Dispatchers.IO).launch {
-            // Analyze with Gemini AI
+            // 1. Analyze with Gemini AI (primary — must succeed)
             val aiResult = EyeScreeningAnalyzer.analyze(requireContext(), uri)
 
-            val uploadResult = storageRepository.uploadEyeImage(uid, uri)
-            if (uploadResult is com.example.patientapp.utils.Resource.Success) {
-                val imageUrl = uploadResult.data
+            val riskLevel: String
+            val findings: String
+            val recommendation: String
 
-                val riskLevel: String
-                val findings: String
-                val recommendation: String
-
-                if (aiResult.isSuccess) {
-                    val result = aiResult.getOrNull()!!
-                    riskLevel = result.riskLevel
-                    findings = result.findings
-                    recommendation = result.recommendation
-                } else {
-                    // Fallback if AI fails
-                    riskLevel = "MODERATE"
-                    findings = "AI analysis unavailable: ${aiResult.exceptionOrNull()?.message}\nPlease consult an ophthalmologist for professional assessment."
-                    recommendation = "Schedule a comprehensive eye examination with a qualified ophthalmologist for accurate diagnosis."
-                }
-
-                val screening = EyeScreening(
-                    id = UUID.randomUUID().toString(),
-                    patientId = uid,
-                    imageUrl = imageUrl,
-                    riskLevel = riskLevel,
-                    aiAssessment = findings,
-                    createdAt = Timestamp.now()
-                )
-                val saveResult = patientRepository.saveEyeScreening(screening)
-
-                if (_binding != null) {
-                    launch(Dispatchers.Main) {
-                        if (_binding == null) return@launch
-                        binding.progressBar.visibility = View.GONE
-                        binding.btnCapture.isEnabled = true
-                        if (saveResult is com.example.patientapp.utils.Resource.Success) {
-                            showDetailedResult(riskLevel, findings, recommendation)
-                        } else {
-                            requireContext().showToast("Failed to save screening")
-                        }
-                    }
-                }
+            if (aiResult.isSuccess) {
+                val result = aiResult.getOrNull()!!
+                riskLevel = result.riskLevel
+                findings = result.findings
+                recommendation = result.recommendation
             } else {
-                if (_binding != null) {
-                    launch(Dispatchers.Main) {
-                        if (_binding == null) return@launch
-                        binding.progressBar.visibility = View.GONE
-                        binding.btnCapture.isEnabled = true
-                        requireContext().showToast("Upload failed. Please try again.")
-                    }
+                // Fallback if AI fails
+                riskLevel = "MODERATE"
+                findings = "AI analysis unavailable: ${aiResult.exceptionOrNull()?.message}\nPlease consult an ophthalmologist for professional assessment."
+                recommendation = "Schedule a comprehensive eye examination with a qualified ophthalmologist for accurate diagnosis."
+            }
+
+            // 2. Upload image and save to Firestore (best-effort, non-blocking)
+            val uid = sessionManager.getUid()
+            if (uid != null) {
+                try {
+                    val uploadResult = storageRepository.uploadEyeImage(uid, uri)
+                    val imageUrl = if (uploadResult is com.example.patientapp.utils.Resource.Success) uploadResult.data else ""
+
+                    val screening = EyeScreening(
+                        id = UUID.randomUUID().toString(),
+                        patientId = uid,
+                        imageUrl = imageUrl,
+                        riskLevel = riskLevel,
+                        aiAssessment = findings,
+                        createdAt = Timestamp.now()
+                    )
+                    patientRepository.saveEyeScreening(screening)
+                } catch (e: Exception) {
+                    // Upload/save failed — still show AI results
+                }
+            }
+
+            // 3. Show results regardless of upload status
+            if (_binding != null) {
+                launch(Dispatchers.Main) {
+                    if (_binding == null) return@launch
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnCapture.isEnabled = true
+                    showDetailedResult(riskLevel, findings, recommendation)
                 }
             }
         }
