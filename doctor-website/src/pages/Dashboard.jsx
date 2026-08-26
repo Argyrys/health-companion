@@ -61,7 +61,7 @@ export default function Dashboard({ doctorId }) {
           snap = await getDocs(query(collection(db, 'appointments'), orderBy('createdAt', 'desc')));
         }
         if (!cancelled) {
-          setAppointments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+          setAppointments(snap.docs.map(d => ({ ...d.data(), id: d.id })));
         }
       } catch (err) {
         console.error('Error fetching appointments:', err);
