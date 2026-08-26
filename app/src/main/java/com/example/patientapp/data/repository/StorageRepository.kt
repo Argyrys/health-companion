@@ -21,8 +21,7 @@ class StorageRepository @Inject constructor(
             val url = ref.downloadUrl.await().toString()
             Resource.Success(url)
         } catch (e: Exception) {
-            // Mock: return a fake URL
-            Resource.Success("mock://voice/recording.mp3")
+            Resource.Error(e.message ?: "Failed to upload voice recording")
         }
     }
 
@@ -33,7 +32,7 @@ class StorageRepository @Inject constructor(
             val url = ref.downloadUrl.await().toString()
             Resource.Success(url)
         } catch (e: Exception) {
-            Resource.Success("mock://eye/image.jpg")
+            Resource.Error(e.message ?: "Failed to upload eye image")
         }
     }
 
@@ -44,7 +43,7 @@ class StorageRepository @Inject constructor(
             val url = ref.downloadUrl.await().toString()
             Resource.Success(url)
         } catch (e: Exception) {
-            Resource.Success("mock://report/report.pdf")
+            Resource.Error(e.message ?: "Failed to upload report PDF")
         }
     }
 }

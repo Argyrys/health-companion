@@ -78,17 +78,23 @@ class RegisterActivity : AppCompatActivity() {
                 val result = auth.createUserWithEmailAndPassword(email, password).await()
                 val uid = result.user?.uid
                 if (uid != null) {
-                    // Create patient profile in Firestore (app subcollection format)
                     val patientProfile = hashMapOf(
+                        "uid" to uid,
                         "fullName" to name,
                         "email" to email,
                         "phoneNumber" to "",
-                        "dateOfBirth" to "",
                         "gender" to "",
                         "bloodGroup" to "",
                         "height" to "",
                         "weight" to "",
-                        "createdAt" to com.google.firebase.Timestamp.now()
+                        "address" to "",
+                        "city" to "",
+                        "emergencyContactName" to "",
+                        "emergencyContactNumber" to "",
+                        "existingConditions" to emptyList<String>(),
+                        "preferredLanguage" to "English",
+                        "age" to "",
+                        "updatedAt" to com.google.firebase.Timestamp.now()
                     )
                     firestore.collection("patients").document(uid)
                         .collection("data").document("profile")

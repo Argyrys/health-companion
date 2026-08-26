@@ -20,15 +20,6 @@ class PatientRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val localAuthManager: LocalAuthManager
 ) {
-    private val useLocal: Boolean by lazy {
-        try {
-            firestore.app
-            false
-        } catch (e: Exception) {
-            true
-        }
-    }
-
     private fun patientDoc(uid: String) =
         firestore.collection(Constants.COLLECTION_PATIENTS).document(uid)
 
@@ -57,18 +48,17 @@ class PatientRepository @Inject constructor(
         patientDoc(uid).collection("data").document(Constants.SUBCOLLECTION_MENTAL_HEALTH)
 
     private fun reportsCol(uid: String) =
-        patientDoc(uid).collection("data").document("reportData")
-            .collection("reports")
+        patientDoc(uid).collection("data").document("reportData").collection("reports")
 
     private fun remindersCol(uid: String) =
-        patientDoc(uid).collection("data").document("reminderData")
-            .collection("reminders")
+        patientDoc(uid).collection("data").document("reminderData").collection("reminders")
+
+    private fun voiceDoc(uid: String) =
+        patientDoc(uid).collection("data").document("voiceTranscription")
 
     // ==================== PROFILE ====================
     suspend fun saveProfile(patient: Patient): Resource<Unit> {
-        // Always save locally
         localAuthManager.savePatientProfile(patient.uid, patient)
-
         return try {
             val data = mapOf(
                 "uid" to patient.uid,
@@ -91,42 +81,40 @@ class PatientRepository @Inject constructor(
             profileDoc(patient.uid).set(data, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit) // Local save succeeded
+            Resource.Error(e.message ?: "Failed to save profile to cloud")
         }
     }
 
     fun observeProfile(uid: String): Flow<Patient?> {
-        // Always try local first
-        val localPatient = localAuthManager.getPatientProfile(uid)
-        if (localPatient != null) {
-            return flowOf(localPatient)
-        }
-        if (useLocal) return flowOf(null)
         return callbackFlow {
+            val local = localAuthManager.getPatientProfile(uid)
+            if (local != null) trySend(local)
+
             try {
                 val reg = profileDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) {
-                        trySend(null)
+                        if (local == null) trySend(null)
                         return@addSnapshotListener
                     }
                     val patient = snapshot?.toObject(Patient::class.java)
-                    trySend(patient)
+                    if (patient != null) {
+                        localAuthManager.savePatientProfile(uid, patient)
+                    }
+                    trySend(patient ?: local)
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(null)
+                trySend(local)
             }
         }
     }
 
     suspend fun getProfile(uid: String): Patient? {
-        val local = localAuthManager.getPatientProfile(uid)
-        if (local != null) return local
-
         return try {
             profileDoc(uid).get().await().toObject(Patient::class.java)
+                ?: localAuthManager.getPatientProfile(uid)
         } catch (e: Exception) {
-            null
+            localAuthManager.getPatientProfile(uid)
         }
     }
 
@@ -148,23 +136,24 @@ class PatientRepository @Inject constructor(
             caseDoc(caseTaking.patientId).set(data, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save case taking to cloud")
         }
     }
 
     fun observeCaseTaking(uid: String): Flow<CaseTaking?> {
-        val local = localAuthManager.getCaseTaking(uid)
-        if (local != null) return flowOf(local)
-        if (useLocal) return flowOf(null)
         return callbackFlow {
+            val local = localAuthManager.getCaseTaking(uid)
+            if (local != null) trySend(local)
+
             try {
                 val reg = caseDoc(uid).addSnapshotListener { snapshot, error ->
-                    if (error != null) { trySend(null); return@addSnapshotListener }
-                    trySend(snapshot?.toObject(CaseTaking::class.java))
+                    if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
+                    val data = snapshot?.toObject(CaseTaking::class.java)
+                    trySend(data ?: local)
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(null)
+                trySend(local)
             }
         }
     }
@@ -188,23 +177,24 @@ class PatientRepository @Inject constructor(
             medHistoryDoc(history.patientId).set(data, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save medical history to cloud")
         }
     }
 
     fun observeMedicalHistory(uid: String): Flow<MedicalHistory?> {
-        val local = localAuthManager.getMedicalHistory(uid)
-        if (local != null) return flowOf(local)
-        if (useLocal) return flowOf(null)
         return callbackFlow {
+            val local = localAuthManager.getMedicalHistory(uid)
+            if (local != null) trySend(local)
+
             try {
                 val reg = medHistoryDoc(uid).addSnapshotListener { snapshot, error ->
-                    if (error != null) { trySend(null); return@addSnapshotListener }
-                    trySend(snapshot?.toObject(MedicalHistory::class.java))
+                    if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
+                    val data = snapshot?.toObject(MedicalHistory::class.java)
+                    trySend(data ?: local)
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(null)
+                trySend(local)
             }
         }
     }
@@ -222,23 +212,24 @@ class PatientRepository @Inject constructor(
             famHistoryDoc(history.patientId).set(data, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save family history to cloud")
         }
     }
 
     fun observeFamilyHistory(uid: String): Flow<FamilyHistory?> {
-        val local = localAuthManager.getFamilyHistory(uid)
-        if (local != null) return flowOf(local)
-        if (useLocal) return flowOf(null)
         return callbackFlow {
+            val local = localAuthManager.getFamilyHistory(uid)
+            if (local != null) trySend(local)
+
             try {
                 val reg = famHistoryDoc(uid).addSnapshotListener { snapshot, error ->
-                    if (error != null) { trySend(null); return@addSnapshotListener }
-                    trySend(snapshot?.toObject(FamilyHistory::class.java))
+                    if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
+                    val data = snapshot?.toObject(FamilyHistory::class.java)
+                    trySend(data ?: local)
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(null)
+                trySend(local)
             }
         }
     }
@@ -257,20 +248,20 @@ class PatientRepository @Inject constructor(
             medicationsDoc(patientId).set(data, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save medications to cloud")
         }
     }
 
     fun observeMedications(uid: String): Flow<List<Medication>> {
-        val local = localAuthManager.getMedications(uid)
-        if (local.isNotEmpty()) return flowOf(local)
-        if (useLocal) return flowOf(emptyList())
         return callbackFlow {
+            val local = localAuthManager.getMedications(uid)
+            if (local.isNotEmpty()) trySend(local)
+
             try {
                 val reg = medicationsDoc(uid).addSnapshotListener { snapshot, error ->
-                    if (error != null) { trySend(emptyList()); return@addSnapshotListener }
+                    if (error != null) { if (local.isEmpty()) trySend(emptyList()); return@addSnapshotListener }
                     val list = snapshot?.get("medications") as? List<Map<String, Any>> ?: emptyList()
-                    trySend(list.map {
+                    val meds = list.map {
                         Medication(
                             id = it["id"] as? String ?: "",
                             patientId = it["patientId"] as? String ?: uid,
@@ -278,11 +269,12 @@ class PatientRepository @Inject constructor(
                             dosage = it["dosage"] as? String ?: "",
                             frequency = it["frequency"] as? String ?: "Once daily"
                         )
-                    })
+                    }
+                    trySend(meds.ifEmpty { local })
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(emptyList())
+                trySend(local)
             }
         }
     }
@@ -301,20 +293,20 @@ class PatientRepository @Inject constructor(
             allergiesDoc(patientId).set(data, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save allergies to cloud")
         }
     }
 
     fun observeAllergies(uid: String): Flow<List<Allergy>> {
-        val local = localAuthManager.getAllergies(uid)
-        if (local.isNotEmpty()) return flowOf(local)
-        if (useLocal) return flowOf(emptyList())
         return callbackFlow {
+            val local = localAuthManager.getAllergies(uid)
+            if (local.isNotEmpty()) trySend(local)
+
             try {
                 val reg = allergiesDoc(uid).addSnapshotListener { snapshot, error ->
-                    if (error != null) { trySend(emptyList()); return@addSnapshotListener }
+                    if (error != null) { if (local.isEmpty()) trySend(emptyList()); return@addSnapshotListener }
                     val list = snapshot?.get("allergies") as? List<Map<String, Any>> ?: emptyList()
-                    trySend(list.map {
+                    val allergies = list.map {
                         Allergy(
                             id = it["id"] as? String ?: "",
                             patientId = it["patientId"] as? String ?: uid,
@@ -322,11 +314,12 @@ class PatientRepository @Inject constructor(
                             allergen = it["allergen"] as? String ?: "",
                             severity = it["severity"] as? String ?: "Mild"
                         )
-                    })
+                    }
+                    trySend(allergies.ifEmpty { local })
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(emptyList())
+                trySend(local)
             }
         }
     }
@@ -338,23 +331,24 @@ class PatientRepository @Inject constructor(
             eyeScreeningDoc(screening.patientId).set(screening, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save eye screening to cloud")
         }
     }
 
     fun observeEyeScreening(uid: String): Flow<EyeScreening?> {
-        val local = localAuthManager.getEyeScreening(uid)
-        if (local != null) return flowOf(local)
-        if (useLocal) return flowOf(null)
         return callbackFlow {
+            val local = localAuthManager.getEyeScreening(uid)
+            if (local != null) trySend(local)
+
             try {
                 val reg = eyeScreeningDoc(uid).addSnapshotListener { snapshot, error ->
-                    if (error != null) { trySend(null); return@addSnapshotListener }
-                    trySend(snapshot?.toObject(EyeScreening::class.java))
+                    if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
+                    val data = snapshot?.toObject(EyeScreening::class.java)
+                    trySend(data ?: local)
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(null)
+                trySend(local)
             }
         }
     }
@@ -366,23 +360,24 @@ class PatientRepository @Inject constructor(
             mentalHealthDoc(mentalHealth.patientId).set(mentalHealth, SetOptions.merge()).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save mental health to cloud")
         }
     }
 
     fun observeMentalHealth(uid: String): Flow<MentalHealth?> {
-        val local = localAuthManager.getMentalHealth(uid)
-        if (local != null) return flowOf(local)
-        if (useLocal) return flowOf(null)
         return callbackFlow {
+            val local = localAuthManager.getMentalHealth(uid)
+            if (local != null) trySend(local)
+
             try {
                 val reg = mentalHealthDoc(uid).addSnapshotListener { snapshot, error ->
-                    if (error != null) { trySend(null); return@addSnapshotListener }
-                    trySend(snapshot?.toObject(MentalHealth::class.java))
+                    if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
+                    val data = snapshot?.toObject(MentalHealth::class.java)
+                    trySend(data ?: local)
                 }
                 awaitClose { reg.remove() }
             } catch (e: Exception) {
-                trySend(null)
+                trySend(local)
             }
         }
     }
@@ -393,12 +388,11 @@ class PatientRepository @Inject constructor(
             reportsCol(report.patientId).add(report).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save report to cloud")
         }
     }
 
     fun observeReports(uid: String): Flow<List<Report>> {
-        if (useLocal) return flowOf(emptyList())
         return callbackFlow {
             try {
                 val reg = reportsCol(uid).orderBy("createdAt")
@@ -419,7 +413,7 @@ class PatientRepository @Inject constructor(
             remindersCol(reminder.patientId).add(reminder).await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to save reminder to cloud")
         }
     }
 
@@ -430,12 +424,11 @@ class PatientRepository @Inject constructor(
             snapshot.documents.firstOrNull()?.reference?.set(reminder, SetOptions.merge())?.await()
             Resource.Success(Unit)
         } catch (e: Exception) {
-            Resource.Success(Unit)
+            Resource.Error(e.message ?: "Failed to update reminder")
         }
     }
 
     fun observeReminders(uid: String): Flow<List<Reminder>> {
-        if (useLocal) return flowOf(emptyList())
         return callbackFlow {
             try {
                 val reg = remindersCol(uid).addSnapshotListener { snapshot, error ->
@@ -452,9 +445,33 @@ class PatientRepository @Inject constructor(
     // ==================== VOICE TRANSCRIPTION ====================
     suspend fun saveVoiceTranscription(uid: String, text: String) {
         localAuthManager.saveVoiceTranscription(uid, text)
+        try {
+            voiceDoc(uid).set(
+                mapOf("text" to text, "updatedAt" to Timestamp.now()),
+                SetOptions.merge()
+            ).await()
+        } catch (_: Exception) { }
     }
 
     fun getVoiceTranscription(uid: String): String? {
         return localAuthManager.getVoiceTranscription(uid)
+    }
+
+    fun observeVoiceTranscription(uid: String): Flow<String?> {
+        return callbackFlow {
+            val local = localAuthManager.getVoiceTranscription(uid)
+            if (local != null) trySend(local)
+
+            try {
+                val reg = voiceDoc(uid).addSnapshotListener { snapshot, error ->
+                    if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
+                    val text = snapshot?.getString("text")
+                    trySend(text ?: local)
+                }
+                awaitClose { reg.remove() }
+            } catch (e: Exception) {
+                trySend(local)
+            }
+        }
     }
 }

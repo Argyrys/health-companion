@@ -200,8 +200,21 @@ class ReportsFragment : Fragment() {
                         lastGeneratedPdf = file
                         requireContext().showToast("PDF report generated successfully")
                         shareLocalPdf(file)
+
+                        // Upload PDF to Firebase Storage and save record
                         CoroutineScope(Dispatchers.IO).launch {
-                            val report = Report(patientId = uid, createdAt = Timestamp.now())
+                            val pdfUri = Uri.fromFile(file)
+                            val uploadResult = storageRepository.uploadReport(uid, pdfUri)
+                            val pdfUrl = if (uploadResult is com.example.patientapp.utils.Resource.Success) {
+                                uploadResult.data
+                            } else {
+                                ""
+                            }
+                            val report = Report(
+                                patientId = uid,
+                                pdfUrl = pdfUrl,
+                                createdAt = Timestamp.now()
+                            )
                             patientRepository.saveReport(report)
                         }
                     }
