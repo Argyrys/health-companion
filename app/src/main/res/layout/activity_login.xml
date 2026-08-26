@@ -88,6 +88,7 @@
                 android:layout_marginTop="12dp"
                 app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
                 app:endIconMode="password_toggle"
+                app:endIconTint="@color/text_primary"
                 app:passwordToggleEnabled="true">
 
                 <com.google.android.material.textfield.TextInputEditText

@@ -92,7 +92,8 @@
                 android:hint="Password"
                 android:layout_marginTop="12dp"
                 app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                app:endIconMode="password_toggle">
+                app:endIconMode="password_toggle"
+                app:endIconTint="@color/text_primary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPassword"
@@ -111,7 +112,8 @@
                 android:hint="Confirm Password"
                 android:layout_marginTop="12dp"
                 app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
-                app:endIconMode="password_toggle">
+                app:endIconMode="password_toggle"
+                app:endIconTint="@color/text_primary">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etConfirmPassword"
