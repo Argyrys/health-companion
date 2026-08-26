@@ -99,15 +99,6 @@ class HomeFragment : Fragment() {
         val carouselAdapter = CarouselAdapter(carouselItems)
         binding.viewPagerCarousel.adapter = carouselAdapter
 
-        // Create dots manually
-        binding.tabLayoutDots.removeAllTabs()
-        for (i in carouselItems.indices) {
-            binding.tabLayoutDots.addTab(binding.tabLayoutDots.newTab())
-        }
-        for (i in 0 until binding.tabLayoutDots.tabCount) {
-            if (i == 0) binding.tabLayoutDots.getTabAt(i)?.select()
-        }
-
         // Auto-scroll
         val autoScrollRunnable = object : Runnable {
             override fun run() {
@@ -117,11 +108,6 @@ class HomeFragment : Fragment() {
                 autoScrollHandler.postDelayed(this, autoScrollDelay)
             }
         }
-        binding.viewPagerCarousel.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                binding.tabLayoutDots.getTabAt(position)?.select()
-            }
-        })
         autoScrollHandler.postDelayed(autoScrollRunnable, autoScrollDelay)
     }
 

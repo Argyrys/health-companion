@@ -139,4 +139,7 @@
     <string name="permission_denied">Permission denied</string>
     <string name="camera_permission_required">Camera permission is required for this feature</string>
     <string name="mic_permission_required">Microphone permission is required for recording</string>
+
+    <!-- Google Sign-In Web Client ID -->
+    <string name="default_web_client_id">704791131195-n2mlh88afp1i6g0kuis43hrcns266eol.apps.googleusercontent.com</string>
 </resources>

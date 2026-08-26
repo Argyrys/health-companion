@@ -9,8 +9,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.patientapp.databinding.FragmentAppointmentsBinding
 import com.example.patientapp.utils.SessionManager
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -57,7 +57,6 @@ class AppointmentsFragment : Fragment() {
         FirebaseFirestore.getInstance()
             .collection("appointments")
             .whereEqualTo("patientId", uid)
-            .orderBy("createdAt", Query.Direction.DESCENDING)
             .addSnapshotListener { snapshot, error ->
                 if (!isAdded) return@addSnapshotListener
 
@@ -67,14 +66,21 @@ class AppointmentsFragment : Fragment() {
                 }
 
                 val items = snapshot.documents.mapNotNull { doc ->
+                    val createdAtRaw = doc.get("createdAt")
+                    val createdAtMillis = when (createdAtRaw) {
+                        is Timestamp -> createdAtRaw.toDate().time
+                        is Long -> createdAtRaw
+                        is Number -> createdAtRaw.toLong()
+                        else -> 0L
+                    }
                     AppointmentItem(
                         id = doc.id,
                         doctorName = doc.getString("doctorName") ?: "Unknown Doctor",
                         message = doc.getString("message") ?: "",
-                        status = doc.getString("status") ?: "pending",
-                        createdAt = doc.getLong("createdAt") ?: 0L
+                        status = doc.getString("status") ?: "Pending",
+                        createdAt = createdAtMillis
                     )
-                }
+                }.sortedByDescending { it.createdAt }
 
                 if (items.isEmpty()) {
                     showEmpty()

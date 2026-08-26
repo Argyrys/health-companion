@@ -3,13 +3,20 @@ package com.example.patientapp.ui.auth
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.example.patientapp.R
 import com.example.patientapp.databinding.ActivityLoginBinding
 import com.example.patientapp.ui.main.MainActivity
 import com.example.patientapp.utils.SessionManager
 import com.example.patientapp.utils.showToast
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -20,25 +27,102 @@ import javax.inject.Inject
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
+    private lateinit var googleSignInClient: GoogleSignInClient
 
     @Inject lateinit var sessionManager: SessionManager
     @Inject lateinit var auth: FirebaseAuth
     @Inject lateinit var firestore: FirebaseFirestore
+
+    private val googleSignInLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
+            val account = task.getResult(ApiException::class.java)
+            firebaseAuthWithGoogle(account.idToken!!)
+        } catch (e: ApiException) {
+            showLoading(false)
+            showToast("Google sign in failed")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(getString(R.string.default_web_client_id))
+            .requestEmail()
+            .build()
+        googleSignInClient = GoogleSignIn.getClient(this, gso)
+
         binding.btnLogin.setOnClickListener { login() }
-
+        binding.btnGoogleSignIn.setOnClickListener { googleSignIn() }
         binding.tvForgotPassword.setOnClickListener { forgotPassword() }
-
         binding.tvCreateAccount.setOnClickListener {
             startActivity(Intent(this, RegisterActivity::class.java))
         }
-
         binding.tvBack.setOnClickListener { finish() }
+    }
+
+    private fun googleSignIn() {
+        showLoading(true)
+        googleSignInLauncher.launch(googleSignInClient.signInIntent)
+    }
+
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        lifecycleScope.launch {
+            try {
+                val result = auth.signInWithCredential(credential).await()
+                val user = result.user
+                if (user != null) {
+                    val uid = user.uid
+                    val email = user.email ?: ""
+                    val name = user.displayName ?: ""
+
+                    sessionManager.saveUid(uid)
+                    sessionManager.saveEmail(email)
+
+                    val profileDoc = firestore.collection("patients").document(uid)
+                        .collection("data").document("profile")
+                    val snapshot = profileDoc.get().await()
+                    if (!snapshot.exists()) {
+                        profileDoc.set(hashMapOf(
+                            "uid" to uid,
+                            "fullName" to name,
+                            "email" to email,
+                            "phoneNumber" to "",
+                            "gender" to "",
+                            "bloodGroup" to "",
+                            "height" to "",
+                            "weight" to "",
+                            "address" to "",
+                            "city" to "",
+                            "emergencyContactName" to "",
+                            "emergencyContactNumber" to "",
+                            "existingConditions" to "",
+                            "preferredLanguage" to "English",
+                            "age" to 0,
+                            "updatedAt" to com.google.firebase.Timestamp.now()
+                        )).await()
+                    }
+
+                    uploadFCMToken(uid)
+                    startActivity(Intent(this@LoginActivity, MainActivity::class.java).apply {
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    })
+                    finish()
+                } else {
+                    showToast("Google sign in failed — no user")
+                }
+            } catch (e: Exception) {
+                showToast(e.message ?: "Google sign in failed")
+            } finally {
+                if (!isFinishing) showLoading(false)
+            }
+        }
     }
 
     private fun login() {
@@ -102,6 +186,7 @@ class LoginActivity : AppCompatActivity() {
     private fun showLoading(show: Boolean) {
         binding.progressBar.visibility = if (show) View.VISIBLE else View.GONE
         binding.btnLogin.isEnabled = !show
+        binding.btnGoogleSignIn.isEnabled = !show
     }
 
     private fun forgotPassword() {
