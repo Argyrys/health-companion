@@ -23,7 +23,12 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         // Gemini API key — get free key from https://aistudio.google.com/apikey
-        def geminiKey = project.hasProperty('GEMINI_API_KEY') ? project.property('GEMINI_API_KEY') : ''
+        def localProps = new Properties()
+        def localPropsFile = rootProject.file('local.properties')
+        if (localPropsFile.exists()) {
+            localProps.load(localPropsFile.newDataInputStream())
+        }
+        def geminiKey = localProps.getProperty('GEMINI_API_KEY', '')
         buildConfigField "String", "GEMINI_API_KEY", "\"${geminiKey}\""
     }
 
