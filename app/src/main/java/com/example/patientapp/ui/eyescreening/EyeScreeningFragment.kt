@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.example.patientapp.R
 import com.example.patientapp.data.model.EyeScreening
+import com.example.patientapp.data.repository.EyeScreeningAnalyzer
 import com.example.patientapp.data.repository.PatientRepository
 import com.example.patientapp.data.repository.StorageRepository
 import com.example.patientapp.databinding.FragmentEyeScreeningBinding
@@ -116,19 +117,35 @@ class EyeScreeningFragment : Fragment() {
         binding.btnCapture.isEnabled = false
 
         CoroutineScope(Dispatchers.IO).launch {
+            // Analyze with Gemini AI
+            val aiResult = EyeScreeningAnalyzer.analyze(requireContext(), uri)
+
             val uploadResult = storageRepository.uploadEyeImage(uid, uri)
             if (uploadResult is com.example.patientapp.utils.Resource.Success) {
                 val imageUrl = uploadResult.data
 
-                // Structured AI Risk Assessment
-                val assessment = generateStructuredAssessment()
+                val riskLevel: String
+                val findings: String
+                val recommendation: String
+
+                if (aiResult.isSuccess) {
+                    val result = aiResult.getOrNull()!!
+                    riskLevel = result.riskLevel
+                    findings = result.findings
+                    recommendation = result.recommendation
+                } else {
+                    // Fallback if AI fails
+                    riskLevel = "MODERATE"
+                    findings = "AI analysis unavailable: ${aiResult.exceptionOrNull()?.message}\nPlease consult an ophthalmologist for professional assessment."
+                    recommendation = "Schedule a comprehensive eye examination with a qualified ophthalmologist for accurate diagnosis."
+                }
 
                 val screening = EyeScreening(
                     id = UUID.randomUUID().toString(),
                     patientId = uid,
                     imageUrl = imageUrl,
-                    riskLevel = assessment.first,
-                    aiAssessment = assessment.second,
+                    riskLevel = riskLevel,
+                    aiAssessment = findings,
                     createdAt = Timestamp.now()
                 )
                 val saveResult = patientRepository.saveEyeScreening(screening)
@@ -139,7 +156,7 @@ class EyeScreeningFragment : Fragment() {
                         binding.progressBar.visibility = View.GONE
                         binding.btnCapture.isEnabled = true
                         if (saveResult is com.example.patientapp.utils.Resource.Success) {
-                            showDetailedResult(assessment.first, assessment.second, assessment.third)
+                            showDetailedResult(riskLevel, findings, recommendation)
                         } else {
                             requireContext().showToast("Failed to save screening")
                         }
@@ -156,60 +173,6 @@ class EyeScreeningFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun generateStructuredAssessment(): Triple<String, String, String> {
-        val uri = photoUri ?: return Triple("UNKNOWN", "No image to analyze.", "Retake the image.")
-
-        // Get image file size for basic heuristic
-        var fileSizeKB = 0L
-        try {
-            requireContext().contentResolver.openInputStream(uri)?.use { stream ->
-                fileSizeKB = stream.available().toLong() / 1024
-            }
-        } catch (_: Exception) { }
-
-        // Basic heuristic analysis based on image properties
-        val hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY)
-        val isLowLight = hour < 6 || hour > 20
-
-        val riskLevel: String
-        val findings: String
-        val recommendation: String
-
-        when {
-            fileSizeKB < 10 -> {
-                riskLevel = "INDETERMINATE"
-                findings = "Image quality is too low for reliable analysis.\n" +
-                        "\u2022 File size: ${fileSizeKB}KB (insufficient detail)\n" +
-                        "\u2022 Recommendation: Recapture with better lighting"
-                recommendation = "Please retake the photo in well-lit conditions, " +
-                        "holding the camera 6-8 inches from the eye."
-            }
-            isLowLight -> {
-                riskLevel = "MODERATE"
-                findings = "Image captured in low-light conditions which may affect accuracy.\n" +
-                        "\u2022 Lighting: Poor (${hour}:00)\n" +
-                        "\u2022 Visible structures: Partially visible\n" +
-                        "\u2022 Note: Low-light images may mask redness or discoloration"
-                recommendation = "Results may be unreliable due to lighting. " +
-                        "Retake in daylight or under bright artificial light for accurate assessment."
-            }
-            else -> {
-                riskLevel = "LOW"
-                findings = "Image quality: Adequate for basic screening.\n" +
-                        "\u2022 File size: ${fileSizeKB}KB (sufficient detail)\n" +
-                        "\u2022 Eye clarity: Within normal range\n" +
-                        "\u2022 Visible structures: Intact\n" +
-                        "\u2022 Redness indicators: None visually detected\n" +
-                        "\u2022 Note: This is a basic visual screening, not a medical diagnosis"
-                recommendation = "No immediate concerns detected. " +
-                        "Schedule a comprehensive eye examination annually, or sooner if you experience " +
-                        "vision changes, pain, or persistent redness."
-            }
-        }
-
-        return Triple(riskLevel, findings, recommendation)
     }
 
     private fun showDetailedResult(riskLevel: String, findings: String, recommendation: String) {
