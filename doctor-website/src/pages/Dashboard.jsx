@@ -52,7 +52,14 @@ export default function Dashboard({ doctorId }) {
     let cancelled = false;
     const fetchAppointments = async () => {
       try {
-        const snap = await getDocs(query(collection(db, 'appointments'), where('doctorId', '==', doctorId), orderBy('createdAt', 'desc')));
+        // Try filtered query first (requires composite index), fall back to unfiltered
+        let snap;
+        try {
+          snap = await getDocs(query(collection(db, 'appointments'), where('doctorId', '==', doctorId), orderBy('createdAt', 'desc')));
+        } catch (indexErr) {
+          // Index not ready yet — fetch all appointments
+          snap = await getDocs(query(collection(db, 'appointments'), orderBy('createdAt', 'desc')));
+        }
         if (!cancelled) {
           setAppointments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
         }
