@@ -74,10 +74,11 @@ export default function Dashboard({ doctorId }) {
 
   const handleAppointmentStatus = async (appointmentId, status) => {
     try {
-      await updateDoc(doc(db, 'appointments', appointmentId), { status });
+      await updateDoc(doc(db, 'appointments', appointmentId), { status: status, updatedAt: new Date().toISOString() });
       setAppointments(prev => prev.map(a => a.id === appointmentId ? { ...a, status } : a));
     } catch (err) {
       console.error('Error updating appointment:', err);
+      alert('Failed to update appointment: ' + err.message);
     }
   };
 
