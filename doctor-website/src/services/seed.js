@@ -291,7 +291,7 @@ export const seedDatabase = async (doctorId) => {
   const appUid = appStylePatient.uid;
   const appBase = `patients/${appUid}/data`;
 
-  await setDoc(doc(db, 'patients', appUid), { createdAt: new Date().toISOString().split('T')[0] });
+  await setDoc(doc(db, 'patients', appUid), { createdAt: new Date().toISOString().split('T')[0], doctorId });
   await setDoc(doc(db, appBase, 'profile'), appStylePatient);
 
   await setDoc(doc(db, appBase, 'caseTaking'), {
