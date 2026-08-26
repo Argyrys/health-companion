@@ -51,7 +51,7 @@ Be professional and clinical. Always recommend consulting an ophthalmologist for
                 }
 
                 val model = GenerativeModel(
-                    modelName = "gemini-1.5-flash",
+                    modelName = "gemini-2.5-flash",
                     apiKey = apiKey
                 )
 
