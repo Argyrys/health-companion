@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Dashboard from './pages/Dashboard';
@@ -100,8 +101,9 @@ function App() {
         </div>
       ) : (
         <Routes>
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
           <Route path="/signup" element={<SignUp onLogin={handleLogin} />} />
-          <Route path="*" element={<Login onLogin={handleLogin} />} />
+          <Route path="*" element={<Landing onLogin={() => window.location.href = '/login'} onSignup={() => window.location.href = '/signup'} />} />
         </Routes>
       )}
     </Router>
