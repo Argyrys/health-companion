@@ -326,7 +326,7 @@ export default function Landing({ onLogin, onSignup }) {
               { icon: Pill, title: 'Medications & Allergies', desc: 'Track current medications, dosages, and known allergies with severity levels.', gradient: 'from-rose-500 to-rose-600', shadow: 'shadow-rose-500/15' },
               { icon: Bell, title: 'Smart Reminders', desc: 'Medication reminders with scheduling, tracking, and push notifications.', gradient: 'from-cyan-500 to-cyan-600', shadow: 'shadow-cyan-500/15' },
             ].map(({ icon: Icon, title, desc, gradient, shadow }) => (
-              <div key={title} className="feature-card group bg-white rounded-2xl border border-slate-100 p-8 sm:p-9 w-full max-w-sm hover:shadow-xl hover:shadow-slate-200/50 hover:border-slate-200 transition-all duration-500">
+              <div key={title} className="feature-card group bg-white rounded-2xl border border-slate-100 p-8 sm:p-9 w-full max-w-sm text-center hover:shadow-xl hover:shadow-slate-200/50 hover:border-slate-200 transition-all duration-500">
                 <div className={`feature-icon w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mx-auto mb-6 shadow-lg ${shadow}`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
