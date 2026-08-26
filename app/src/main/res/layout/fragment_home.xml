@@ -51,10 +51,14 @@
                 style="@style/SecondaryButton"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="Sign In"
+                android:text=""
                 android:textSize="12sp"
                 android:minWidth="0dp"
-                android:paddingHorizontal="16dp" />
+                app:icon="@drawable/ic_person"
+                app:iconGravity="textStart"
+                app:iconSize="18dp"
+                app:iconTint="@color/primary"
+                android:paddingHorizontal="12dp" />
 
         </LinearLayout>
 
