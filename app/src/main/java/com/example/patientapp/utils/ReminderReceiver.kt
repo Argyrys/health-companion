@@ -41,15 +41,25 @@ class ReminderReceiver : BroadcastReceiver() {
             }
         }
 
-        // Launch the voice interaction activity
-        val reminderIntent = Intent(context, MedicationReminderActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        // PendingIntent for the voice reminder activity (used as full-screen intent)
+        val reminderActivityIntent = Intent(context, MedicationReminderActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
             putExtra("medicationName", medicationName)
             putExtra("reminderId", reminderId)
         }
-        context.startActivity(reminderIntent)
+        val reminderPendingIntent = PendingIntent.getActivity(
+            context, reminderId + 3000, reminderActivityIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-        // Also show a notification as backup
+        // Try to launch the activity directly
+        try {
+            context.startActivity(reminderActivityIntent)
+        } catch (_: Exception) {
+            // Activity launch blocked (Android 10+ background restriction) — notification will handle it
+        }
+
+        // Notification with full-screen intent so it shows on lock screen
         val openIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -83,9 +93,11 @@ class ReminderReceiver : BroadcastReceiver() {
             .setContentTitle("Medication Reminder")
             .setContentText("Time to take your $medicationName")
             .setStyle(NotificationCompat.BigTextStyle()
-                .bigText("Have you taken your $medicationName? Tap to answer or use buttons below."))
+                .bigText("Have you taken your $medicationName?\n• Tap the notification to answer by voice\n• Or use the buttons below"))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
+            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setFullScreenIntent(reminderPendingIntent, true)
+            .setContentIntent(reminderPendingIntent)
             .setAutoCancel(true)
             .addAction(R.drawable.bg_button_primary, "TAKEN", takenPendingIntent)
             .addAction(R.drawable.bg_button_secondary, "SKIP", skipPendingIntent)

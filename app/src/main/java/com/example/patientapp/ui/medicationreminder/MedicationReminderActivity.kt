@@ -3,9 +3,10 @@ package com.example.patientapp.ui.medicationreminder
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -29,9 +30,11 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
     @Inject lateinit var sessionManager: SessionManager
 
     private var tts: TextToSpeech? = null
+    private var ttsReady = false
     private var medicationName = ""
     private var timer: CountDownTimer? = null
     private var responded = false
+    private val handler = Handler(Looper.getMainLooper())
 
     private val speechLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -61,7 +64,7 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
 
         tts = TextToSpeech(this, this)
 
-        timer = object : CountDownTimer(15_000, 1_000) {
+        timer = object : CountDownTimer(20_000, 1_000) {
             override fun onTick(millis: Long) {
                 val secs = millis / 1000
                 findViewById<TextView>(R.id.tvTimeout).text = "Auto-skip in ${secs}s"
@@ -75,14 +78,11 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             tts?.language = Locale.US
-            tts?.setOnUtteranceCompletedListener { utteranceId ->
-                if (utteranceId == "question" && !responded) {
-                    startListening()
-                }
-            }
+            ttsReady = true
             speakQuestion()
         } else {
-            startListening()
+            // TTS failed — just show buttons
+            findViewById<TextView>(R.id.tvStatus).text = "Tap a button below"
         }
     }
 
@@ -91,10 +91,17 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
         val params = Bundle().apply {
             putFloat(TextToSpeech.Engine.KEY_PARAM_STREAM, android.media.AudioManager.STREAM_ALARM.toFloat())
         }
-        tts?.speak(question, TextToSpeech.QUEUE_FLUSH, params, "question")
+        val utteranceId = "question_${System.currentTimeMillis()}"
+        tts?.speak(question, TextToSpeech.QUEUE_FLUSH, params, utteranceId)
+
+        // Use handler delay as fallback since onUtteranceCompleted is deprecated
+        handler.postDelayed({
+            if (!responded) startListening()
+        }, 4000)
     }
 
     private fun startListening() {
+        if (responded) return
         runOnUiThread {
             findViewById<TextView>(R.id.tvStatus).text = "Speak now: Yes or No"
         }
@@ -127,6 +134,7 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
         if (responded) return
         responded = true
         timer?.cancel()
+        handler.removeCallbacksAndMessages(null)
 
         val uid = sessionManager.getUid() ?: run { finish(); return }
         val adherence = MedicationAdherence(
@@ -141,18 +149,21 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
         }
 
         val msg = if (taken) "Great! $medicationName marked as taken." else "$medicationName marked as not taken."
-        tts?.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "response")
+        if (ttsReady) {
+            tts?.speak(msg, TextToSpeech.QUEUE_FLUSH, null, "response_${System.currentTimeMillis()}")
+        }
 
         runOnUiThread {
             findViewById<TextView>(R.id.tvStatus).text = msg
             findViewById<MaterialButton>(R.id.btnYes).isEnabled = false
             findViewById<MaterialButton>(R.id.btnNo).isEnabled = false
-            android.os.Handler(mainLooper).postDelayed({ finish() }, 3000)
+            handler.postDelayed({ finish() }, 3000)
         }
     }
 
     override fun onDestroy() {
         timer?.cancel()
+        handler.removeCallbacksAndMessages(null)
         tts?.stop()
         tts?.shutdown()
         super.onDestroy()
