@@ -53,6 +53,13 @@
         <!-- Eye Screening Camera -->
         <activity android:name=".ui.eyescreening.CameraActivity" />
 
+        <!-- Medication Reminder Voice Activity -->
+        <activity
+            android:name=".ui.medicationreminder.MedicationReminderActivity"
+            android:theme="@style/Theme.PatientApp.Transparent"
+            android:excludeFromRecents="true"
+            android:taskAffinity="" />
+
         <!-- Reminder Receiver -->
         <receiver
             android:name=".utils.ReminderReceiver"

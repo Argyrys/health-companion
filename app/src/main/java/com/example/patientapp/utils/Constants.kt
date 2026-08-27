@@ -18,6 +18,7 @@ object Constants {
     const val SUBCOLLECTION_MENTAL_HEALTH = "mentalHealth"
     const val SUBCOLLECTION_REPORTS = "reports"
     const val SUBCOLLECTION_REMINDERS = "reminders"
+    const val SUBCOLLECTION_ADHERENCE = "medicationAdherence"
 
     // Storage paths
     const val STORAGE_VOICE = "voice"

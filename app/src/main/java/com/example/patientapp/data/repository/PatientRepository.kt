@@ -504,4 +504,32 @@ class PatientRepository @Inject constructor(
             }
         }
     }
+
+    // ==================== MEDICATION ADHERENCE ====================
+    private fun adherenceCol(uid: String) =
+        patientDoc(uid).collection("data").document("medicationAdherenceData").collection("adherence")
+
+    suspend fun saveAdherence(adherence: MedicationAdherence): Resource<Unit> {
+        return try {
+            adherenceCol(adherence.patientId).add(adherence).await()
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to save adherence")
+        }
+    }
+
+    fun observeAdherence(uid: String): Flow<List<MedicationAdherence>> {
+        return callbackFlow {
+            try {
+                val reg = adherenceCol(uid).orderBy("timestamp")
+                    .addSnapshotListener { snapshot, error ->
+                        if (error != null) { trySend(emptyList()); return@addSnapshotListener }
+                        trySend(snapshot?.documents?.mapNotNull { it.toObject(MedicationAdherence::class.java) } ?: emptyList())
+                    }
+                awaitClose { reg.remove() }
+            } catch (e: Exception) {
+                trySend(emptyList())
+            }
+        }
+    }
 }

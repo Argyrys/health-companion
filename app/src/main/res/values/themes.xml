@@ -14,6 +14,14 @@
         <item name="android:statusBarColor">@color/splash_bg</item>
     </style>
 
+    <style name="Theme.PatientApp.Transparent">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
     <!-- Card Styles -->
     <style name="CardStyle">
         <item name="cardCornerRadius">12dp</item>

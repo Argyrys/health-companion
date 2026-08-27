@@ -1,5 +1,5 @@
 import {
-  collection, doc, getDocs, getDoc, updateDoc, query, where, deleteDoc, setDoc
+  collection, doc, getDocs, getDoc, updateDoc, query, where, deleteDoc, setDoc, orderBy
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -436,4 +436,15 @@ export const deleteAllPatients = async (doctorId) => {
   const snapshot = await getDocs(q);
   const deletes = snapshot.docs.map(d => deleteDoc(d.ref));
   await Promise.all(deletes);
+};
+
+export const getAdherence = async (patientId) => {
+  try {
+    const snap = await getDocs(
+      collection(db, `patients/${patientId}/data/medicationAdherenceData/adherence`)
+    );
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch {
+    return [];
+  }
 };

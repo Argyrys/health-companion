@@ -8,7 +8,7 @@ import {
 } from 'lucide-react';
 import {
   getPatient, updateDiagnosis, updatePatientProfile, updateConsultationField,
-  addMedication, removeMedication, addAllergy, removeAllergy
+  addMedication, removeMedication, addAllergy, removeAllergy, getAdherence
 } from '../services/patients';
 import { PatientReportSkeleton } from '../components/Skeleton';
 
@@ -97,6 +97,7 @@ const sections = [
   { id: 'symptoms', label: 'Symptoms', icon: Stethoscope },
   { id: 'history', label: 'History', icon: Heart },
   { id: 'medications', label: 'Meds', icon: Pill },
+  { id: 'adherence', label: 'Adherence', icon: CheckCircle2 },
   { id: 'allergies', label: 'Allergies', icon: AlertTriangle },
   { id: 'eye', label: 'Eye', icon: Camera },
   { id: 'mental', label: 'Mental', icon: Brain },
@@ -118,6 +119,7 @@ export default function PatientReport() {
   const [newAllergy, setNewAllergy] = useState({ name: '', severity: 'Mild' });
   const [newFamilyEntry, setNewFamilyEntry] = useState({ condition: '', relationship: '' });
   const [newOtherCondition, setNewOtherCondition] = useState('');
+  const [adherence, setAdherence] = useState([]);
   const [playingAudio, setPlayingAudio] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
   const audioRef = useRef(null);
@@ -126,6 +128,7 @@ export default function PatientReport() {
     symptoms: true,
     history: true,
     medications: true,
+    adherence: true,
     allergies: true,
     eye: true,
     mental: true,
@@ -143,6 +146,8 @@ export default function PatientReport() {
           setDiagnosis(data?.consultations?.[0]?.diagnosis || '');
           setPrescription(data?.consultations?.[0]?.prescription || '');
         }
+        const adh = await getAdherence(id);
+        if (!cancelled) setAdherence(adh);
       } catch (err) {
         console.error('Error fetching patient:', err);
       }
@@ -832,6 +837,39 @@ export default function PatientReport() {
               </button>
             </div>
           </div>
+        </Section>
+
+        {/* Medication Adherence */}
+        <Section sectionId="adherence" title="Medication Adherence" icon={CheckCircle2} expandedSections={expandedSections} toggleSection={toggleSection} badge={adherence.length}>
+          {adherence.length > 0 ? (
+            <div className="space-y-2">
+              {adherence.slice().reverse().slice(0, 10).map((a, i) => {
+                const ts = a.timestamp?.toDate ? a.timestamp.toDate() : (a.timestamp ? new Date(a.timestamp) : null);
+                const dateStr = ts ? ts.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+                return (
+                  <div key={i} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${a.taken ? 'bg-green-100' : 'bg-red-100'}`}>
+                        <CheckCircle2 className={`w-4 h-4 ${a.taken ? 'text-green-600' : 'text-red-500'}`} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-medium text-slate-800 text-sm truncate">{a.medicationName}</p>
+                        <p className="text-xs text-slate-400 mt-0.5">{dateStr}</p>
+                      </div>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${a.taken ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {a.taken ? 'Taken' : 'Missed'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="px-5 py-8 text-center">
+              <CheckCircle2 className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-slate-400 text-xs">No adherence records yet</p>
+            </div>
+          )}
         </Section>
 
         {/* Allergies - editable */}
