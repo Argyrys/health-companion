@@ -182,8 +182,8 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
       <div>
         <label className={`block font-medium text-slate-600 mb-1.5 ${mobile ? 'text-xs' : 'text-sm'}`}>Email</label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <svg className={`text-slate-300 ${mobile ? 'w-4 h-4' : 'w-4.5 h-4.5'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
+            <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="3" />
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
@@ -193,7 +193,7 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="doctor@hospital.com"
-            className={`w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl ${mobile ? 'pl-10 pr-4 py-3 text-sm' : 'pl-11 pr-4 py-3.5 text-sm'}`}
+            className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-4 py-3.5 text-sm"
           />
         </div>
       </div>
@@ -212,8 +212,8 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
           </div>
         </div>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <svg className={`text-slate-300 ${mobile ? 'w-4 h-4' : 'w-4.5 h-4.5'}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
+            <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
@@ -223,10 +223,10 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
-            className={`w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl ${mobile ? 'pl-10 pr-11 py-3 text-sm' : 'pl-11 pr-12 py-3.5 text-sm'}`}
+            className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-12 py-3.5 text-sm"
           />
           <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-300 hover:text-slate-500 transition-colors">
-            {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
       </div>

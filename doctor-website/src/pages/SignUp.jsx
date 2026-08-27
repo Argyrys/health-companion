@@ -183,26 +183,26 @@ function SignUpForm({ name, setName, email, setEmail, password, setPassword, con
       <div>
         <label className={`block font-medium text-slate-600 mb-1.5 ${mobile ? 'text-xs' : 'text-sm'}`}>Full Name</label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
             <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
               <circle cx="12" cy="7" r="4" />
             </svg>
           </div>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Dr. Smith" className={`w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl ${mobile ? 'pl-10 pr-4 py-3 text-sm' : 'pl-11 pr-4 py-3.5 text-sm'}`} />
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Dr. Smith" className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-4 py-3.5 text-sm" />
         </div>
       </div>
 
       <div>
         <label className={`block font-medium text-slate-600 mb-1.5 ${mobile ? 'text-xs' : 'text-sm'}`}>Email</label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
             <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="3" />
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
           </div>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="doctor@hospital.com" className={`w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl ${mobile ? 'pl-10 pr-4 py-3 text-sm' : 'pl-11 pr-4 py-3.5 text-sm'}`} />
+          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="doctor@hospital.com" className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-4 py-3.5 text-sm" />
         </div>
       </div>
 
@@ -214,15 +214,15 @@ function SignUpForm({ name, setName, email, setEmail, password, setPassword, con
           )}
         </div>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
             <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </div>
-          <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" className={`w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl ${mobile ? 'pl-10 pr-11 py-3 text-sm' : 'pl-11 pr-12 py-3.5 text-sm'}`} />
+          <input type={showPassword ? 'text' : 'password'} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="At least 6 characters" className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-12 py-3.5 text-sm" />
           <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-300 hover:text-slate-500 transition-colors">
-            {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
         {showStrength && (
@@ -237,12 +237,12 @@ function SignUpForm({ name, setName, email, setEmail, password, setPassword, con
       <div>
         <label className={`block font-medium text-slate-600 mb-1.5 ${mobile ? 'text-xs' : 'text-sm'}`}>Confirm Password</label>
         <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+          <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
             <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
           </div>
-          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Re-enter password" className={`w-full bg-white border text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl ${passwordsMismatch ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : passwordsMatch ? 'border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500/20' : 'border-slate-200'} ${mobile ? 'pl-10 pr-10 py-3 text-sm' : 'pl-11 pr-10 py-3.5 text-sm'}`} />
+          <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="Re-enter password" className={`w-full bg-white border text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-10 py-3.5 text-sm ${passwordsMismatch ? 'border-red-300 focus:border-red-500 focus:ring-red-500/20' : passwordsMatch ? 'border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500/20' : 'border-slate-200'}`} />
           <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center">
             {passwordsMatch && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
             {passwordsMismatch && <AlertCircle className="w-4 h-4 text-red-400" />}
