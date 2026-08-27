@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Users, FileText, AlertTriangle, Activity, Database, TrendingUp, Clock, Stethoscope, ClipboardList, ChevronRight, User, Droplets, BarChart3, Calendar, CheckCircle, XCircle, Hourglass } from 'lucide-react';
 import { getAllPatients, deleteAllPatients } from '../services/patients';
-import { seedDatabase } from '../services/seed';
 import DashboardSkeleton from '../components/Skeleton';
 import { collection, getDocs, updateDoc, doc, query, orderBy, where } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -22,8 +21,6 @@ export default function Dashboard({ doctorId }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [seeding, setSeeding] = useState(false);
-  const [seeded, setSeeded] = useState(false);
   const [clearing, setClearing] = useState(false);
   const [appointments, setAppointments] = useState([]);
 
@@ -82,17 +79,6 @@ export default function Dashboard({ doctorId }) {
     }
   };
 
-  const handleSeed = async () => {
-    setSeeding(true);
-    try {
-      await seedDatabase(doctorId);
-      setSeeded(true);
-    } catch (err) {
-      console.error('Error seeding database:', err);
-    }
-    setSeeding(false);
-  };
-
   const handleClear = async () => {
     if (!window.confirm('Delete all patient data? This cannot be undone.')) return;
     setClearing(true);
@@ -146,12 +132,6 @@ export default function Dashboard({ doctorId }) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          {patients.length === 0 && !seeded && (
-            <button onClick={handleSeed} disabled={seeding} className="flex items-center gap-1.5 px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-600/20 transition-all">
-              <Database className="w-4 h-4" />
-              {seeding ? 'Seeding...' : 'Seed Data'}
-            </button>
-          )}
           {patients.length > 0 && (
             <button onClick={handleClear} disabled={clearing} className="flex items-center gap-1.5 px-4 py-2.5 bg-white text-red-600 border border-red-200 rounded-xl text-sm font-medium hover:bg-red-50 disabled:opacity-50 transition-all">
               {clearing ? 'Clearing...' : 'Clear Data'}
@@ -216,11 +196,8 @@ export default function Dashboard({ doctorId }) {
                 <div className="w-14 h-14 bg-slate-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
                   <Database className="w-7 h-7 text-slate-300" />
                 </div>
-                <p className="text-slate-500 font-medium text-sm mb-0.5">No patients yet</p>
-                <p className="text-slate-400 text-xs mb-4">Seed the database with sample data to get started.</p>
-                <button onClick={handleSeed} disabled={seeding} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700 disabled:opacity-50 shadow-md shadow-blue-600/20 transition-all">
-                  {seeding ? 'Seeding...' : seeded ? 'Seeded!' : 'Seed Sample Data'}
-                </button>
+                <p className="text-slate-500 font-medium text-sm">No patients yet</p>
+                <p className="text-slate-400 text-xs">Patients will appear here once they register.</p>
               </div>
             )}
           </div>
