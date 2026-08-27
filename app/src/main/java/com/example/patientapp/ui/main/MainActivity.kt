@@ -32,31 +32,8 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfig)
         binding.bottomNav.setupWithNavController(navController)
 
-        // Fade transitions for bottom nav
-        navHostFragment.childFragmentManager.fragments.firstOrNull()?.let { fragment ->
-            // Set initial animation
-        }
-
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.toolbar.title = destination.label
-        }
-
-        // Custom bottom nav item animations
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            val navId = item.itemId
-            val currentId = navController.currentDestination?.id
-
-            if (currentId != navId) {
-                navController.navigate(navId, null, androidx.navigation.NavOptions.Builder()
-                    .setLaunchSingleTop(true)
-                    .setEnterAnim(R.anim.fade_in)
-                    .setExitAnim(R.anim.fade_out)
-                    .setPopEnterAnim(R.anim.fade_in)
-                    .setPopExitAnim(R.anim.fade_out)
-                    .build()
-                )
-            }
-            true
         }
     }
 
