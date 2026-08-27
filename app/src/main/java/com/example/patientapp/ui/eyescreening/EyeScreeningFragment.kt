@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.example.patientapp.R
 import com.example.patientapp.data.model.EyeScreening
@@ -22,7 +23,6 @@ import com.example.patientapp.utils.SessionManager
 import com.example.patientapp.utils.showToast
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -115,7 +115,7 @@ class EyeScreeningFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnCapture.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             // 1. Analyze with Gemini AI (primary — must succeed)
             val aiResult = EyeScreeningAnalyzer.analyze(requireContext(), uri)
 

@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.patientapp.data.model.Patient
 import com.example.patientapp.data.repository.PatientRepository
 import com.example.patientapp.databinding.FragmentProfileBinding
@@ -18,7 +19,6 @@ import com.example.patientapp.utils.LocalAuthManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -111,7 +111,7 @@ class ProfileFragment : Fragment() {
 
     private fun loadProfile() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeProfile(uid).collectLatest { patient ->
                 patient?.let {
                     currentPatient = it
@@ -203,7 +203,7 @@ class ProfileFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnSave.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveProfile(updated)
             launch(Dispatchers.Main) {
                 binding.progressBar.visibility = View.GONE

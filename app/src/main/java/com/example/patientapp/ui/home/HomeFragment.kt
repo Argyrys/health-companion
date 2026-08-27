@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.viewpager2.widget.ViewPager2
@@ -17,7 +18,6 @@ import com.example.patientapp.data.repository.PatientRepository
 import com.example.patientapp.databinding.FragmentHomeBinding
 import com.example.patientapp.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -123,7 +123,7 @@ class HomeFragment : Fragment() {
 
     private fun loadPatientData() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeProfile(uid).collectLatest { patient ->
                 patient?.let {
                     launch(Dispatchers.Main) {

@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.patientapp.R
 import com.example.patientapp.data.model.Medication
@@ -22,9 +23,9 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -68,7 +69,7 @@ class ReminderFragment : Fragment() {
 
     private fun loadReminders() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeReminders(uid).collectLatest { list ->
                 launch(Dispatchers.Main) {
                     reminders.clear()
@@ -89,22 +90,21 @@ class ReminderFragment : Fragment() {
     private fun showAddReminderDialog() {
         val uid = sessionManager.getUid() ?: return
 
-        CoroutineScope(Dispatchers.IO).launch {
-            patientRepository.observeMedications(uid).collectLatest { meds ->
-                launch(Dispatchers.Main) {
-                    if (meds.isEmpty()) {
-                        requireContext().showToast("No medications added. Add medications first.")
-                        return@launch
-                    }
-
-                    val names = meds.map { it.drugName }.toTypedArray()
-                    MaterialAlertDialogBuilder(requireContext())
-                        .setTitle("Select Medication")
-                        .setItems(names) { _, which ->
-                            showTimePicker(meds[which])
-                        }
-                        .show()
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            val meds = patientRepository.observeMedications(uid).first()
+            launch(Dispatchers.Main) {
+                if (meds.isEmpty()) {
+                    requireContext().showToast("No medications added. Add medications first.")
+                    return@launch
                 }
+
+                val names = meds.map { it.drugName }.toTypedArray()
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Select Medication")
+                    .setItems(names) { _, which ->
+                        showTimePicker(meds[which])
+                    }
+                    .show()
             }
         }
     }
@@ -141,7 +141,7 @@ class ReminderFragment : Fragment() {
             date = today
         )
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveReminder(reminder)
             launch(Dispatchers.Main) {
                 if (result.isSuccess) {
@@ -196,7 +196,7 @@ class ReminderFragment : Fragment() {
         val uid = sessionManager.getUid() ?: return
         val updated = reminder.copy(taken = taken, skipped = !taken, isActive = false)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.updateReminder(updated)
         }
     }

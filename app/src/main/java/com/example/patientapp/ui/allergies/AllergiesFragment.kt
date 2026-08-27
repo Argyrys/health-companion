@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.patientapp.R
 import com.example.patientapp.data.model.Allergy
@@ -19,7 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -59,7 +59,7 @@ class AllergiesFragment : Fragment() {
 
     private fun loadAllergies() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeAllergies(uid).collectLatest { list ->
                 launch(Dispatchers.Main) {
                     allergies.clear()
@@ -110,14 +110,19 @@ class AllergiesFragment : Fragment() {
                 .show()
         }
 
-        MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle("Add Allergy")
             .setView(dialogView)
-            .setPositiveButton("Add") { _, _ ->
+            .setPositiveButton("Add", null)
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(android.app.Dialog.BUTTON_POSITIVE).setOnClickListener {
                 val allergen = etAllergen.text.toString().trim()
                 if (allergen.isEmpty()) {
                     requireContext().showToast("Please enter allergen name")
-                    return@setPositiveButton
+                    return@setOnClickListener
                 }
                 val allergy = Allergy(
                     id = UUID.randomUUID().toString(),
@@ -127,9 +132,10 @@ class AllergiesFragment : Fragment() {
                     severity = selectedSeverity
                 )
                 saveAllergy(allergy)
+                dialog.dismiss()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
+        dialog.show()
     }
 
     private fun saveAllergy(allergy: Allergy) {
@@ -137,7 +143,7 @@ class AllergiesFragment : Fragment() {
         val updated = allergies.toMutableList()
         updated.add(allergy)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveAllergies(updated, uid)
             launch(Dispatchers.Main) {
                 if (result.isSuccess) requireContext().showToast("Allergy added")
@@ -151,7 +157,7 @@ class AllergiesFragment : Fragment() {
         val updated = allergies.toMutableList()
         updated.removeAll { it.id == allergy.id }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveAllergies(updated, uid)
             launch(Dispatchers.Main) {
                 if (result.isSuccess) requireContext().showToast("Allergy removed")

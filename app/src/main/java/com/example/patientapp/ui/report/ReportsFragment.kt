@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.patientapp.R
 import com.example.patientapp.data.model.Report
@@ -25,7 +26,6 @@ import com.itextpdf.layout.Document
 import com.itextpdf.layout.element.Paragraph
 import com.itextpdf.layout.properties.TextAlignment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
@@ -76,7 +76,7 @@ class ReportsFragment : Fragment() {
 
     private fun loadReports() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeReports(uid).collectLatest { list ->
                 if (_binding == null) return@collectLatest
                 launch(Dispatchers.Main) {
@@ -101,7 +101,7 @@ class ReportsFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnGenerate.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val patient = patientRepository.getProfile(uid)
                 val caseTaking = patientRepository.observeCaseTaking(uid).first() ?: com.example.patientapp.data.model.CaseTaking()
@@ -202,7 +202,7 @@ class ReportsFragment : Fragment() {
                         shareLocalPdf(file)
 
                         // Upload PDF to Firebase Storage and save record
-                        CoroutineScope(Dispatchers.IO).launch {
+                        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
                             val pdfUri = Uri.fromFile(file)
                             val uploadResult = storageRepository.uploadReport(uid, pdfUri)
                             val pdfUrl = if (uploadResult is com.example.patientapp.utils.Resource.Success) {

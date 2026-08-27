@@ -39,7 +39,13 @@ class LoginActivity : AppCompatActivity() {
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
             val account = task.getResult(ApiException::class.java)
-            firebaseAuthWithGoogle(account.idToken!!)
+            val token = account.idToken
+            if (token != null) {
+                firebaseAuthWithGoogle(token)
+            } else {
+                showLoading(false)
+                showToast("Google sign in failed: no token")
+            }
         } catch (e: ApiException) {
             showLoading(false)
             showToast("Google sign in failed")
@@ -179,6 +185,7 @@ class LoginActivity : AppCompatActivity() {
         com.google.firebase.messaging.FirebaseMessaging.getInstance().token
             .addOnSuccessListener { token ->
                 firestore.collection("patients").document(uid)
+                    .collection("data").document("profile")
                     .update("fcmToken", token)
             }
     }

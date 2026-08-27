@@ -10,6 +10,7 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.patientapp.R
 import com.example.patientapp.data.model.MedicalHistory
 import com.example.patientapp.data.repository.PatientRepository
@@ -19,9 +20,9 @@ import com.example.patientapp.utils.showToast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -55,18 +56,19 @@ class MedicalHistoryFragment : Fragment() {
 
     private fun loadExistingData() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
-            patientRepository.observeMedicalHistory(uid).collectLatest { history ->
-                history?.let {
-                    launch(Dispatchers.Main) {
-                        binding.cbDiabetes.isChecked = it.diabetes
-                        binding.cbHypertension.isChecked = it.hypertension
-                        binding.cbAsthma.isChecked = it.asthma
-                        binding.cbHeartDisease.isChecked = it.heartDisease
-                        binding.cbPreviousSurgery.isChecked = it.previousSurgery
-                        binding.cbHospitalization.isChecked = it.hospitalization
-                        it.otherConditions.forEach { condition -> addConditionField(condition) }
-                    }
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            val history = patientRepository.observeMedicalHistory(uid).first()
+            history?.let {
+                launch(Dispatchers.Main) {
+                    binding.cbDiabetes.isChecked = it.diabetes
+                    binding.cbHypertension.isChecked = it.hypertension
+                    binding.cbAsthma.isChecked = it.asthma
+                    binding.cbHeartDisease.isChecked = it.heartDisease
+                    binding.cbPreviousSurgery.isChecked = it.previousSurgery
+                    binding.cbHospitalization.isChecked = it.hospitalization
+                    otherConditionViews.clear()
+                    binding.llOtherConditions.removeAllViews()
+                    it.otherConditions.forEach { condition -> addConditionField(condition) }
                 }
             }
         }
@@ -105,7 +107,7 @@ class MedicalHistoryFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnSave.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveMedicalHistory(history)
             launch(Dispatchers.Main) {
                 binding.progressBar.visibility = View.GONE

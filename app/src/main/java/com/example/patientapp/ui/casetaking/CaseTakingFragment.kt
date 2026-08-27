@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.patientapp.R
 import com.example.patientapp.data.model.CaseTaking
@@ -18,7 +19,6 @@ import com.example.patientapp.utils.showToast
 import com.google.android.material.chip.Chip
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -122,7 +122,7 @@ class CaseTakingFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnSave.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveCaseTaking(caseTaking)
             launch(Dispatchers.Main) {
                 binding.progressBar.visibility = View.GONE

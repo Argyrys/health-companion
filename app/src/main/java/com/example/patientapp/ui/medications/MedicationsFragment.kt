@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.patientapp.R
 import com.example.patientapp.data.model.Medication
@@ -19,7 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ class MedicationsFragment : Fragment() {
 
     private fun loadMedications() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeMedications(uid).collectLatest { meds ->
                 launch(Dispatchers.Main) {
                     medications.clear()
@@ -108,15 +108,20 @@ class MedicationsFragment : Fragment() {
                 .show()
         }
 
-        MaterialAlertDialogBuilder(requireContext())
+        val dialog = MaterialAlertDialogBuilder(requireContext())
             .setTitle(if (existing != null) "Edit Medication" else "Add Medication")
             .setView(dialogView)
-            .setPositiveButton("Save") { _, _ ->
+            .setPositiveButton("Save", null)
+            .setNegativeButton("Cancel", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(android.app.Dialog.BUTTON_POSITIVE).setOnClickListener {
                 val drugName = etDrug.text.toString().trim()
                 val dosage = etDosage.text.toString().trim()
                 if (drugName.isEmpty() || dosage.isEmpty()) {
                     requireContext().showToast("Please fill all fields")
-                    return@setPositiveButton
+                    return@setOnClickListener
                 }
                 val med = Medication(
                     id = existing?.id ?: UUID.randomUUID().toString(),
@@ -126,9 +131,10 @@ class MedicationsFragment : Fragment() {
                     frequency = selectedFrequency
                 )
                 saveMedication(med)
+                dialog.dismiss()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
+        dialog.show()
     }
 
     private fun saveMedication(med: Medication) {
@@ -137,7 +143,7 @@ class MedicationsFragment : Fragment() {
         val index = updated.indexOfFirst { it.id == med.id }
         if (index >= 0) updated[index] = med else updated.add(med)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveMedications(updated, uid)
             launch(Dispatchers.Main) {
                 if (result.isSuccess) requireContext().showToast("Medication saved")
@@ -151,7 +157,7 @@ class MedicationsFragment : Fragment() {
         val updated = medications.toMutableList()
         updated.removeAll { it.id == med.id }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveMedications(updated, uid)
             launch(Dispatchers.Main) {
                 if (result.isSuccess) requireContext().showToast("Medication removed")

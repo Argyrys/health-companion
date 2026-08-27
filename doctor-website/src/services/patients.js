@@ -13,7 +13,7 @@ const fmtDate = (val) => {
 const mapAppPatient = async (docId) => {
   const base = `patients/${docId}/data`;
   try {
-    const [profileSnap, caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap] = await Promise.all([
+    const [profileSnap, caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap, voiceSnap] = await Promise.all([
       getDoc(doc(db, base, 'profile')),
       getDoc(doc(db, base, 'caseTaking')),
       getDoc(doc(db, base, 'medications')),
@@ -23,17 +23,18 @@ const mapAppPatient = async (docId) => {
       getDoc(doc(db, base, 'eyeScreening')),
       getDoc(doc(db, base, 'mentalHealth')),
       getDocs(collection(db, `${base}/reportData/reports`)).catch(() => ({ docs: [] })),
+      getDoc(doc(db, base, 'voiceTranscription')).catch(() => null),
     ]);
 
     if (!profileSnap.exists()) return null;
-    return assembleAppPatient(docId, profileSnap.data(), caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap);
+    return assembleAppPatient(docId, profileSnap.data(), caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap, voiceSnap);
   } catch (err) {
     console.warn('Could not read app patient subcollections for', docId, err);
     return null;
   }
 };
 
-const assembleAppPatient = (docId, p, caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap) => {
+const assembleAppPatient = (docId, p, caseSnap, medSnap, allergySnap, famSnap, medHistSnap, eyeSnap, mentalSnap, reportSnap, voiceSnap) => {
   const ct = caseSnap?.exists() ? caseSnap.data() : {};
   const meds = medSnap?.exists() ? medSnap.data() : {};
   const allergyData = allergySnap?.exists() ? allergySnap.data() : {};
@@ -113,7 +114,7 @@ const assembleAppPatient = (docId, p, caseSnap, medSnap, allergySnap, famSnap, m
         severity: ct.severity || 0,
         duration,
         voiceRecording: ct.voiceRecordingUrl || null,
-        voiceRecordingTranscription: null,
+        voiceRecordingTranscription: voiceSnap?.exists() ? (voiceSnap.data().text || null) : null,
         medicalHistory,
         familyHistory,
         medications,

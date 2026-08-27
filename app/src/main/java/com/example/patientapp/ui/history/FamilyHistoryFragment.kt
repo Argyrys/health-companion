@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.patientapp.R
 import com.example.patientapp.data.model.FamilyHistory
 import com.example.patientapp.data.model.FamilyHistoryEntry
@@ -16,9 +17,9 @@ import com.example.patientapp.utils.showToast
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,13 +53,14 @@ class FamilyHistoryFragment : Fragment() {
 
     private fun loadExistingData() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
-            patientRepository.observeFamilyHistory(uid).collectLatest { history ->
-                history?.let {
-                    launch(Dispatchers.Main) {
-                        it.entries.forEach { entry ->
-                            addEntryField(entry.condition, entry.relationship)
-                        }
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+            val history = patientRepository.observeFamilyHistory(uid).first()
+            history?.let {
+                launch(Dispatchers.Main) {
+                    entryViewsList.clear()
+                    binding.llEntries.removeAllViews()
+                    it.entries.forEach { entry ->
+                        addEntryField(entry.condition, entry.relationship)
                     }
                 }
             }
@@ -107,7 +109,7 @@ class FamilyHistoryFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnSave.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val result = patientRepository.saveFamilyHistory(history)
             launch(Dispatchers.Main) {
                 binding.progressBar.visibility = View.GONE

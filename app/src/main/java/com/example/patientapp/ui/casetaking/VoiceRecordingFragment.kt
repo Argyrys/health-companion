@@ -16,12 +16,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.patientapp.data.repository.PatientRepository
 import com.example.patientapp.databinding.FragmentVoiceRecordingBinding
 import com.example.patientapp.utils.SessionManager
 import com.example.patientapp.utils.showToast
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -119,7 +119,7 @@ class VoiceRecordingFragment : Fragment() {
 
     private fun loadSavedTranscription() {
         val uid = sessionManager.getUid() ?: return
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             val text = patientRepository.getVoiceTranscription(uid)
             if (!text.isNullOrEmpty()) {
                 savedTranscription = text
@@ -265,7 +265,7 @@ class VoiceRecordingFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE
         binding.btnSaveTranscription.isEnabled = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.saveVoiceTranscription(uid, text)
             savedTranscription = text
             withContext(Dispatchers.Main) {

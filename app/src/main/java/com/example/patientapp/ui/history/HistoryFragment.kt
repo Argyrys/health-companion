@@ -5,11 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import com.example.patientapp.data.repository.PatientRepository
 import com.example.patientapp.databinding.FragmentHistoryBinding
 import com.example.patientapp.utils.SessionManager
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -39,7 +39,7 @@ class HistoryFragment : Fragment() {
     private fun loadHistory() {
         val uid = sessionManager.getUid() ?: return
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeCaseTaking(uid).collectLatest { case ->
                 case?.let {
                     launch(Dispatchers.Main) {
@@ -50,7 +50,7 @@ class HistoryFragment : Fragment() {
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeMedicalHistory(uid).collectLatest { history ->
                 history?.let {
                     launch(Dispatchers.Main) {
@@ -68,7 +68,7 @@ class HistoryFragment : Fragment() {
             }
         }
 
-        CoroutineScope(Dispatchers.IO).launch {
+        viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.observeFamilyHistory(uid).collectLatest { family ->
                 family?.let {
                     launch(Dispatchers.Main) {
