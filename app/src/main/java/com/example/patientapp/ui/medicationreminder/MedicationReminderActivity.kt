@@ -17,7 +17,7 @@ import com.example.patientapp.utils.SessionManager
 import com.google.android.material.button.MaterialButton
 import com.google.firebase.Timestamp
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.util.Locale
@@ -49,6 +49,10 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medication_reminder)
+
+        // Show over lock screen
+        setShowWhenLocked(true)
+        setTurnScreenOn(true)
 
         medicationName = intent.getStringExtra("medicationName") ?: "your medicine"
 
@@ -97,7 +101,7 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
         // Use handler delay as fallback since onUtteranceCompleted is deprecated
         handler.postDelayed({
             if (!responded) startListening()
-        }, 4000)
+        }, 5000)
     }
 
     private fun startListening() {
@@ -144,7 +148,7 @@ class MedicationReminderActivity : AppCompatActivity(), TextToSpeech.OnInitListe
             timestamp = Timestamp.now()
         )
 
-        CoroutineScope(Dispatchers.IO).launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.saveAdherence(adherence)
         }
 

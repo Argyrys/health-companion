@@ -23,6 +23,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 val takenIntent = Intent(context, ReminderActionReceiver::class.java).apply {
                     putExtra("reminderId", reminderId)
                     putExtra("status", "taken")
+                    putExtra("medicationName", medicationName)
                 }
                 context.sendBroadcast(takenIntent)
                 val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -33,6 +34,7 @@ class ReminderReceiver : BroadcastReceiver() {
                 val skipIntent = Intent(context, ReminderActionReceiver::class.java).apply {
                     putExtra("reminderId", reminderId)
                     putExtra("status", "skipped")
+                    putExtra("medicationName", medicationName)
                 }
                 context.sendBroadcast(skipIntent)
                 val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
