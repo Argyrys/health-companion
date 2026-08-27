@@ -6,6 +6,7 @@ import com.example.patientapp.utils.LocalAuthManager
 import com.example.patientapp.utils.Resource
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -90,8 +91,9 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getPatientProfile(uid)
             if (local != null) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = profileDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = profileDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) {
                         if (local == null) trySend(null)
                         return@addSnapshotListener
@@ -103,10 +105,10 @@ class PatientRepository @Inject constructor(
                     }
                     trySend(patient ?: local)
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -175,16 +177,17 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getCaseTaking(uid)
             if (local != null) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = caseDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = caseDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
                     val data = snapshot?.toObject(CaseTaking::class.java)
                     trySend(data ?: local)
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -216,16 +219,17 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getMedicalHistory(uid)
             if (local != null) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = medHistoryDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = medHistoryDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
                     val data = snapshot?.toObject(MedicalHistory::class.java)
                     trySend(data ?: local)
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -251,16 +255,17 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getFamilyHistory(uid)
             if (local != null) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = famHistoryDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = famHistoryDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
                     val data = snapshot?.toObject(FamilyHistory::class.java)
                     trySend(data ?: local)
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -287,8 +292,9 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getMedications(uid)
             if (local.isNotEmpty()) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = medicationsDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = medicationsDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local.isEmpty()) trySend(emptyList()); return@addSnapshotListener }
                     val list = snapshot?.get("medications") as? List<Map<String, Any>> ?: emptyList()
                     val meds = list.map {
@@ -302,10 +308,10 @@ class PatientRepository @Inject constructor(
                     }
                     trySend(meds.ifEmpty { local })
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -332,8 +338,9 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getAllergies(uid)
             if (local.isNotEmpty()) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = allergiesDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = allergiesDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local.isEmpty()) trySend(emptyList()); return@addSnapshotListener }
                     val list = snapshot?.get("allergies") as? List<Map<String, Any>> ?: emptyList()
                     val allergies = list.map {
@@ -347,10 +354,10 @@ class PatientRepository @Inject constructor(
                     }
                     trySend(allergies.ifEmpty { local })
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -370,16 +377,17 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getEyeScreening(uid)
             if (local != null) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = eyeScreeningDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = eyeScreeningDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
                     val data = snapshot?.toObject(EyeScreening::class.java)
                     trySend(data ?: local)
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -399,16 +407,17 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getMentalHealth(uid)
             if (local != null) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = mentalHealthDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = mentalHealthDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
                     val data = snapshot?.toObject(MentalHealth::class.java)
                     trySend(data ?: local)
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -424,16 +433,17 @@ class PatientRepository @Inject constructor(
 
     fun observeReports(uid: String): Flow<List<Report>> {
         return callbackFlow {
+            var reg: ListenerRegistration? = null
             try {
-                val reg = reportsCol(uid).orderBy("createdAt")
+                reg = reportsCol(uid).orderBy("createdAt")
                     .addSnapshotListener { snapshot, error ->
                         if (error != null) { trySend(emptyList()); return@addSnapshotListener }
                         trySend(snapshot?.documents?.mapNotNull { it.toObject(Report::class.java) } ?: emptyList())
                     }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(emptyList())
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -460,15 +470,16 @@ class PatientRepository @Inject constructor(
 
     fun observeReminders(uid: String): Flow<List<Reminder>> {
         return callbackFlow {
+            var reg: ListenerRegistration? = null
             try {
-                val reg = remindersCol(uid).addSnapshotListener { snapshot, error ->
+                reg = remindersCol(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { trySend(emptyList()); return@addSnapshotListener }
                     trySend(snapshot?.documents?.mapNotNull { it.toObject(Reminder::class.java) } ?: emptyList())
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(emptyList())
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -492,16 +503,17 @@ class PatientRepository @Inject constructor(
             val local = localAuthManager.getVoiceTranscription(uid)
             if (local != null) trySend(local)
 
+            var reg: ListenerRegistration? = null
             try {
-                val reg = voiceDoc(uid).addSnapshotListener { snapshot, error ->
+                reg = voiceDoc(uid).addSnapshotListener { snapshot, error ->
                     if (error != null) { if (local == null) trySend(null); return@addSnapshotListener }
                     val text = snapshot?.getString("text")
                     trySend(text ?: local)
                 }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(local)
             }
+            awaitClose { reg?.remove() }
         }
     }
 
@@ -520,16 +532,17 @@ class PatientRepository @Inject constructor(
 
     fun observeAdherence(uid: String): Flow<List<MedicationAdherence>> {
         return callbackFlow {
+            var reg: ListenerRegistration? = null
             try {
-                val reg = adherenceCol(uid).orderBy("timestamp")
+                reg = adherenceCol(uid).orderBy("timestamp")
                     .addSnapshotListener { snapshot, error ->
                         if (error != null) { trySend(emptyList()); return@addSnapshotListener }
                         trySend(snapshot?.documents?.mapNotNull { it.toObject(MedicationAdherence::class.java) } ?: emptyList())
                     }
-                awaitClose { reg.remove() }
             } catch (e: Exception) {
                 trySend(emptyList())
             }
+            awaitClose { reg?.remove() }
         }
     }
 }
