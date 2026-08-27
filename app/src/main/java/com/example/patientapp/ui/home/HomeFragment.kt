@@ -52,7 +52,8 @@ class HomeFragment : Fragment() {
         FeatureItem("\uD83D\uDC41\uFE0F", "Eye Screening", R.id.action_home_to_eyeScreening),
         FeatureItem("\uD83E\uDDE0", "Mental Health", R.id.action_home_to_mentalHealth),
         FeatureItem("\uD83D\uDCCA", "My Reports", R.id.action_home_to_reports),
-        FeatureItem("\u23F0", "Reminders", R.id.action_home_to_reminders)
+        FeatureItem("\u23F0", "Reminders", R.id.action_home_to_reminders),
+        FeatureItem("\uD83D\uDCCB", "Med Report", R.id.action_home_to_medicineReport)
     )
 
     override fun onCreateView(

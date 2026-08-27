@@ -88,6 +88,13 @@
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
+        <action
+            android:id="@+id/action_home_to_medicineReport"
+            app:destination="@id/medicineReportFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
     </fragment>
 
     <fragment
@@ -176,6 +183,12 @@
         android:name="com.example.patientapp.ui.reminder.ReminderFragment"
         android:label="Reminders"
         tools:layout="@layout/fragment_reminder" />
+
+    <fragment
+        android:id="@+id/medicineReportFragment"
+        android:name="com.example.patientapp.ui.medicinereport.MedicineReportFragment"
+        android:label="Medicine Report"
+        tools:layout="@layout/fragment_medicine_report" />
 
     <fragment
         android:id="@+id/shareReportFragment"
