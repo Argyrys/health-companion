@@ -1,8 +1,10 @@
 package com.example.patientapp.ui.reminder
 
+import android.content.res.ColorStateList
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.patientapp.R
@@ -26,19 +28,19 @@ class ReminderAdapter(
             when {
                 reminder.taken -> {
                     binding.tvStatus.text = "Taken"
-                    binding.tvStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.success_green))
+                    setStatus(binding, R.color.success_green)
                     binding.btnTaken.visibility = View.GONE
                     binding.btnSkip.visibility = View.GONE
                 }
                 reminder.skipped -> {
                     binding.tvStatus.text = "Skipped"
-                    binding.tvStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.warning_orange))
+                    setStatus(binding, R.color.warning_orange)
                     binding.btnTaken.visibility = View.GONE
                     binding.btnSkip.visibility = View.GONE
                 }
                 reminder.isActive -> {
                     binding.tvStatus.text = "Pending"
-                    binding.tvStatus.setTextColor(ContextCompat.getColor(binding.root.context, R.color.info_blue))
+                    setStatus(binding, R.color.info_blue)
                     binding.btnTaken.visibility = View.VISIBLE
                     binding.btnSkip.visibility = View.VISIBLE
                 }
@@ -49,6 +51,14 @@ class ReminderAdapter(
             binding.btnEdit.setOnClickListener { onEdit(reminder) }
             binding.btnDelete.setOnClickListener { onDelete(reminder) }
         }
+    }
+
+    private fun setStatus(binding: ItemReminderBinding, @ColorRes colorRes: Int) {
+        val color = ContextCompat.getColor(binding.root.context, colorRes)
+        binding.tvStatus.setTextColor(
+            ContextCompat.getColor(binding.root.context, R.color.on_primary)
+        )
+        binding.tvStatus.backgroundTintList = ColorStateList.valueOf(color)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReminderViewHolder {

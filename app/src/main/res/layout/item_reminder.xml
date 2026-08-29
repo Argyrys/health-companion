@@ -4,17 +4,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="6dp"
-    app:cardCornerRadius="8dp"
-    app:cardElevation="2dp">
+    android:layout_marginStart="12dp"
+    android:layout_marginEnd="12dp"
+    android:layout_marginTop="6dp"
+    android:layout_marginBottom="6dp"
+    app:cardBackgroundColor="@color/card_background"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="0dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="@dimen/spacing_md">
+        android:padding="16dp">
 
-        <!-- Row 1: medicine name (prominent) + time, status on the right -->
+        <!-- Title row: medicine name + status pill -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,26 +38,53 @@
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@color/text_primary" />
+                    android:textColor="@color/text_primary"
+                    android:maxLines="1"
+                    android:ellipsize="end" />
 
-                <TextView
-                    android:id="@+id/tvTime"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="@color/text_secondary"
-                    android:layout_marginTop="4dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginTop="6dp">
+
+                    <ImageView
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:src="@android:drawable/ic_menu_recent_history"
+                        android:contentDescription="@null"
+                        android:tint="@color/primary" />
+
+                    <TextView
+                        android:id="@+id/tvTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="13sp"
+                        android:textColor="@color/text_secondary"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
             </LinearLayout>
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:layout_marginStart="8dp" />
+                android:background="@drawable/bg_status_pill"
+                android:gravity="center"
+                android:textSize="11sp"
+                android:textColor="@color/on_primary"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Row 2: actions -->
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/divider"
+            android:layout_marginTop="12dp" />
+
+        <!-- Action row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -67,6 +99,11 @@
                 android:layout_height="wrap_content"
                 android:text="@string/taken"
                 android:textSize="12sp"
+                android:minHeight="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
                 android:visibility="gone" />
 
             <com.google.android.material.button.MaterialButton
@@ -76,8 +113,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/skip"
                 android:textSize="12sp"
-                android:visibility="gone"
-                android:layout_marginStart="8dp" />
+                android:minHeight="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:visibility="gone" />
 
             <Space
                 android:layout_width="0dp"
@@ -91,7 +133,9 @@
                 android:src="@android:drawable/ic_menu_edit"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/edit"
-                android:tint="@color/text_secondary" />
+                android:tint="@color/primary"
+                android:scaleType="centerInside"
+                android:padding="10dp" />
 
             <ImageButton
                 android:id="@+id/btnDelete"
@@ -101,6 +145,8 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="@string/delete"
                 android:tint="@color/danger_red"
+                android:scaleType="centerInside"
+                android:padding="10dp"
                 android:layout_marginStart="4dp" />
         </LinearLayout>
 
