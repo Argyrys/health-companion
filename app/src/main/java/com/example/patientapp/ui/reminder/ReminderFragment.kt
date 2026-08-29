@@ -6,8 +6,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -145,8 +148,27 @@ class ReminderFragment : Fragment() {
         }
     }
 
+    private fun ensureIgnoreBatteryOptimizations() {
+        val pm = requireContext().getSystemService(Context.POWER_SERVICE) as PowerManager
+        if (pm.isIgnoringBatteryOptimizations(requireContext().packageName)) return
+        val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+            data = Uri.parse("package:${requireContext().packageName}")
+        }
+        try {
+            startActivity(intent)
+        } catch (_: Exception) {
+            // Fallback: open general battery optimization settings
+            try {
+                startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+            } catch (_: Exception) {
+                // ignore
+            }
+        }
+    }
+
     private fun createReminder(medication: Medication, hour: Int, minute: Int) {
         ensureNotificationPermission()
+        ensureIgnoreBatteryOptimizations()
         val uid = sessionManager.getUid() ?: return
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(System.currentTimeMillis())
         val reminderId = System.currentTimeMillis().toInt()
@@ -196,6 +218,8 @@ class ReminderFragment : Fragment() {
         }
 
         try {
+            // Use an exact alarm that can still fire while the device is dozing so
+            // Samsung battery optimization cannot defer the reminder's delivery.
             alarmManager.setRepeating(
                 AlarmManager.RTC_WAKEUP,
                 calendar.timeInMillis,
