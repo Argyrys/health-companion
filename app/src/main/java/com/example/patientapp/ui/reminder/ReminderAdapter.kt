@@ -12,7 +12,9 @@ import com.example.patientapp.databinding.ItemReminderBinding
 class ReminderAdapter(
     private val reminders: List<Reminder>,
     private val onTaken: (Reminder) -> Unit,
-    private val onSkip: (Reminder) -> Unit
+    private val onSkip: (Reminder) -> Unit,
+    private val onEdit: (Reminder) -> Unit,
+    private val onDelete: (Reminder) -> Unit
 ) : RecyclerView.Adapter<ReminderAdapter.ReminderViewHolder>() {
 
     inner class ReminderViewHolder(private val binding: ItemReminderBinding) :
@@ -44,6 +46,8 @@ class ReminderAdapter(
 
             binding.btnTaken.setOnClickListener { onTaken(reminder) }
             binding.btnSkip.setOnClickListener { onSkip(reminder) }
+            binding.btnEdit.setOnClickListener { onEdit(reminder) }
+            binding.btnDelete.setOnClickListener { onDelete(reminder) }
         }
     }
 

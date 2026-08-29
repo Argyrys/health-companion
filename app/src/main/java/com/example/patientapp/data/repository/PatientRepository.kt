@@ -468,6 +468,17 @@ class PatientRepository @Inject constructor(
         }
     }
 
+    suspend fun deleteReminder(reminder: Reminder): Resource<Unit> {
+        return try {
+            val snapshot = remindersCol(reminder.patientId)
+                .whereEqualTo("id", reminder.id).get().await()
+            snapshot.documents.forEach { it.reference.delete().await() }
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to delete reminder")
+        }
+    }
+
     fun observeReminders(uid: String): Flow<List<Reminder>> {
         return callbackFlow {
             var reg: ListenerRegistration? = null

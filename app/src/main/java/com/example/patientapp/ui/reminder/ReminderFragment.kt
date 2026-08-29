@@ -65,7 +65,9 @@ class ReminderFragment : Fragment() {
 
         adapter = ReminderAdapter(reminders,
             onTaken = { markReminder(it, taken = true) },
-            onSkip = { markReminder(it, taken = false) }
+            onSkip = { markReminder(it, taken = false) },
+            onEdit = { showEditDialog(it) },
+            onDelete = { deleteReminder(it) }
         )
         binding.rvReminders.layoutManager = LinearLayoutManager(requireContext())
         binding.rvReminders.adapter = adapter
@@ -243,6 +245,66 @@ class ReminderFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
             patientRepository.updateReminder(updated)
         }
+    }
+
+    private fun deleteReminder(reminder: Reminder) {
+        val reminderId = reminder.id.toIntOrNull() ?: return
+        val confirm = MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Delete reminder")
+            .setMessage("Delete the reminder for ${reminder.medicationName}?")
+            .setPositiveButton("Delete") { _, _ ->
+                cancelAlarm(reminderId)
+                viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                    patientRepository.deleteReminder(reminder)
+                    launch(Dispatchers.Main) {
+                        requireContext().showToast("Reminder deleted")
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+        confirm.show()
+    }
+
+    private fun showEditDialog(reminder: Reminder) {
+        val reminderId = reminder.id.toIntOrNull() ?: return
+        val picker = MaterialTimePicker.Builder()
+            .setTimeFormat(TimeFormat.CLOCK_24H)
+            .setHour(reminder.scheduledHour.coerceIn(0, 23))
+            .setMinute(reminder.scheduledMinute.coerceIn(0, 59))
+            .setTitleText("Edit reminder time")
+            .build()
+
+        picker.addOnPositiveButtonClickListener {
+            val updated = reminder.copy(
+                scheduledHour = picker.hour,
+                scheduledMinute = picker.minute,
+                isActive = true,
+                taken = false,
+                skipped = false
+            )
+            cancelAlarm(reminderId)
+            viewLifecycleOwner.lifecycleScope.launch(Dispatchers.IO) {
+                patientRepository.updateReminder(updated)
+                launch(Dispatchers.Main) {
+                    scheduleAlarm(updated, reminderId)
+                    requireContext().showToast(
+                        "Reminder updated for ${String.format("%02d:%02d", picker.hour, picker.minute)}"
+                    )
+                }
+            }
+        }
+
+        picker.show(childFragmentManager, "edit_time_picker")
+    }
+
+    private fun cancelAlarm(reminderId: Int) {
+        val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(requireContext(), ReminderReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            requireContext(), reminderId, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
     }
 
     override fun onDestroyView() {
