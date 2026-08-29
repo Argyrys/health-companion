@@ -11,83 +11,98 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="@dimen/spacing_md"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_md">
 
+        <!-- Row 1: medicine name (prominent) + time, status on the right -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
-            <TextView
-                android:id="@+id/tvMedName"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/text_primary" />
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tvTime"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/text_secondary"
-                android:layout_marginTop="4dp" />
+                <TextView
+                    android:id="@+id/tvMedName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_primary" />
+
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="13sp"
+                    android:textColor="@color/text_secondary"
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:layout_marginTop="2dp" />
-
+                android:layout_marginStart="8dp" />
         </LinearLayout>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnTaken"
-            style="@style/PrimaryButton"
-            android:layout_width="wrap_content"
+        <!-- Row 2: actions -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/taken"
-            android:textSize="12sp"
-            android:visibility="gone" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="8dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSkip"
-            style="@style/SecondaryButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/skip"
-            android:textSize="12sp"
-            android:visibility="gone"
-            android:layout_marginStart="8dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnTaken"
+                style="@style/PrimaryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/taken"
+                android:textSize="12sp"
+                android:visibility="gone" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnEdit"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/edit"
-            android:textSize="12sp"
-            app:icon="@android:drawable/ic_menu_edit"
-            app:iconGravity="textStart"
-            app:iconSize="16dp"
-            android:layout_marginStart="8dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSkip"
+                style="@style/SecondaryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/skip"
+                android:textSize="12sp"
+                android:visibility="gone"
+                android:layout_marginStart="8dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnDelete"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/delete"
-            android:textColor="@color/danger_red"
-            app:icon="@android:drawable/ic_menu_delete"
-            app:iconGravity="textStart"
-            app:iconSize="16dp"
-            android:layout_marginStart="4dp" />
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageButton
+                android:id="@+id/btnEdit"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_edit"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/edit"
+                android:tint="@color/text_secondary" />
+
+            <ImageButton
+                android:id="@+id/btnDelete"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_delete"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/delete"
+                android:tint="@color/danger_red"
+                android:layout_marginStart="4dp" />
+        </LinearLayout>
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
