@@ -9,7 +9,6 @@ import androidx.core.app.NotificationCompat
 import com.example.patientapp.PatientApp
 import com.example.patientapp.R
 import com.example.patientapp.ui.medicationreminder.MedicationReminderActivity
-import com.example.patientapp.ui.main.MainActivity
 
 class ReminderReceiver : BroadcastReceiver() {
 
@@ -19,6 +18,11 @@ class ReminderReceiver : BroadcastReceiver() {
         val action = intent.getStringExtra("action")
 
         when (action) {
+            "FIRE" -> {
+                // Launch the voice reminder reliably via a foreground service.
+                ReminderFireService.start(context, medicationName, reminderId)
+                return
+            }
             "TAKEN" -> {
                 val takenIntent = Intent(context, ReminderActionReceiver::class.java).apply {
                     putExtra("reminderId", reminderId)
@@ -43,6 +47,11 @@ class ReminderReceiver : BroadcastReceiver() {
             }
         }
 
+        // Route through a foreground service so the voice reminder launches even
+        // when the app is closed or the screen is locked (foreground services are
+        // exempt from background-activity-start restrictions).
+        ReminderFireService.start(context, medicationName, reminderId)
+
         // PendingIntent for the voice reminder activity (used as full-screen intent)
         val reminderActivityIntent = Intent(context, MedicationReminderActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
@@ -54,22 +63,8 @@ class ReminderReceiver : BroadcastReceiver() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Try to launch the activity directly
-        try {
-            context.startActivity(reminderActivityIntent)
-        } catch (_: Exception) {
-            // Activity launch blocked (Android 10+ background restriction) — notification will handle it
-        }
-
-        // Notification with full-screen intent so it shows on lock screen
-        val openIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent = PendingIntent.getActivity(
-            context, reminderId, openIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
+        // Notification with full-screen intent so it shows on lock screen as a
+        // fallback if the activity launch is ever blocked.
         val takenActionIntent = Intent(context, ReminderReceiver::class.java).apply {
             putExtra("medicationName", medicationName)
             putExtra("reminderId", reminderId)
