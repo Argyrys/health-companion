@@ -52,13 +52,13 @@ export default function Login({ onLogin }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-950 flex flex-col">
       {/* Mobile Header */}
       <div className="lg:hidden relative overflow-hidden">
-        <div className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 px-6 pt-12 pb-16 relative">
+        <div className="bg-gradient-to-br from-blue-900 via-blue-950 to-slate-900 px-6 pt-12 pb-16 relative">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute -top-10 -right-10 w-48 h-48 bg-white rounded-full blur-3xl" />
-            <div className="absolute bottom-0 -left-10 w-36 h-36 bg-blue-300 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 -left-10 w-36 h-36 bg-blue-400 rounded-full blur-3xl" />
           </div>
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
@@ -67,7 +67,7 @@ export default function Login({ onLogin }) {
               </div>
               <div>
                 <h1 className="text-lg font-bold text-white tracking-tight">Health Companion</h1>
-                <p className="text-blue-200 text-[11px] font-medium tracking-wide uppercase">Doctor Portal</p>
+                <p className="text-blue-300 text-[11px] font-medium tracking-wide uppercase">Doctor Portal</p>
               </div>
             </div>
             <h2 className="text-2xl font-bold text-white leading-snug">Welcome back,<br/>Doctor</h2>
@@ -75,7 +75,7 @@ export default function Login({ onLogin }) {
         </div>
         {/* Curved bottom */}
         <div className="absolute bottom-0 left-0 right-0 h-6">
-          <svg viewBox="0 0 1440 48" fill="none" className="w-full h-full text-slate-50" preserveAspectRatio="none">
+          <svg viewBox="0 0 1440 48" fill="none" className="w-full h-full text-slate-900" preserveAspectRatio="none">
             <path d="M0 48h1440V16c-240 20-480 32-720 32S240 36 0 16v32z" fill="currentColor" />
           </svg>
         </div>
@@ -83,7 +83,7 @@ export default function Login({ onLogin }) {
 
       {/* Desktop Left Panel */}
       <div className="hidden lg:flex lg:w-full min-h-screen">
-        <div className="w-[45%] bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 relative overflow-hidden flex flex-col justify-between p-14">
+        <div className="w-[45%] bg-gradient-to-br from-blue-900 via-blue-950 to-slate-900 relative overflow-hidden flex flex-col justify-between p-14">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-20 left-20 w-80 h-80 bg-white rounded-full blur-3xl" />
             <div className="absolute bottom-32 right-16 w-64 h-64 bg-blue-300 rounded-full blur-3xl" />
@@ -96,11 +96,11 @@ export default function Login({ onLogin }) {
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">Health Companion</h1>
-                <p className="text-blue-100 text-xs">Healthcare that listens.</p>
+                <p className="text-blue-300 text-xs">Healthcare that listens.</p>
               </div>
             </div>
             <h2 className="text-[2.75rem] font-bold text-white leading-[1.15] mb-5">Your clinical<br/>dashboard awaits.</h2>
-            <p className="text-blue-100 text-base leading-relaxed max-w-sm">Access patient records, manage diagnoses, and deliver better care — all from one place.</p>
+            <p className="text-blue-300 text-base leading-relaxed max-w-sm">Access patient records, manage diagnoses, and deliver better care — all from one place.</p>
           </div>
           <div className="relative z-10 space-y-5">
             {[
@@ -114,7 +114,7 @@ export default function Login({ onLogin }) {
                 </div>
                 <div>
                   <p className="text-white text-sm font-semibold">{label}</p>
-                  <p className="text-blue-200 text-xs">{desc}</p>
+                  <p className="text-blue-300 text-xs">{desc}</p>
                 </div>
               </div>
             ))}
@@ -125,7 +125,7 @@ export default function Login({ onLogin }) {
         <div className="flex-1 flex items-center justify-center px-8 py-12">
           <div className={`w-full max-w-md transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
             <div className="mb-10">
-              <h2 className="text-3xl font-bold text-slate-800 mb-2">Sign in</h2>
+              <h2 className="text-3xl font-bold text-white mb-2">Sign in</h2>
               <p className="text-slate-400 text-sm">Enter your credentials to access the doctor portal</p>
             </div>
             <LoginForm
@@ -137,12 +137,12 @@ export default function Login({ onLogin }) {
               handleSubmit={handleSubmit} handleForgotPassword={handleForgotPassword}
             />
             <div className="mt-8 text-center">
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-400">
                 Don't have an account?{' '}
-                <a href="/signup" className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">Sign up free</a>
+                <a href="/signup" className="text-blue-400 font-semibold hover:text-blue-300 transition-colors">Sign up free</a>
               </p>
             </div>
-            <p className="text-center text-xs text-slate-300 mt-10">Health Companion &middot; Smart India Hackathon 2026</p>
+            <p className="text-center text-xs text-slate-500 mt-10">Health Companion &middot; Smart India Hackathon 2026</p>
           </div>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function Login({ onLogin }) {
       <div className="lg:hidden flex-1 px-5 py-6 -mt-2">
         <div className={`w-full max-w-md mx-auto transition-all duration-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="mb-6">
-            <h2 className="text-xl font-bold text-slate-800 mb-1">Sign in</h2>
+            <h2 className="text-xl font-bold text-white mb-1">Sign in</h2>
             <p className="text-slate-400 text-xs">Access your clinical dashboard</p>
           </div>
           <LoginForm
@@ -164,12 +164,12 @@ export default function Login({ onLogin }) {
             mobile
           />
           <div className="mt-5 text-center">
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-slate-400">
               Don't have an account?{' '}
-              <a href="/signup" className="text-blue-600 font-semibold">Sign up free</a>
+              <a href="/signup" className="text-blue-400 font-semibold">Sign up free</a>
             </p>
           </div>
-          <p className="text-center text-[10px] text-slate-300 mt-6">Health Companion &middot; SIH 2026</p>
+          <p className="text-center text-[10px] text-slate-500 mt-6">Health Companion &middot; SIH 2026</p>
         </div>
       </div>
     </div>
@@ -180,10 +180,10 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className={`block font-medium text-slate-600 mb-1.5 ${mobile ? 'text-xs' : 'text-sm'}`}>Email</label>
+        <label className={`block font-medium text-slate-300 mb-1.5 ${mobile ? 'text-xs' : 'text-sm'}`}>Email</label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
-            <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="text-slate-500 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="2" y="4" width="20" height="16" rx="3" />
               <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
@@ -193,19 +193,19 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="doctor@hospital.com"
-            className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-4 py-3.5 text-sm"
+            className="w-full bg-slate-800/70 border border-slate-700 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all rounded-xl pl-11 pr-4 py-3.5 text-sm"
           />
         </div>
       </div>
 
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <label className={`font-medium text-slate-600 ${mobile ? 'text-xs' : 'text-sm'}`}>Password</label>
+          <label className={`font-medium text-slate-300 ${mobile ? 'text-xs' : 'text-sm'}`}>Password</label>
           <div className="h-5">
             {resetSent ? (
               <p className="text-[11px] text-emerald-600 font-medium flex items-center gap-1"><CheckCircle2 className="w-3 h-3" />Sent!</p>
             ) : (
-              <button type="button" onClick={handleForgotPassword} disabled={resetLoading} className="text-[11px] text-blue-600 font-medium hover:text-blue-700 transition-colors disabled:opacity-50">
+              <button type="button" onClick={handleForgotPassword} disabled={resetLoading} className="text-[11px] text-blue-400 font-medium hover:text-blue-300 transition-colors disabled:opacity-50">
                 {resetLoading ? 'Sending...' : 'Forgot password?'}
               </button>
             )}
@@ -213,7 +213,7 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
         </div>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 w-11 flex items-center justify-center pointer-events-none">
-            <svg className="text-slate-300 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="text-slate-500 w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
@@ -223,9 +223,9 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Enter password"
-            className="w-full bg-white border border-slate-200 text-slate-800 placeholder:text-slate-300 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all rounded-xl pl-11 pr-12 py-3.5 text-sm"
+            className="w-full bg-slate-800/70 border border-slate-700 text-white placeholder:text-slate-500 focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all rounded-xl pl-11 pr-12 py-3.5 text-sm"
           />
-          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-300 hover:text-slate-500 transition-colors">
+          <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors">
             {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
           </button>
         </div>
@@ -241,7 +241,7 @@ function LoginForm({ email, setEmail, password, setPassword, showPassword, setSh
       <button
         type="submit"
         disabled={loading}
-        className={`w-full bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-600/25 hover:shadow-blue-600/40 flex items-center justify-center gap-2 ${mobile ? 'py-3.5 text-sm' : 'py-3.5 text-sm'}`}
+        className={`w-full bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-500 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-slate-900 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-blue-900/40 hover:shadow-blue-800/50 flex items-center justify-center gap-2 ${mobile ? 'py-3.5 text-sm' : 'py-3.5 text-sm'}`}
       >
         {loading ? (
           <>

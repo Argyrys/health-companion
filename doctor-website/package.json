@@ -25,5 +25,10 @@
     "oxlint": "^1.75.0",
     "tailwindcss": "^4.3.3",
     "vite": "^8.2.0"
+  },
+  "allowScripts": {
+    "@firebase/util@1.15.3": true,
+    "core-js@3.50.0": true,
+    "protobufjs@7.6.5": true
   }
 }
