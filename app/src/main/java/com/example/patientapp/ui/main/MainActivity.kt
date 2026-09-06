@@ -8,12 +8,20 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.patientapp.R
 import com.example.patientapp.databinding.ActivityMainBinding
+import com.example.patientapp.utils.AppointmentNotificationHelper
+import com.example.patientapp.utils.SessionManager
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    @Inject lateinit var sessionManager: SessionManager
+
+    private var appointmentListener: ListenerRegistration? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +43,35 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             binding.toolbar.title = destination.label
         }
+
+        startAppointmentListener()
+    }
+
+    private fun startAppointmentListener() {
+        val uid = sessionManager.getUid() ?: return
+
+        appointmentListener = FirebaseFirestore.getInstance()
+            .collection("appointments")
+            .whereEqualTo("patientId", uid)
+            .addSnapshotListener { snapshot, error ->
+                if (error != null || snapshot == null) return@addSnapshotListener
+
+                for (doc in snapshot.documents) {
+                    val status = doc.getString("status") ?: continue
+                    val doctorName = doc.getString("doctorName") ?: "Doctor"
+                    val patientName = doc.getString("patientName") ?: ""
+                    val appointmentId = doc.id
+
+                    AppointmentNotificationHelper.onStatusChanged(
+                        this, appointmentId, patientName, doctorName, status
+                    )
+                }
+            }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        appointmentListener?.remove()
     }
 
     override fun onSupportNavigateUp(): Boolean {

@@ -33,14 +33,25 @@ class PatientApp : Application() {
                 description = "Notifications about doctor diagnosis and prescriptions"
             }
 
+            val appointmentChannel = NotificationChannel(
+                CHANNEL_APPOINTMENTS,
+                "Appointment Updates",
+                NotificationManager.IMPORTANCE_HIGH
+            ).apply {
+                description = "Notifications about appointment status changes"
+                enableVibration(true)
+            }
+
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(reminderChannel)
             manager.createNotificationChannel(diagnosisChannel)
+            manager.createNotificationChannel(appointmentChannel)
         }
     }
 
     companion object {
         const val CHANNEL_REMINDERS = "medication_reminders"
         const val CHANNEL_DIAGNOSIS = "doctor_diagnosis"
+        const val CHANNEL_APPOINTMENTS = "appointment_updates"
     }
 }
