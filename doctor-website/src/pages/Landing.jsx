@@ -198,7 +198,7 @@ export default function Landing({ onLogin, onSignup }) {
 
                   <div className="flex items-center gap-2 text-xs text-white/30">
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>End-to-end encrypted &middot; HIPAA compliant</span>
+                    <span>Built with Firebase &middot; Smart India Hackathon 2026</span>
                   </div>
                 </div>
 
@@ -426,7 +426,7 @@ export default function Landing({ onLogin, onSignup }) {
             <div className="relative z-10">
               <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5 mb-8">
                 <Heart className="w-3.5 h-3.5 text-red-400" />
-                <span className="text-white/60 text-xs font-medium">Trusted by healthcare professionals</span>
+                <span className="text-white/60 text-xs font-medium">Built for Smart India Hackathon 2026</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-5 tracking-tight">
