@@ -7,8 +7,10 @@ import Dashboard from './pages/Dashboard';
 import PatientList from './pages/PatientList';
 import PatientReport from './pages/PatientReport';
 import Profile from './pages/Profile';
+import ReceptionDashboard from './pages/ReceptionDashboard';
+import CreateReceptionist from './pages/CreateReceptionist';
 import Sidebar from './components/Sidebar';
-import { logoutDoctor, onAuthChange } from './services/auth';
+import { logoutDoctor, onAuthChange, getUserRole } from './services/auth';
 import { getOrCreateDoctor } from './services/doctors';
 
 function App() {
@@ -16,6 +18,7 @@ function App() {
   const [doctorName, setDoctorName] = useState('');
   const [doctorId, setDoctorId] = useState('');
   const [doctorNum, setDoctorNum] = useState(null);
+  const [userRole, setUserRole] = useState('doctor');
   const [authLoading, setAuthLoading] = useState(true);
 
   const loadDoctorProfile = async (user, signupName) => {
@@ -23,22 +26,26 @@ function App() {
       const doc = await getOrCreateDoctor(user.uid, user.email, signupName);
       setDoctorName(doc.name || user.email.split('@')[0]);
       setDoctorNum(doc.doctorId);
+      setUserRole(doc.role || 'doctor');
     } catch (err) {
       console.error('Error loading doctor profile:', err);
     }
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthChange((user) => {
+    const unsubscribe = onAuthChange(async (user) => {
       if (user) {
         setDoctorId(user.uid);
         setIsLoggedIn(true);
+        const role = await getUserRole(user.uid);
+        setUserRole(role);
         loadDoctorProfile(user);
       } else {
         setIsLoggedIn(false);
         setDoctorName('');
         setDoctorId('');
         setDoctorNum(null);
+        setUserRole('doctor');
       }
       setAuthLoading(false);
     });
@@ -48,10 +55,13 @@ function App() {
   const handleLogin = async (name, uid, email) => {
     setIsLoggedIn(true);
     setDoctorId(uid);
+    const role = await getUserRole(uid);
+    setUserRole(role);
     try {
       const doc = await getOrCreateDoctor(uid, email, name);
       setDoctorName(doc.name || name);
       setDoctorNum(doc.doctorId);
+      setUserRole(doc.role || role);
     } catch (err) {
       console.error('Error loading doctor profile:', err);
     }
@@ -76,19 +86,32 @@ function App() {
     );
   }
 
+  const isReceptionist = userRole === 'receptionist';
+
   return (
     <Router>
       {isLoggedIn ? (
         <div className="min-h-screen bg-slate-50">
-          <Sidebar doctorName={doctorName} doctorNum={doctorNum} onLogout={handleLogout} />
+          <Sidebar doctorName={doctorName} doctorNum={doctorNum} onLogout={handleLogout} role={userRole} />
           <div className="main-content">
             <main className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 min-h-screen">
               <Routes>
-                <Route path="/" element={<Dashboard doctorId={doctorId} />} />
-                <Route path="/patients" element={<PatientList doctorId={doctorId} />} />
-                <Route path="/patients/:id" element={<PatientReport doctorId={doctorId} />} />
-                <Route path="/profile" element={<Profile doctorId={doctorId} />} />
-                <Route path="*" element={<Navigate to="/" />} />
+                {isReceptionist ? (
+                  <>
+                    <Route path="/" element={<ReceptionDashboard doctorId={doctorId} />} />
+                    <Route path="/profile" element={<Profile doctorId={doctorId} />} />
+                    <Route path="*" element={<Navigate to="/" />} />
+                  </>
+                ) : (
+                  <>
+                    <Route path="/" element={<Dashboard doctorId={doctorId} />} />
+                    <Route path="/patients" element={<PatientList doctorId={doctorId} />} />
+                    <Route path="/patients/:id" element={<PatientReport doctorId={doctorId} />} />
+                    <Route path="/profile" element={<Profile doctorId={doctorId} />} />
+                    <Route path="/create-receptionist" element={<CreateReceptionist doctorId={doctorId} />} />
+                    <Route path="*" element={<Navigate to="/" />} />
+                  </>
+                )}
               </Routes>
             </main>
             <footer className="border-t border-slate-200 bg-white px-6 py-4">

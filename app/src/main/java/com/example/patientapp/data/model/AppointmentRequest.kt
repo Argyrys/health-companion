@@ -10,6 +10,10 @@ data class AppointmentRequest(
     val doctorName: String = "",
     val message: String = "",
     val reportUrl: String = "",
-    val status: String = "Pending",
+    val status: String = "pending",
+    val scheduledTime: Timestamp? = null,
+    val rejectionReason: String = "",
+    val forwardedBy: String = "",
+    val forwardedAt: Timestamp? = null,
     val createdAt: Timestamp? = null
 )

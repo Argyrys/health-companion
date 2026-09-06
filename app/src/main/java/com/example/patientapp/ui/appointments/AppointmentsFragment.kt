@@ -73,12 +73,22 @@ class AppointmentsFragment : Fragment() {
                         is Number -> createdAtRaw.toLong()
                         else -> 0L
                     }
+                    val scheduledTimeRaw = doc.get("scheduledTime")
+                    val scheduledTimeMillis = when (scheduledTimeRaw) {
+                        is Timestamp -> scheduledTimeRaw.toDate().time
+                        is Long -> scheduledTimeRaw
+                        is Number -> scheduledTimeRaw.toLong()
+                        else -> 0L
+                    }
                     AppointmentItem(
                         id = doc.id,
                         doctorName = doc.getString("doctorName") ?: "Unknown Doctor",
                         message = doc.getString("message") ?: "",
-                        status = doc.getString("status") ?: "Pending",
-                        createdAt = createdAtMillis
+                        status = doc.getString("status") ?: "pending",
+                        createdAt = createdAtMillis,
+                        scheduledTime = scheduledTimeMillis,
+                        rejectionReason = doc.getString("rejectionReason") ?: "",
+                        forwardedBy = doc.getString("forwardedBy") ?: ""
                     )
                 }.sortedByDescending { it.createdAt }
 

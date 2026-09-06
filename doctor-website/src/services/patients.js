@@ -448,3 +448,38 @@ export const getAdherence = async (patientId) => {
     return [];
   }
 };
+
+export const getAppointmentsForDoctor = async (doctorId) => {
+  try {
+    const snap = await getDocs(query(
+      collection(db, 'appointments'),
+      where('doctorId', '==', doctorId),
+      orderBy('createdAt', 'desc')
+    ));
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  } catch {
+    try {
+      const snap = await getDocs(query(collection(db, 'appointments'), orderBy('createdAt', 'desc')));
+      return snap.docs.filter(d => d.data().doctorId === doctorId).map(d => ({ id: d.id, ...d.data() }));
+    } catch {
+      return [];
+    }
+  }
+};
+
+export const forwardAppointment = async (appointmentId, scheduledTime, doctorId) => {
+  const aptRef = doc(db, 'appointments', appointmentId);
+  await updateDoc(aptRef, {
+    status: 'forwarded',
+    scheduledTime: scheduledTime,
+    forwardedAt: new Date(),
+  });
+};
+
+export const rejectAppointment = async (appointmentId, reason) => {
+  const aptRef = doc(db, 'appointments', appointmentId);
+  await updateDoc(aptRef, {
+    status: 'rejected',
+    rejectionReason: reason || '',
+  });
+};

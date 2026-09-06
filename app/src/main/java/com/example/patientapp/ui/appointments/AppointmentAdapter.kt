@@ -2,6 +2,7 @@ package com.example.patientapp.ui.appointments
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -17,7 +18,10 @@ data class AppointmentItem(
     val doctorName: String = "",
     val message: String = "",
     val status: String = "pending",
-    val createdAt: Long = 0L
+    val createdAt: Long = 0L,
+    val scheduledTime: Long = 0L,
+    val rejectionReason: String = "",
+    val forwardedBy: String = ""
 )
 
 class AppointmentAdapter :
@@ -31,6 +35,7 @@ class AppointmentAdapter :
             binding.tvMessage.text = item.message
 
             val statusText = when (item.status.lowercase()) {
+                "forwarded" -> "Scheduled"
                 "accepted" -> "Accepted"
                 "rejected" -> "Rejected"
                 else -> "Pending"
@@ -38,6 +43,7 @@ class AppointmentAdapter :
             binding.tvStatus.text = statusText
 
             val (bgRes, textColor) = when (item.status.lowercase()) {
+                "forwarded" -> Pair(R.drawable.bg_status_forwarded, Color.parseColor("#1565C0"))
                 "accepted" -> Pair(R.drawable.bg_status_accepted, Color.parseColor("#1B5E20"))
                 "rejected" -> Pair(R.drawable.bg_status_rejected, Color.parseColor("#B71C1C"))
                 else -> Pair(R.drawable.bg_status_pending, Color.parseColor("#E65100"))
@@ -48,6 +54,28 @@ class AppointmentAdapter :
             val date = Date(item.createdAt)
             val fmt = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
             binding.tvDate.text = "Requested: ${fmt.format(date)}"
+
+            if (item.scheduledTime > 0) {
+                val schedFmt = SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault())
+                binding.tvScheduledTime.text = "Scheduled: ${schedFmt.format(Date(item.scheduledTime))}"
+                binding.tvScheduledTime.visibility = View.VISIBLE
+            } else {
+                binding.tvScheduledTime.visibility = View.GONE
+            }
+
+            if (item.rejectionReason.isNotEmpty()) {
+                binding.tvRejectionReason.text = "Reason: ${item.rejectionReason}"
+                binding.tvRejectionReason.visibility = View.VISIBLE
+            } else {
+                binding.tvRejectionReason.visibility = View.GONE
+            }
+
+            if (item.forwardedBy.isNotEmpty() && item.status.lowercase() == "forwarded") {
+                binding.tvForwardedBy.text = "Forwarded by: ${item.forwardedBy}"
+                binding.tvForwardedBy.visibility = View.VISIBLE
+            } else {
+                binding.tvForwardedBy.visibility = View.GONE
+            }
         }
     }
 

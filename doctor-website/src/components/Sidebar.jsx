@@ -1,16 +1,23 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Activity, Users, LayoutDashboard, LogOut, Menu, X, ChevronRight, User } from 'lucide-react';
+import { Activity, Users, LayoutDashboard, LogOut, Menu, X, ChevronRight, User, CalendarCheck } from 'lucide-react';
 
-export default function Sidebar({ doctorName, doctorNum, onLogout }) {
+export default function Sidebar({ doctorName, doctorNum, onLogout, role }) {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const links = [
-    { path: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { path: '/patients', label: 'Patients', icon: Users },
-    { path: '/profile', label: 'Profile', icon: User },
-  ];
+  const isReceptionist = role === 'receptionist';
+
+  const links = isReceptionist
+    ? [
+        { path: '/', label: 'Reception Queue', icon: CalendarCheck },
+        { path: '/profile', label: 'Profile', icon: User },
+      ]
+    : [
+        { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+        { path: '/patients', label: 'Patients', icon: Users },
+        { path: '/profile', label: 'Profile', icon: User },
+      ];
 
   const isActive = (path) => location.pathname === path;
 
@@ -53,8 +60,8 @@ export default function Sidebar({ doctorName, doctorNum, onLogout }) {
             <span className="text-white font-semibold text-sm">{doctorName?.charAt(0)}</span>
           </div>
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-slate-800 truncate">Dr. {doctorName}</p>
-            <p className="text-[10px] text-slate-400">ID #{doctorNum || '...'}</p>
+            <p className="text-sm font-semibold text-slate-800 truncate">{isReceptionist ? doctorName : `Dr. ${doctorName}`}</p>
+            <p className="text-[10px] text-slate-400">{isReceptionist ? 'Receptionist' : `ID #${doctorNum || '...'}`}</p>
           </div>
         </div>
         <button

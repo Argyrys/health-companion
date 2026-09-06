@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Activity, Eye, EyeOff, ArrowRight, Heart, Shield, Zap, CheckCircle2 } from 'lucide-react';
-import { loginDoctor, resetPassword } from '../services/auth';
+import { loginDoctor, resetPassword, loginWithGoogle } from '../services/auth';
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState('');
@@ -10,9 +10,30 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [resetSent, setResetSent] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => { setTimeout(() => setMounted(true), 50); }, []);
+
+  const handleGoogleLogin = async () => {
+    setError('');
+    setGoogleLoading(true);
+    try {
+      const user = await loginWithGoogle();
+      onLogin(user.displayName || user.email.split('@')[0], user.uid, user.email);
+    } catch (err) {
+      if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        // no-op
+      } else if (err.code === 'auth/account-exists-with-different-credential') {
+        setError('An account with this email already exists. Try signing in with email/password.');
+      } else if (err.code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized for Google sign-in. Ask your admin to add it in Firebase Console.');
+      } else {
+        setError('Google sign-in failed. Please try again.');
+      }
+    }
+    setGoogleLoading(false);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -135,6 +156,7 @@ export default function Login({ onLogin }) {
               error={error} loading={loading}
               resetSent={resetSent} resetLoading={resetLoading}
               handleSubmit={handleSubmit} handleForgotPassword={handleForgotPassword}
+              googleLoading={googleLoading} handleGoogleLogin={handleGoogleLogin}
             />
             <div className="mt-8 text-center">
               <p className="text-sm text-slate-400">
@@ -161,6 +183,7 @@ export default function Login({ onLogin }) {
             error={error} loading={loading}
             resetSent={resetSent} resetLoading={resetLoading}
             handleSubmit={handleSubmit} handleForgotPassword={handleForgotPassword}
+            googleLoading={googleLoading} handleGoogleLogin={handleGoogleLogin}
             mobile
           />
           <div className="mt-5 text-center">
@@ -176,9 +199,42 @@ export default function Login({ onLogin }) {
   );
 }
 
-function LoginForm({ email, setEmail, password, setPassword, showPassword, setShowPassword, error, loading, resetSent, resetLoading, handleSubmit, handleForgotPassword, mobile }) {
+function LoginForm({ email, setEmail, password, setPassword, showPassword, setShowPassword, error, loading, resetSent, resetLoading, handleSubmit, handleForgotPassword, googleLoading, handleGoogleLogin, mobile }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <button
+        type="button"
+        onClick={handleGoogleLogin}
+        disabled={googleLoading}
+        className="w-full bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 hover:border-slate-300 focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm flex items-center justify-center gap-3 py-3.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {googleLoading ? (
+          <>
+            <svg className="animate-spin h-4 w-4 text-slate-400" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Connecting...
+          </>
+        ) : (
+          <>
+            <svg className="w-5 h-5" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+              <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+              <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+            </svg>
+            Continue with Google
+          </>
+        )}
+      </button>
+
+      <div className="flex items-center gap-3">
+        <div className="flex-1 h-px bg-slate-200" />
+        <span className={`text-slate-400 font-medium ${mobile ? 'text-[11px]' : 'text-xs'}`}>or sign in with email</span>
+        <div className="flex-1 h-px bg-slate-200" />
+      </div>
+
       <div>
         <label className={`block font-medium text-slate-300 mb-1.5 ${mobile ? 'text-xs' : 'text-sm'}`}>Email</label>
         <div className="relative">

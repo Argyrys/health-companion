@@ -58,6 +58,34 @@
             android:layout_marginTop="8dp" />
 
         <TextView
+            android:id="@+id/tvScheduledTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="#1565C0"
+            android:textStyle="bold"
+            android:layout_marginTop="6dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvForwardedBy"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="@color/text_secondary"
+            android:layout_marginTop="2dp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvRejectionReason"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#B71C1C"
+            android:layout_marginTop="4dp"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/tvDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
