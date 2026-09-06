@@ -9,40 +9,106 @@ service cloud.firestore {
       allow update, delete: if request.auth != null && request.auth.uid == doctorId;
     }
 
-    // Counters — used for auto-incrementing doctor IDs (admin-only in production)
+    // Counters — used for auto-incrementing doctor IDs
     match /counters/{counterId} {
       allow read: if request.auth != null;
-      allow write: if false; // managed by app logic only
+      allow write: if false;
     }
 
     // Patients collection — patients own their data, doctors/receptionists can read
     match /patients/{patientId} {
-      // Anyone authenticated can read (doctors need to see patient data)
       allow read: if request.auth != null;
-      // Patient can write their own root doc, or any authenticated user can merge-link
       allow create: if request.auth != null;
       allow update: if request.auth != null && (
         request.auth.uid == patientId ||
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(['doctorId', 'doctorName'])
       );
 
-      // Data subcollection — patient owns their data, any authenticated user can read
+      // Validate patient profile fields
+      allow update: if request.auth != null
+        && request.auth.uid == patientId
+        && (
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['age', 'name', 'gender'])
+          || (
+            (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['age'])
+              || (request.resource.data.age is number && request.resource.data.age >= 0 && request.resource.data.age <= 150))
+            && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['name'])
+              || (request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() <= 200))
+            && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['gender'])
+              || request.resource.data.gender in ['Male', 'Female', 'Other', 'Prefer not to say', ''])
+          )
+        );
+
+      // Data subcollection — patient owns their data
       match /data/{document=**} {
         allow read: if request.auth != null;
-        // Patient can write their own data
         allow create, update: if request.auth != null && request.auth.uid == patientId;
         allow delete: if request.auth != null && request.auth.uid == patientId;
+      }
+
+      // Reminders — validate required fields
+      match /data/reminderData/reminders/{reminderId} {
+        allow create: if request.auth != null
+          && request.auth.uid == patientId
+          && request.resource.data.medicationName is string
+          && request.resource.data.medicationName.size() > 0
+          && request.resource.data.medicationName.size() <= 200
+          && request.resource.data.reminderTime is string
+          && request.resource.data.reminderTime.matches('^\\\\d{2}:\\\\d{2}$')
+          && request.resource.data.frequency in ['Daily', 'Weekly', 'Monthly', 'As needed'];
+      }
+
+      // Consultations — validate diagnosis and prescription fields
+      match /data/{dataId}/consultations/{consultationId} {
+        allow update: if request.auth != null && (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['diagnosis', 'prescription'])
+          || (
+            (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['diagnosis'])
+              || (request.resource.data.diagnosis is string && request.resource.data.diagnosis.size() <= 5000))
+            && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['prescription'])
+              || (request.resource.data.prescription is string && request.resource.data.prescription.size() <= 5000))
+          )
+        );
       }
     }
 
     // Appointments — patients create, any authenticated user can read/update
     match /appointments/{appointmentId} {
       allow read: if request.auth != null;
-      // Patient can create their own appointment
+
+      // Patient can create their own appointment with required fields
       allow create: if request.auth != null
-        && request.resource.data.patientId == request.auth.uid;
-      // Any authenticated user can update (receptionist forwards, doctor accepts/rejects)
-      allow update: if request.auth != null;
+        && request.resource.data.patientId == request.auth.uid
+        && request.resource.data.patientName is string
+        && request.resource.data.patientName.size() > 0
+        && request.resource.data.doctorId is string
+        && request.resource.data.doctorId.size() > 0
+        && request.resource.data.status == 'pending';
+
+      // Any authenticated user can update — validate status transitions
+      allow update: if request.auth != null
+        && (
+          // Status field must be a valid value if changed
+          !request.resource.data.diff(resource.data).affectedKeys().hasAny(['status'])
+          || request.resource.data.status in ['pending', 'forwarded', 'accepted', 'rejected']
+        )
+        && (
+          // If status is rejected, rejectionReason must be present
+          request.resource.data.status != 'rejected'
+          || (
+            request.resource.data.rejectionReason is string
+            && request.resource.data.rejectionReason.size() > 0
+          )
+        )
+        && (
+          // Scheduled time required when forwarded
+          request.resource.data.status != 'forwarded'
+          || (
+            request.resource.data.scheduledTime is string
+            && request.resource.data.scheduledTime.size() > 0
+          )
+        );
+
       // No delete allowed
     }
 
