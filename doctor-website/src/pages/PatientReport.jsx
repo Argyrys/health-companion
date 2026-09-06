@@ -4,12 +4,13 @@ import {
   ArrowLeft, Camera, Brain, Pill, AlertTriangle,
   Heart, FileText, Save, ChevronDown, ChevronUp, CheckCircle2,
   Mic, Printer, User, MapPin, Phone, Globe, Plus, X, Download, Play, Pause, Square,
-  Activity, Stethoscope, ClipboardList, Shield, Droplets, Ruler, Weight
+  Activity, Stethoscope, ClipboardList, Shield, Droplets, Ruler, Weight, Sparkles, Loader2
 } from 'lucide-react';
 import {
   getPatient, updateDiagnosis, updatePatientProfile, updateConsultationField,
   addMedication, removeMedication, addAllergy, removeAllergy, getAdherence
 } from '../services/patients';
+import { analyzePatient } from '../services/ai';
 import { PatientReportSkeleton } from '../components/Skeleton';
 
 const Section = ({ sectionId, title, icon: Icon, children, expandedSections, toggleSection, badge, accent }) => {
@@ -93,6 +94,7 @@ const SeverityGauge = ({ value }) => {
 };
 
 const sections = [
+  { id: 'aiAnalysis', label: 'AI Analysis', icon: Sparkles },
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'symptoms', label: 'Symptoms', icon: Stethoscope },
   { id: 'history', label: 'History', icon: Heart },
@@ -120,10 +122,14 @@ export default function PatientReport() {
   const [newFamilyEntry, setNewFamilyEntry] = useState({ condition: '', relationship: '' });
   const [newOtherCondition, setNewOtherCondition] = useState('');
   const [adherence, setAdherence] = useState([]);
+  const [aiAnalysis, setAiAnalysis] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
   const [playingAudio, setPlayingAudio] = useState(false);
   const [audioProgress, setAudioProgress] = useState(0);
   const audioRef = useRef(null);
   const [expandedSections, setExpandedSections] = useState({
+    aiAnalysis: false,
     profile: true,
     symptoms: true,
     history: true,
@@ -183,6 +189,18 @@ export default function PatientReport() {
   const scrollToSection = (sectionId) => {
     const el = document.getElementById(`section-${sectionId}`);
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const handleAnalyze = async () => {
+    setAiLoading(true);
+    setAiError('');
+    try {
+      const analysis = await analyzePatient(patient);
+      setAiAnalysis(analysis);
+    } catch (err) {
+      setAiError(err.message || 'Failed to generate analysis');
+    }
+    setAiLoading(false);
   };
 
   const consultation = patient?.consultations?.[0];
@@ -637,6 +655,63 @@ export default function PatientReport() {
           ))}
         </div>
       </div>
+
+      {/* AI Analysis */}
+      <Section sectionId="aiAnalysis" title="AI Patient Analysis" icon={Sparkles} expandedSections={expandedSections} toggleSection={toggleSection} accent="bg-purple-50 border-purple-100">
+        <div className="space-y-4">
+          {!aiAnalysis && !aiLoading && (
+            <div className="text-center py-8">
+              <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Sparkles className="w-8 h-8 text-purple-500" />
+              </div>
+              <p className="text-sm text-slate-600 mb-1 font-medium">AI-Powered Patient Analysis</p>
+              <p className="text-xs text-slate-400 mb-4 max-w-md mx-auto">
+                Generate an AI summary of this patient's symptoms, history, medications, and test results to get clinical insights and recommendations.
+              </p>
+              <button
+                onClick={handleAnalyze}
+                className="px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 shadow-md shadow-purple-600/20 transition-all"
+              >
+                <Sparkles className="w-4 h-4 inline mr-1.5 -mt-0.5" />
+                Generate Analysis
+              </button>
+            </div>
+          )}
+          {aiLoading && (
+            <div className="text-center py-8">
+              <Loader2 className="w-8 h-8 text-purple-500 animate-spin mx-auto mb-3" />
+              <p className="text-sm text-slate-600 font-medium">Analyzing patient data...</p>
+              <p className="text-xs text-slate-400 mt-1">This may take a few seconds</p>
+            </div>
+          )}
+          {aiError && (
+            <div className="p-4 bg-red-50 rounded-xl border border-red-100 text-center">
+              <p className="text-sm text-red-600">{aiError}</p>
+              <button onClick={handleAnalyze} className="mt-2 text-xs text-red-500 underline font-medium">Try again</button>
+            </div>
+          )}
+          {aiAnalysis && (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs text-purple-500 uppercase tracking-wider font-semibold">AI-Generated Analysis</p>
+                <button onClick={handleAnalyze} className="text-xs text-purple-500 underline font-medium">Regenerate</button>
+              </div>
+              <div className="prose prose-sm max-w-none text-slate-700 whitespace-pre-wrap leading-relaxed text-sm">
+                {aiAnalysis.split('\n').map((line, i) => {
+                  if (line.startsWith('## ')) {
+                    return <h3 key={i} className="text-base font-bold text-slate-800 mt-4 mb-2">{line.replace('## ', '')}</h3>;
+                  }
+                  if (line.startsWith('- ') || line.startsWith('* ')) {
+                    return <li key={i} className="ml-4 text-slate-600">{line.substring(2)}</li>;
+                  }
+                  if (line.trim() === '') return <br key={i} />;
+                  return <p key={i} className="mb-1">{line}</p>;
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+      </Section>
 
       {/* Patient Profile */}
       <Section sectionId="profile" title="Patient Profile" icon={User} expandedSections={expandedSections} toggleSection={toggleSection}>
