@@ -2,34 +2,48 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Doctors collection — any authenticated user can read/write
+    // Doctors collection — authenticated users can read, owner can write own profile
     match /doctors/{doctorId} {
       allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update, delete: if request.auth != null && request.auth.uid == doctorId;
     }
 
-    // Counters — used for auto-incrementing doctor IDs
+    // Counters — used for auto-incrementing doctor IDs (admin-only in production)
     match /counters/{counterId} {
-      allow read, write: if request.auth != null;
+      allow read: if request.auth != null;
+      allow write: if false; // managed by app logic only
     }
 
-    // Patients collection — any authenticated user can read/write
+    // Patients collection — patients own their data, doctors/receptionists can read
     match /patients/{patientId} {
+      // Anyone authenticated can read (doctors need to see patient data)
       allow read: if request.auth != null;
-      allow write: if request.auth != null;
+      // Patient can write their own root doc, or any authenticated user can merge-link
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (
+        request.auth.uid == patientId ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['doctorId', 'doctorName'])
+      );
 
-      // Data subcollection — any authenticated user can read/write
+      // Data subcollection — patient owns their data, any authenticated user can read
       match /data/{document=**} {
         allow read: if request.auth != null;
-        allow write: if request.auth != null;
+        // Patient can write their own data
+        allow create, update: if request.auth != null && request.auth.uid == patientId;
+        allow delete: if request.auth != null && request.auth.uid == patientId;
       }
     }
 
-    // Appointments collection — patients create, doctors read/update
+    // Appointments — patients create, any authenticated user can read/update
     match /appointments/{appointmentId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      // Patient can create their own appointment
+      allow create: if request.auth != null
+        && request.resource.data.patientId == request.auth.uid;
+      // Any authenticated user can update (receptionist forwards, doctor accepts/rejects)
       allow update: if request.auth != null;
+      // No delete allowed
     }
 
     // Deny all other access
